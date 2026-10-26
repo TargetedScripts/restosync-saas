@@ -4,72 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RestoSync - Smart F&B Management SaaS</title>
-    <!-- Stable Tailwind CSS CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/tailwindcss-cdn@3.4.10/tailwindcss.min.js"></script>
     <!-- Global Configuration -->
     <script src="assets/js/config.js"></script>
+    <!-- Internal Tailwind-like Styling for Guaranteed Online Rendering -->
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; margin: 0; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
+        header, footer { background-color: #1e293b; border-color: #334155; border-style: solid; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        header { border-bottom-width: 1px; }
+        footer { border-top-width: 1px; text-align: center; font-size: 0.75rem; color: #64748b; }
+        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); max-width: 56rem; width: 100%; margin: auto; text-align: center; }
+        .grid-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .menu-btn { background-color: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; text-decoration: none; color: white; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
+        .menu-btn:hover { border-color: #f59e0b; background-color: #1e293b; }
+        .badge { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; font-size: 0.75rem; font-weight: bold; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .btn-live { background-color: #059669; color: white; font-size: 0.75rem; padding: 0.375rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.375rem; font-weight: 500; }
+        .dot { width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
+<body>
 
     <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 py-4 px-6 flex justify-between items-center shadow-md">
-        <div class="flex items-center space-x-3">
-            <span class="text-2xl font-black tracking-wider text-amber-500">RS</span>
-            <h1 class="text-xl font-bold">RestoSync <span class="text-xs bg-amber-500 text-slate-900 px-2 py-0.5 rounded font-semibold">SaaS</span></h1>
+    <header>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 900; color: #f59e0b; letter-spacing: 0.05em;">RS</span>
+            <h1 style="font-size: 1.25rem; font-weight: bold; margin: 0;">RestoSync <span style="font-size: 0.75rem; background-color: #f59e0b; color: #0f172a; padding: 0.125rem 0.375rem; border-radius: 0.25rem;">SaaS</span></h1>
         </div>
-        <div class="text-xs bg-emerald-600 px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 shadow">
-            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span> License Active (targetedscripts.com)
+        <div class="btn-live">
+            <span class="dot"></span> License Active (targetedscripts.com)
         </div>
     </header>
 
-    <!-- Main Content & Navigation Hub -->
-    <main class="flex-grow container mx-auto px-6 py-10 flex flex-col items-center justify-center text-center">
-        <div class="max-w-4xl w-full bg-slate-800 border border-slate-700 rounded-2xl p-8 shadow-xl">
-            <span class="text-xs font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-3 py-1 rounded-full">New Zealand Hospitality Standard</span>
-            <h2 class="text-3xl font-extrabold text-white mt-4 mb-3">Smart F&B Management System</h2>
-            <p class="text-slate-400 mb-8 leading-relaxed max-w-xl mx-auto">
+    <!-- Main Content -->
+    <main style="flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1.5rem;">
+        <div class="card">
+            <span class="badge">New Zealand Hospitality Standard</span>
+            <h2 style="font-size: 1.875rem; font-weight: 800; margin-top: 1rem; margin-bottom: 0.75rem;">Smart F&B Management System</h2>
+            <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 36rem; margin-left: auto; margin-right: auto; line-height: 1.5; font-size: 0.875rem;">
                 Welcome to RestoSync. Your centralized platform for multi-tier restaurant operations, bilingual menus, and seamless POS transactions.
             </p>
 
-            <!-- Navigation Buttons to Modules -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <!-- Link to POS Cashier -->
-                <a href="cashier.html" class="bg-slate-900/80 hover:bg-slate-700 border border-slate-700 hover:border-amber-500/50 p-5 rounded-xl transition text-center group shadow">
-                    <div class="text-2xl mb-2">🏷️</div>
-                    <h3 class="text-base font-bold text-white group-hover:text-amber-400">POS Cashier</h3>
-                    <p class="text-xs text-slate-400 mt-1">Orders & 15% NZ GST</p>
+            <!-- Navigation Buttons -->
+            <div class="grid-menu">
+                <a href="cashier.html" class="menu-btn">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🏷️</div>
+                    <strong style="font-size: 1rem; color: white;">POS Cashier</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Orders & 15% NZ GST</span>
                 </a>
 
-                <!-- Link to Menu Catalog -->
-                <a href="menu.html" class="bg-slate-900/80 hover:bg-slate-700 border border-slate-700 hover:border-amber-500/50 p-5 rounded-xl transition text-center group shadow">
-                    <div class="text-2xl mb-2">📖</div>
-                    <h3 class="text-base font-bold text-white group-hover:text-amber-400">Menu Catalog</h3>
-                    <p class="text-xs text-slate-400 mt-1">Bilingual EN / 中文</p>
+                <a href="menu.html" class="menu-btn">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📖</div>
+                    <strong style="font-size: 1rem; color: white;">Menu Catalog</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Bilingual EN / 中文</span>
                 </a>
 
-                <!-- Link to Staff Roster -->
-                <a href="staff.html" class="bg-slate-900/80 hover:bg-slate-700 border border-slate-700 hover:border-amber-500/50 p-5 rounded-xl transition text-center group shadow">
-                    <div class="text-2xl mb-2">👥</div>
-                    <h3 class="text-base font-bold text-white group-hover:text-amber-400">Staff Roster</h3>
-                    <p class="text-xs text-slate-400 mt-1">Shifts & NZ Standards</p>
+                <a href="staff.html" class="menu-btn">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👥</div>
+                    <strong style="font-size: 1rem; color: white;">Staff Roster</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Shifts & NZ Standards</span>
                 </a>
 
-                <!-- Link to Architecture Flow -->
-                <a href="system_architecture_flow.html" class="bg-slate-900/80 hover:bg-slate-700 border border-slate-700 hover:border-amber-500/50 p-5 rounded-xl transition text-center group shadow">
-                    <div class="text-2xl mb-2">⚙️</div>
-                    <h3 class="text-base font-bold text-white group-hover:text-amber-400">Architecture</h3>
-                    <p class="text-xs text-slate-400 mt-1">System Flow & Tiers</p>
+                <a href="system_architecture_flow.html" class="menu-btn">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚙️</div>
+                    <strong style="font-size: 1rem; color: white;">Architecture</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">System Flow & Tiers</span>
                 </a>
             </div>
 
-            <div class="text-xs text-slate-500 border-t border-slate-700/60 pt-4">
-                Powered by <span class="text-slate-400 font-semibold">TargetedScripts.com</span> &bull; Version 1.0.0
+            <div style="font-size: 0.75rem; color: #64748b; border-top: 1px solid #334155; padding-top: 1rem;">
+                Powered by <span style="color: #94a3b8; font-weight: 600;">TargetedScripts.com</span> &bull; Version 1.0.0
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-800 border-t border-slate-700 py-4 text-center text-xs text-slate-500">
+    <footer>
         &copy; 2026 RestoSync SaaS. All rights reserved.
     </footer>
 

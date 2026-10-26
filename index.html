@@ -12,7 +12,7 @@
         header, footer { background-color: #1e293b; border-color: #334155; border-style: solid; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
         header { border-bottom-width: 1px; }
         footer { border-top-width: 1px; text-align: center; font-size: 0.75rem; color: #94a3b8; justify-content: center; flex-direction: column; gap: 0.5rem; }
-        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); max-width: 60rem; width: 100%; margin: auto; text-align: center; }
+        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); max-width: 62rem; width: 100%; margin: auto; text-align: center; }
         .grid-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
         .menu-btn { background-color: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; text-decoration: none; color: white; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
         .menu-btn:hover { border-color: #f59e0b; background-color: #1e293b; }
@@ -20,8 +20,11 @@
         .btn-live { background-color: #059669; color: white; font-size: 0.75rem; padding: 0.375rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.375rem; font-weight: 500; }
         .dot { width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; }
         .logo-inverted { height: 38px; width: auto; object-fit: contain; filter: invert(1) brightness(2); }
-        .pricing-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; text-align: left; margin-top: 2rem; margin-bottom: 2rem; }
+        .pricing-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; text-align: left; margin-top: 2rem; margin-bottom: 2rem; }
         .price-card { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; }
+        .skins-showcase { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.5rem; text-align: left; margin-bottom: 2rem; }
+        .skin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .skin-item { background: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; padding: 1rem; }
         .faq-section { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; text-align: left; margin-top: 2rem; font-size: 0.85rem; color: #94a3b8; }
     </style>
 </head>
@@ -74,7 +77,29 @@
                 </a>
             </div>
 
-            <!-- Subscription Tiers & Included Free Website Info -->
+            <!-- Free Digital Customer Website & Layout Skins Showcase -->
+            <div class="skins-showcase">
+                <div style="font-weight: bold; font-size: 1.1rem; color: white; margin-bottom: 0.5rem;">🌐 Included Free: Digital Customer Website</div>
+                <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 1rem; line-height: 1.4;">
+                    Setiap paket langganan RestoSync sudah termasuk pembuatan dan hosting <strong>Free Digital Customer Website</strong> tanpa biaya tambahan. Anda bebas memilih dari 2 opsi tata letak (*Layout Skins*) profesional berikut:
+                </p>
+                <div class="skin-grid">
+                    <div class="skin-item">
+                        <div style="font-weight: bold; color: #f59e0b; font-size: 0.9rem; margin-bottom: 0.25rem;">1. Modern Grid Layout</div>
+                        <div style="font-size: 0.78rem; color: #94a3b8; line-height: 1.3;">
+                            Tampilan visual berbasis kartu/grid modern. Sangat ideal dan responsif untuk <strong>Takeaway Shop, Cafe, dan Fast Food</strong>.
+                        </div>
+                    </div>
+                    <div class="skin-item">
+                        <div style="font-weight: bold; color: #f59e0b; font-size: 0.9rem; margin-bottom: 0.25rem;">2. Classic Menu Book Layout</div>
+                        <div style="font-size: 0.78rem; color: #94a3b8; line-height: 1.3;">
+                            Tampilan terstruktur mirip buku menu restoran fisik. Sangat cocok untuk <strong>Dine-in Restaurant, Bistro, dan Tempat Makan</strong> dengan variasi kategori menu yang luas.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscription Tiers -->
             <div style="text-align: left; font-weight: bold; font-size: 1rem; color: white; margin-bottom: 0.5rem; border-top: 1px solid #334155; padding-top: 1.5rem;">
                 Subscription Tiers & Value Package
             </div>
@@ -82,19 +107,19 @@
                 <div class="price-card">
                     <div style="font-weight: bold; color: #f59e0b;">Basic Tier ($150/mo)</div>
                     <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
-                        Includes POS Cashier, Menu Catalog, Staff Roster, plus a <strong>Free Digital Customer Menu Website</strong> (with customized skin & template choices).
+                        Mencakup POS Cashier, Menu Catalog, Staff Roster, plus <strong>Free Digital Customer Website</strong> (pilihan Modern Grid atau Classic Menu Book).
                     </div>
                 </div>
                 <div class="price-card">
                     <div style="font-weight: bold; color: #f59e0b;">Professional Tier ($250/mo)</div>
                     <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
-                        Includes advanced operations features, priority support, and a <strong>Free Digital Customer Menu Website</strong> tailored to your restaurant branding.
+                        Mencakup fitur operasional lanjutan, prioritas support, dan <strong>Free Digital Customer Website</strong> yang disesuaikan dengan branding restoran Anda.
                     </div>
                 </div>
                 <div class="price-card">
                     <div style="font-weight: bold; color: #f59e0b;">Enterprise Tier ($400/mo)</div>
                     <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
-                        Multi-branch capabilities, automated reporting, and a fully customized <strong>Free Digital Customer Menu Website</strong> solution.
+                        Kapabilitas multi-cabang, laporan otomatis, serta solusi <strong>Free Digital Customer Website</strong> tingkat lanjut untuk perusahaan F&B besar.
                     </div>
                 </div>
             </div>
@@ -102,7 +127,7 @@
             <!-- FAQ / Product vs Custom Agency Clarification -->
             <div class="faq-section">
                 <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Product SaaS vs. Custom Development Agency</strong>
-                Biaya berlangganan bulanan RestoSync ($150 - $400/bln) mencakup akses platform SaaS F&B siap pakai dan hosting website restoran ber-template. Jika restoran Anda membutuhkan pengembangan kustom khusus di luar modul standar RestoSync, layanan tersebut dapat dialihkan langsung ke divisi <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">Custom Development TargetedScripts.com</a>.
+                Biaya berlangganan bulanan RestoSync ($150 - $400/bln) sudah mencakup akses platform SaaS F&B siap pakai dan hosting website pelanggan ber-template dengan pilihan <em>Skin Layout</em> (Modern Grid / Classic Menu Book). Jika restoran Anda memerlukan pengembangan kustom khusus di luar modul standar, layanan tersebut dapat dialihkan ke divisi <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">Custom Development TargetedScripts.com</a>.
             </div>
 
             <div style="font-size: 0.75rem; color: #64748b; margin-top: 1.5rem;">

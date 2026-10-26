@@ -3,11 +3,11 @@ const RESTOSYNC_CONFIG = {
     appName: "RestoSync SaaS",
     developer: "TargetedScripts.com",
     tagline: "Custom Software & Automation NZ",
-    version: "1.1.0",
+    version: "1.2.0",
     gstRate: 0.15, // 15% NZ GST Standard
     currency: "NZD",
     
-    // Subscription Tiers with Free Digital Customer Menu Website Included
+    // Subscription Tiers with Free Digital Customer Website & 2 Skin Options
     subscriptionTiers: [
         {
             id: "basic",
@@ -17,7 +17,7 @@ const RESTOSYNC_CONFIG = {
                 "POS Cashier & 15% NZ GST Calculation",
                 "Core Menu Catalog (Bilingual EN / 中文)",
                 "Staff Roster Management",
-                "Free Digital Customer Menu Website (Custom templates & skins included)"
+                "Free Digital Customer Website (Includes choice of Modern Grid or Classic Menu Book layout)"
             ]
         },
         {
@@ -28,7 +28,7 @@ const RESTOSYNC_CONFIG = {
                 "Advanced POS & Multi-Terminal Support",
                 "Extended Menu & Inventory Management",
                 "Staff Roster & Compliance Tracking",
-                "Free Digital Customer Menu Website (Custom templates & skins included)",
+                "Free Digital Customer Website (Includes choice of Modern Grid or Classic Menu Book layout)",
                 "Priority Cloud Hosting & Support"
             ]
         },
@@ -40,7 +40,7 @@ const RESTOSYNC_CONFIG = {
                 "Multi-Branch F&B Operations Management",
                 "Full Analytics & Automated Reporting",
                 "Dedicated Account Management",
-                "Free Digital Customer Menu Website (Custom templates & skins included)",
+                "Free Digital Customer Website (Includes choice of Modern Grid or Classic Menu Book layout)",
                 "Custom Workflow Integrations via TargetedScripts"
             ]
         }

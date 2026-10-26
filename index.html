@@ -3,35 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync - Smart F&B Management SaaS</title>
+    <title>RestoSync - Smart F&B Management SaaS | TargetedScripts.com</title>
     <!-- Global Configuration -->
     <script src="assets/js/config.js"></script>
     <!-- Blue Theme & Inverted Logo Styling -->
     <style>
         body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; margin: 0; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
-        header, footer { background-color: #1e293b; border-color: #334155; border-style: solid; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        header, footer { background-color: #1e293b; border-color: #334155; border-style: solid; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
         header { border-bottom-width: 1px; }
-        footer { border-top-width: 1px; text-align: center; font-size: 0.75rem; color: #64748b; }
-        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); max-width: 56rem; width: 100%; margin: auto; text-align: center; }
+        footer { border-top-width: 1px; text-align: center; font-size: 0.75rem; color: #94a3b8; justify-content: center; flex-direction: column; gap: 0.5rem; }
+        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); max-width: 60rem; width: 100%; margin: auto; text-align: center; }
         .grid-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
         .menu-btn { background-color: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; text-decoration: none; color: white; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
         .menu-btn:hover { border-color: #f59e0b; background-color: #1e293b; }
         .badge { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; font-size: 0.75rem; font-weight: bold; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
         .btn-live { background-color: #059669; color: white; font-size: 0.75rem; padding: 0.375rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.375rem; font-weight: 500; }
         .dot { width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; }
-        /* CSS Filter to automatically invert dark logo to bright white */
-        .logo-inverted { height: 40px; width: auto; object-fit: contain; filter: invert(1) brightness(2); }
+        .logo-inverted { height: 38px; width: auto; object-fit: contain; filter: invert(1) brightness(2); }
+        .pricing-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; text-align: left; margin-top: 2rem; margin-bottom: 2rem; }
+        .price-card { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; }
+        .faq-section { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; text-align: left; margin-top: 2rem; font-size: 0.85rem; color: #94a3b8; }
     </style>
 </head>
 <body>
 
-    <!-- Header with Inverted Logo -->
+    <!-- Header with Inverted Logo & Ecosystem Badge -->
     <header>
-        <div style="display: flex; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
             <img src="assets/images/RS%20Logo.png" alt="RestoSync Logo" class="logo-inverted">
+            <span style="font-size: 0.75rem; color: #94a3b8; border-left: 1px solid #334155; padding-left: 1rem;">TargetedScripts.com Ecosystem</span>
         </div>
         <div class="btn-live">
-            <span class="dot"></span> License Active (targetedscripts.com)
+            <span class="dot"></span> Core SaaS Product Active
         </div>
     </header>
 
@@ -40,11 +43,11 @@
         <div class="card">
             <span class="badge">New Zealand Hospitality Standard</span>
             <h2 style="font-size: 1.875rem; font-weight: 800; margin-top: 1rem; margin-bottom: 0.75rem;">Smart F&B Management System</h2>
-            <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 36rem; margin-left: auto; margin-right: auto; line-height: 1.5; font-size: 0.875rem;">
-                Welcome to RestoSync. Your centralized platform for multi-tier restaurant operations, bilingual menus, and seamless POS transactions.
+            <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 40rem; margin-left: auto; margin-right: auto; line-height: 1.5; font-size: 0.875rem;">
+                A comprehensive cloud-ready SaaS solution tailored for New Zealand restaurants, featuring 15% NZ GST calculations, bilingual menus, and staff rostering.
             </p>
 
-            <!-- Navigation Buttons -->
+            <!-- Navigation Buttons to Modules -->
             <div class="grid-menu">
                 <a href="cashier.html" class="menu-btn">
                     <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🏷️</div>
@@ -71,15 +74,47 @@
                 </a>
             </div>
 
-            <div style="font-size: 0.75rem; color: #64748b; border-top: 1px solid #334155; padding-top: 1rem;">
-                Powered by <span style="color: #94a3b8; font-weight: 600;">TargetedScripts.com</span> &bull; Version 1.0.0
+            <!-- Subscription Tiers & Included Free Website Info -->
+            <div style="text-align: left; font-weight: bold; font-size: 1rem; color: white; margin-bottom: 0.5rem; border-top: 1px solid #334155; padding-top: 1.5rem;">
+                Subscription Tiers & Value Package
+            </div>
+            <div class="pricing-box">
+                <div class="price-card">
+                    <div style="font-weight: bold; color: #f59e0b;">Basic Tier ($150/mo)</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
+                        Includes POS Cashier, Menu Catalog, Staff Roster, plus a <strong>Free Digital Customer Menu Website</strong> (with customized skin & template choices).
+                    </div>
+                </div>
+                <div class="price-card">
+                    <div style="font-weight: bold; color: #f59e0b;">Professional Tier ($250/mo)</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
+                        Includes advanced operations features, priority support, and a <strong>Free Digital Customer Menu Website</strong> tailored to your restaurant branding.
+                    </div>
+                </div>
+                <div class="price-card">
+                    <div style="font-weight: bold; color: #f59e0b;">Enterprise Tier ($400/mo)</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
+                        Multi-branch capabilities, automated reporting, and a fully customized <strong>Free Digital Customer Menu Website</strong> solution.
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ / Product vs Custom Agency Clarification -->
+            <div class="faq-section">
+                <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Product SaaS vs. Custom Development Agency</strong>
+                Biaya berlangganan bulanan RestoSync ($150 - $400/bln) mencakup akses platform SaaS F&B siap pakai dan hosting website restoran ber-template. Jika restoran Anda membutuhkan pengembangan kustom khusus di luar modul standar RestoSync, layanan tersebut dapat dialihkan langsung ke divisi <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">Custom Development TargetedScripts.com</a>.
+            </div>
+
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 1.5rem;">
+                Powered & Developed by <span style="color: #94a3b8; font-weight: 600;">TargetedScripts.com</span> &bull; Custom Software & Automation NZ
             </div>
         </div>
     </main>
 
     <!-- Footer -->
     <footer>
-        &copy; 2026 RestoSync SaaS. All rights reserved.
+        <div>&copy; 2026 RestoSync SaaS. All rights reserved.</div>
+        <div style="color: #64748b; font-size: 0.7rem;">Powered & Developed by TargetedScripts.com - Custom Software & Automation NZ</div>
     </footer>
 
 </body>

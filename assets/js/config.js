@@ -1,58 +1,50 @@
-/**
- * RestoSync SaaS - Global Configuration & License Handler
- * Parent Entity: TargetedScripts (targetedscripts.com)
- */
-
+// RestoSync Global Configuration & New Zealand Hospitality Standards
 const RESTOSYNC_CONFIG = {
     appName: "RestoSync SaaS",
-    version: "1.0.0",
-    tagline: "Your Restaurant, Perfectly Synchronized.",
-    parentEntity: "TargetedScripts",
-    licenseServerEndpoint: "https://targetedscripts.com/api/verify-license",
+    developer: "TargetedScripts.com",
+    tagline: "Custom Software & Automation NZ",
+    version: "1.1.0",
+    gstRate: 0.15, // 15% NZ GST Standard
+    currency: "NZD",
     
-    // Tiered Packaging Structure
-    tiers: {
-        BASIC: {
+    // Subscription Tiers with Free Digital Customer Menu Website Included
+    subscriptionTiers: [
+        {
             id: "basic",
-            name: "Basic Takeaway",
-            price: 150,
-            currency: "NZD",
+            name: "Basic Tier",
+            priceMonthly: 150,
             features: [
-                "Customer Digital Menu (Grid/List Bilingual EN/ZH)",
-                "Catalog & Price Management",
-                "Basic Takeaway & Counter POS",
-                "Client-Owned DB (Zero Server Cost)"
+                "POS Cashier & 15% NZ GST Calculation",
+                "Core Menu Catalog (Bilingual EN / 中文)",
+                "Staff Roster Management",
+                "Free Digital Customer Menu Website (Custom templates & skins included)"
             ]
         },
-        PROFESSIONAL: {
+        {
             id: "professional",
-            name: "Professional Dine-In & FCP",
-            price: 250,
-            currency: "NZD",
+            name: "Professional Tier",
+            priceMonthly: 250,
             features: [
-                "All Basic Features + Firebase Real-Time DB",
-                "Waiter Mobile Ordering (Dine-In)",
-                "Kitchen Display System (KDS) & Floor Manager",
-                "Manager Analytics Dashboard & Financial Reports",
-                "MPI Food Control Plan (FCP) Digital Compliance Logs"
+                "Advanced POS & Multi-Terminal Support",
+                "Extended Menu & Inventory Management",
+                "Staff Roster & Compliance Tracking",
+                "Free Digital Customer Menu Website (Custom templates & skins included)",
+                "Priority Cloud Hosting & Support"
             ]
         },
-        ENTERPRISE: {
+        {
             id: "enterprise",
-            name: "Enterprise Multi-Branch & Roster",
-            price: 400,
-            currency: "NZD",
+            name: "Enterprise Tier",
+            priceMonthly: 400,
             features: [
-                "All Professional Features",
-                "Staff Accounts & Role-Based Access Control",
-                "Staff Rostering & Shift Management",
-                "Multi-Branch Inventory & Branch Overrides (Up to 3 Branches)"
+                "Multi-Branch F&B Operations Management",
+                "Full Analytics & Automated Reporting",
+                "Dedicated Account Management",
+                "Free Digital Customer Menu Website (Custom templates & skins included)",
+                "Custom Workflow Integrations via TargetedScripts"
             ]
         }
-    }
-};
+    ],
 
-// Export config for modular usage
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = RESTOSYNC_CONFIG;
-}
+    serviceModelNote: "RestoSync subscription covers ready-to-use SaaS platform access and hosted template websites. For bespoke custom software development outside standard modules, services are provided via TargetedScripts.com."
+};

@@ -21,7 +21,7 @@
     <script>
         (function() {
             const AUTH_KEY = "restosync_super_admin_auth";
-            const SUPER_PASSWORD = "admin"; // Ubah password super admin sesuai kebutuhan Anda
+            const SUPER_PASSWORD = "admin"; // Password Super Admin
             
             if (sessionStorage.getItem(AUTH_KEY) !== "true") {
                 let pwd = prompt("SECURITY CHECK: Enter Super Admin Password for System Console:");
@@ -189,53 +189,169 @@
                     <input type="checkbox" id="right_system_settings" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
                     <div><strong class="block text-stone-200">System Settings Tab</strong><span class="text-[10px] text-stone-400">Hours, surcharges & configs</span></div>
                 </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_staff_management" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Staff Management Tab</strong><span class="text-[10px] text-stone-400">Employee roles & PIN access</span></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_customer_crm" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Customer CRM & Loyalty Tab</strong><span class="text-[10px] text-stone-400">Member points & database</span></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_audit_logs" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Audit Logs & Security Tab</strong><span class="text-[10px] text-stone-400">Transaction & void history</span></div>
+                </label>
             </div>
         </div>
 
-        <!-- MASTER FEATURE TOGGLES (>20 MODULES CONTROL) -->
+        <!-- MASTER FEATURE TOGGLES (DIKELOMPOKKAN KE DALAM KATEGORI) -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                <i class="fa-solid fa-toggle-on text-sm"></i><span>Master Feature Toggles & Module Access (20+ Modules)</span>
+                <i class="fa-solid fa-layer-group text-sm"></i><span>Master Feature Toggles & Module Access (Categorized by Function)</span>
             </h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_upload_logo" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div><strong class="block text-stone-200">Self Logo Upload & Resize</strong></div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_custom_colors" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div><strong class="block text-stone-200">Theme Color Customization</strong></div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_online_ordering" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div><strong class="block text-stone-200">General Online Ordering</strong></div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_qr_dine_in" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div><strong class="block text-stone-200">QR Dine-In Table Ordering</strong></div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_kitchen_display_system" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div><strong class="block text-stone-200">Kitchen Display System (KDS)</strong></div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_gst_calculation" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div><strong class="block text-stone-200">15% NZ GST Tax Calculator</strong></div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_table_reservation" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div><strong class="block text-stone-200">Table Reservation System</strong></div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_inventory_alerts" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div><strong class="block text-stone-200">Low Stock Email Alerts</strong></div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_staff_performance" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div><strong class="block text-stone-200">Staff Performance Analytics</strong></div>
-                </label>
+            <!-- KELOMPOK 1: POS, TRANSAKSI & PEMBAYARAN -->
+            <div class="space-y-3">
+                <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-cash-register"></i><span>1. POS, Transactions & Payments</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_online_ordering" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">General Online Ordering</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_qr_dine_in" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">QR Dine-In Table Ordering</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_split_bill" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Split Bill & Payment Sharing</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_discount_promo" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Discount & Voucher Engine</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_multi_currency" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Multi-Currency Support</strong></div>
+                    </label>
+                </div>
             </div>
+
+            <!-- KELOMPOK 2: DAPUR, KDS & OPERASIONAL RESTORAN -->
+            <div class="space-y-3 pt-4 border-t border-zinc-800">
+                <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-utensils"></i><span>2. Kitchen, KDS & Restaurant Operations</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_kitchen_display_system" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Kitchen Display System (KDS)</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_table_reservation" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Table Reservation System</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_delivery_dispatch" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Delivery Driver Dispatch Hub</strong></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- KELOMPOK 3: INVENTARIS, RESEP & STOK -->
+            <div class="space-y-3 pt-4 border-t border-zinc-800">
+                <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-boxes-stacked"></i><span>3. Inventory, Recipe & Stock Control</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_inventory_alerts" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Low Stock Email Alerts</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_recipe_costing" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Ingredient Recipe Costing</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_multi_branch" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Multi-Branch Stock Transfer</strong></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- KELOMPOK 4: KEUANGAN, PAJAK & LAPORAN -->
+            <div class="space-y-3 pt-4 border-t border-zinc-800">
+                <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-chart-line"></i><span>4. Finance, Tax & Reporting</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_gst_calculation" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">15% NZ GST Tax Calculator</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_staff_performance" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Staff Performance Analytics</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_advanced_analytics" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Advanced AI Sales Forecasting</strong></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- KELOMPOK 5: HARDWARE, PERIPHERAL & INTEGRASI -->
+            <div class="space-y-3 pt-4 border-t border-zinc-800">
+                <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-print"></i><span>5. Hardware, Peripherals & Integrations</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_receipt_printer" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Thermal Receipt Printing</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_cash_drawer" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Cash Drawer Integration</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_customer_display" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Customer Facing Display (CFD)</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_offline_sync" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Offline Data Synchronization</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_sms_notifications" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">SMS Customer Notifications</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_api_webhook" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">External API & Webhook Access</strong></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- KELOMPOK 6: BRANDING, TEMA & KUSTOMISASI -->
+            <div class="space-y-3 pt-4 border-t border-zinc-800">
+                <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-paintbrush"></i><span>6. Branding, Themes & Customization</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_upload_logo" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Self Logo Upload & Resize</strong></div>
+                    </label>
+                    <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                        <input type="checkbox" id="toggle_custom_colors" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <div><strong class="block text-stone-200">Theme Color Customization</strong></div>
+                    </label>
+                </div>
+            </div>
+
         </div>
 
     </main>

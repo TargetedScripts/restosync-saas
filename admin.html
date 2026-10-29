@@ -84,6 +84,20 @@
             </div>
         </div>
 
+        <!-- ACTIVE OPERATIONAL MODULES (FEATURE TOGGLES DISPLAY) -->
+        <div class="custom-card rounded-3xl p-6 space-y-4 shadow-xl">
+            <div class="flex justify-between items-center border-b border-[#1f2937] pb-3">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center space-x-2">
+                    <i class="fa-solid fa-cubes text-sm"></i><span>Active Operational Modules (Cloud Controlled)</span>
+                </h2>
+                <span class="text-[10px] text-stone-400">Dikelola via System Console</span>
+            </div>
+            <div id="modulesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+                <!-- Dynamic Modules Rendered Here -->
+                <div class="text-xs text-stone-500 col-span-full py-2">Memuat status modul...</div>
+            </div>
+        </div>
+
         <!-- MENU MANAGEMENT SECTION -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <div class="flex justify-between items-center border-b border-[#1f2937] pb-4 flex-wrap gap-3">
@@ -128,13 +142,14 @@
         const urlParams = new URLSearchParams(window.location.search);
         const TENANT_ID = urlParams.get('tenant') || 'bangkokthai';
         document.getElementById('currentTenantId').innerText = TENANT_ID;
-        document.getElementById('liveStoreBtn.href', `index.html?tenant=${TENANT_ID}`);
+        document.getElementById('liveStoreBtn').href = `index.html?tenant=${TENANT_ID}`;
 
         let activeConfig = {
             store: {},
             branding: {},
             menuItems: []
         };
+        let activeModules = {};
 
         function showToast(message, isError = false) {
             const toast = document.getElementById('toastNotification');
@@ -146,7 +161,7 @@
             }, 3500);
         }
 
-        // FETCH DATA DARI FIRESTORE DENGAN FALLBACK AMAN
+        // FETCH DATA DARI FIRESTORE
         document.addEventListener('DOMContentLoaded', () => {
             const statusBadge = document.getElementById('dbStatusBadge');
             
@@ -154,15 +169,15 @@
                 if (doc.exists) {
                     const data = doc.data();
                     
-                    // Mendukung struktur 'config' atau 'profile'
+                    // Ambil config store & menu
                     if (data.config) {
                         activeConfig = data.config;
-                    } else if (data.profile) {
+                    } else {
                         activeConfig.store = {
-                            name: data.profile.tenantName || 'Bangkok Thai Takeaway',
+                            name: data.profile?.tenantName || 'Bangkok Thai Takeaway',
                             tagline: 'Authentic Thai Cuisine in Palmerston North',
-                            phone: data.profile.phone || '+64 6 356 0000',
-                            address: data.profile.address || '642 Pioneer Highway, Palmerston North'
+                            phone: data.profile?.phone || '+64 6 356 0000',
+                            address: data.profile?.address || '642 Pioneer Highway, Palmerston North'
                         };
                         activeConfig.branding = { logo: './assets/images/RS Logo.png' };
                         activeConfig.menuItems = [
@@ -171,7 +186,17 @@
                         ];
                     }
 
+                    // Ambil modules (feature toggles) dari database
+                    activeModules = data.modules || {
+                        toggle_online_ordering: true,
+                        toggle_qr_dine_in: true,
+                        toggle_gst_calculation: true,
+                        toggle_kitchen_display_system: true
+                    };
+
                     populateAdminForm();
+                    renderModulesContainer();
+
                     statusBadge.className = "text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-mono";
                     statusBadge.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1"></i>Connected';
                 } else {
@@ -198,6 +223,43 @@
             document.getElementById('inputStoreLogo').value = branding.logo || '';
 
             renderAdminMenuList();
+        }
+
+        function renderModulesContainer() {
+            const container = document.getElementById('modulesContainer');
+            const moduleMeta = {
+                toggle_online_ordering: { name: "Online Ordering", icon: "fa-cart-shopping" },
+                toggle_qr_dine_in: { name: "QR Dine-In Ordering", icon: "fa-qrcode" },
+                toggle_table_reservation: { name: "Table Reservation", icon: "fa-chair" },
+                toggle_kitchen_display_system: { name: "Kitchen Display (KDS)", icon: "fa-fire-burner" },
+                toggle_fcp_temperature_log: { name: "MPI FCP Temp Logs", icon: "fa-temperature-low" },
+                toggle_gst_calculation: { name: "15% NZ GST Calculator", icon: "fa-calculator" },
+                toggle_advanced_analytics: { name: "Sales Analytics", icon: "fa-chart-line" }
+            };
+
+            container.innerHTML = "";
+            let count = 0;
+
+            for (const [key, active] of Object.entries(activeModules)) {
+                if (active && moduleMeta[key]) {
+                    count++;
+                    const m = moduleMeta[key];
+                    const card = document.createElement('div');
+                    card.className = "bg-[#030712] border border-[#1f2937] p-3 rounded-2xl flex items-center space-x-3";
+                    card.innerHTML = `
+                        <div class="bg-indigo-500/10 text-indigo-400 p-2.5 rounded-xl text-sm"><i class="fa-solid ${m.icon}"></i></div>
+                        <div>
+                            <h3 class="font-bold text-white text-xs">${m.name}</h3>
+                            <span class="text-[10px] text-emerald-400"><i class="fa-solid fa-circle text-[5px] mr-1"></i>Active</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
+            }
+
+            if (count === 0) {
+                container.innerHTML = `<div class="text-xs text-stone-500 col-span-full">Tidak ada modul aktif yang dikonfigurasi.</div>`;
+            }
         }
 
         function renderAdminMenuList() {

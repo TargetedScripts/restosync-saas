@@ -17,26 +17,54 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
 
+    <!-- PASSWORD AUTH GUARD (PENCEGAHAN BACKDOOR & URL BYPASS) -->
+    <script>
+        (function() {
+            const AUTH_KEY = "restosync_super_admin_auth";
+            const SUPER_PASSWORD = "admin"; // Ubah password super admin sesuai kebutuhan Anda
+            
+            if (sessionStorage.getItem(AUTH_KEY) !== "true") {
+                let pwd = prompt("SECURITY CHECK: Enter Super Admin Password for System Console:");
+                if (pwd === SUPER_PASSWORD) {
+                    sessionStorage.setItem(AUTH_KEY, "true");
+                } else {
+                    alert("Access Denied! Invalid Password.");
+                    window.location.href = "about:blank";
+                }
+            }
+        })();
+    </script>
+
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center space-x-2 bg-emerald-600">
         <i class="fa-solid fa-circle-check text-sm"></i>
-        <span>Settings successfully saved to Firebase Cloud!</span>
+        <span>Action successfully executed on Firebase Cloud!</span>
     </div>
 
-    <!-- HEADER -->
+    <!-- HEADER DENGAN INDIKATOR STATUS KONEKSI FIREBASE -->
     <header class="bg-[#111827] border-b border-[#1f2937] px-8 py-4 flex justify-between items-center shadow-md">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 rounded-xl flex items-center justify-center font-black shadow-lg shadow-amber-500/20">
-                <i class="fa-solid fa-server"></i>
+                <i class="fa-solid fa-shield-halved"></i>
             </div>
             <div>
-                <h1 class="font-bold text-white text-base">RestoSync SaaS &bull; Super Admin Console</h1>
-                <p class="text-xs text-stone-400">Global Tenant & Firestore Profile Management Hub</p>
+                <h1 class="font-bold text-white text-base">RestoSync SaaS &bull; Super Admin System Console</h1>
+                <p class="text-xs text-stone-400">Secured Master Hub &bull; Direct Firestore Mirroring</p>
             </div>
         </div>
-        <div>
+        
+        <div class="flex items-center space-x-4">
+            <!-- LIVE CONNECTION INDICATOR LIGHT -->
+            <div class="flex items-center space-x-2 bg-[#030712] border border-[#1f2937] px-3.5 py-1.5 rounded-full">
+                <span id="dbIndicatorDot" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                <span id="dbIndicatorText" class="text-[11px] font-mono text-stone-300">Connecting to Firebase...</span>
+            </div>
+
+            <button onclick="prepareNewTenant()" class="bg-zinc-800 hover:bg-zinc-700 text-amber-400 border border-amber-500/30 px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center space-x-2">
+                <i class="fa-solid fa-user-plus"></i><span>+ Add New Tenant</span>
+            </button>
             <button onclick="saveTenantSettings()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-5 py-2.5 rounded-xl text-xs font-black shadow-lg transition flex items-center space-x-2">
-                <i class="fa-solid fa-cloud-arrow-up"></i><span>Save to Firebase Cloud</span>
+                <i class="fa-solid fa-cloud-arrow-up"></i><span>Save to Firebase</span>
             </button>
         </div>
     </header>
@@ -44,16 +72,22 @@
     <!-- MAIN CONTENT -->
     <main class="max-w-7xl mx-auto px-8 py-8 w-full flex-grow space-y-6">
         
-        <!-- TENANT SELECTOR -->
+        <!-- TENANT SELECTOR & ID -->
         <div class="custom-card rounded-3xl p-6 shadow-xl flex items-center justify-between flex-wrap gap-4">
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">Select Active Tenant (Loaded from Firestore)</label>
-                <select id="tenantSelect" onchange="switchTenant(this.value)" class="custom-input rounded-xl px-4 py-2.5 text-xs font-mono w-72 cursor-pointer">
-                    <option value="">Loading tenants...</option>
-                </select>
+            <div class="flex items-center space-x-4 flex-wrap gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">Select Existing Tenant</label>
+                    <select id="tenantSelect" onchange="switchTenant(this.value)" class="custom-input rounded-xl px-4 py-2.5 text-xs font-mono w-64 cursor-pointer">
+                        <option value="">Loading tenants...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">Tenant ID / Slug (Unique)</label>
+                    <input type="text" id="inputTenantId" class="custom-input rounded-xl px-4 py-2 text-xs font-mono w-56 text-amber-300 font-bold" placeholder="e.g. boluhalus">
+                </div>
             </div>
             <div class="text-right">
-                <span id="systemStatusBadge" class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full font-mono">System Operational</span>
+                <span id="modeIndicator" class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full font-mono">Mode: Editing Existing Tenant</span>
             </div>
         </div>
 
@@ -63,37 +97,37 @@
                 <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
                     <i class="fa-solid fa-database text-sm"></i><span>Live Firestore Raw Data Inspector (Database Proof)</span>
                 </h2>
-                <span class="text-[10px] text-stone-400">Menampilkan JSON mentah apa adanya dari dokumen Firestore</span>
+                <span class="text-[10px] text-stone-400">Menampilkan JSON mentah apa adanya langsung dari dokumen Firestore</span>
             </div>
-            <pre id="rawFirestoreViewer" class="bg-[#030712] border border-[#1f2937] p-4 rounded-xl text-[11px] font-mono text-emerald-400 overflow-x-auto max-h-48">Loading raw database snapshot...</pre>
+            <pre id="rawFirestoreViewer" class="bg-[#030712] border border-[#1f2937] p-4 rounded-xl text-[11px] font-mono text-emerald-400 overflow-x-auto max-h-40">Loading raw database snapshot...</pre>
         </div>
 
-        <!-- CLIENT PROFILE & STORE INFORMATION (MAPPED DIRECTLY FROM "profile") -->
+        <!-- CLIENT PROFILE & STORE INFORMATION -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                <i class="fa-solid fa-store text-sm"></i><span>Client Profile & Store Information (Firestore Map: "profile")</span>
+                <i class="fa-solid fa-store text-sm"></i><span>Client Profile & Store Information</span>
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Store / Restaurant Name (tenantName)</label>
-                    <input type="text" id="inputStoreName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                    <input type="text" id="inputStoreName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Bolu Halus">
                 </div>
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Contact Person (contactPerson)</label>
-                    <input type="text" id="inputClientName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                    <input type="text" id="inputClientName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="denisa">
                 </div>
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Phone Number (phone)</label>
-                    <input type="text" id="inputClientPhone" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono">
+                    <input type="text" id="inputClientPhone" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="+64...">
                 </div>
                 <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Email Address (email)</label>
-                    <input type="email" id="inputClientEmail" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Email Address <span class="text-amber-400 text-[10px]">(For Contract Renewal Alerts)</span></label>
+                    <input type="email" id="inputClientEmail" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="client@domain.co.nz">
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-stone-400 mb-1.5 font-semibold">Physical Address (address)</label>
-                    <input type="text" id="inputStoreAddress" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                    <input type="text" id="inputStoreAddress" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Johnsonville">
                 </div>
             </div>
         </div>
@@ -107,16 +141,100 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Contract Number (contractNo)</label>
-                    <input type="text" id="inputContractNo" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono">
+                    <input type="text" id="inputContractNo" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="TSBH.2029.0099">
                 </div>
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Subscription Tier (tier)</label>
-                    <input type="text" id="inputSubTier" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                    <select id="inputSubTier" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                        <option value="FREE SOCIAL TIER">FREE SOCIAL TIER</option>
+                        <option value="STANDARD ENTERPRISE">STANDARD ENTERPRISE</option>
+                        <option value="PREMIUM MULTI-LOCATION">PREMIUM MULTI-LOCATION</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Expiry Date (expiryDate)</label>
-                    <input type="text" id="inputExpiryDate" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                    <input type="date" id="inputExpiryDate" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
                 </div>
+            </div>
+        </div>
+
+        <!-- USER RIGHTS & ACCESS PERMISSIONS (TABS & ROLES) -->
+        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                <i class="fa-solid fa-shield-halved text-sm"></i><span>Assigned User Rights & Tab Permissions</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_manager_portal" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Manager Portal Access</strong><span class="text-[10px] text-stone-400">admin.html dashboard tab</span></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_pos_access" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">POS Operations Tab</strong><span class="text-[10px] text-stone-400">Cashier & order processing</span></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_inventory_control" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Inventory & Stock Tab</strong><span class="text-[10px] text-stone-400">Stock items & recipe management</span></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_kds_access" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Kitchen Display (KDS) Tab</strong><span class="text-[10px] text-stone-400">Live order routing screen</span></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_financial_reports" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Financial Reports & Tax Tab</strong><span class="text-[10px] text-stone-400">Sales auditing & IRD compliance</span></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_system_settings" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">System Settings Tab</strong><span class="text-[10px] text-stone-400">Hours, surcharges & configs</span></div>
+                </label>
+            </div>
+        </div>
+
+        <!-- MASTER FEATURE TOGGLES (>20 MODULES CONTROL) -->
+        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                <i class="fa-solid fa-toggle-on text-sm"></i><span>Master Feature Toggles & Module Access (20+ Modules)</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="toggle_upload_logo" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Self Logo Upload & Resize</strong></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="toggle_custom_colors" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Theme Color Customization</strong></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="toggle_online_ordering" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">General Online Ordering</strong></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="toggle_qr_dine_in" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">QR Dine-In Table Ordering</strong></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="toggle_kitchen_display_system" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Kitchen Display System (KDS)</strong></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="toggle_gst_calculation" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">15% NZ GST Tax Calculator</strong></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="toggle_table_reservation" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Table Reservation System</strong></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="toggle_inventory_alerts" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Low Stock Email Alerts</strong></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="toggle_staff_performance" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Staff Performance Analytics</strong></div>
+                </label>
             </div>
         </div>
 
@@ -124,7 +242,7 @@
 
     <!-- FOOTER -->
     <footer class="bg-[#030712] border-t border-[#1f2937] py-6 text-center text-xs text-stone-500">
-        RestoSync SaaS System Console &bull; Direct Database Mirroring
+        RestoSync SaaS System Console &bull; Secured Super Admin Hub
     </footer>
 
     <!-- FIREBASE & CONSOLE LOGIC -->
@@ -144,7 +262,7 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        let currentActiveTenant = '';
+        let isNewTenantMode = false;
 
         function showToast(message, isError = false) {
             const toast = document.getElementById('toastNotification');
@@ -156,8 +274,31 @@
             }, 3500);
         }
 
-        // LOAD TENANTS AUTOMATICALLY FROM FIRESTORE
+        // PEMANTAU STATUS KONEKSI FIREBASE SECARA REAL-TIME
+        function updateConnectionStatus(status, message) {
+            const dot = document.getElementById('dbIndicatorDot');
+            const text = document.getElementById('dbIndicatorText');
+            
+            if (status === 'connected') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50";
+                text.innerText = message || "Firebase Connected";
+            } else if (status === 'loading') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse";
+                text.innerText = message || "Syncing with Cloud...";
+            } else if (status === 'error') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-lg shadow-red-500/50";
+                text.innerText = message || "Firebase Disconnected / Error";
+            }
+        }
+
+        // LOAD TENANTS AUTOMATICALLY INTO DROPDOWN
         document.addEventListener('DOMContentLoaded', () => {
+            updateConnectionStatus('loading', 'Connecting to Firestore...');
+            loadTenantList('boluhalus');
+        });
+
+        function loadTenantList(defaultSelect) {
+            updateConnectionStatus('loading', 'Fetching tenants...');
             const select = document.getElementById('tenantSelect');
             
             db.collection("tenants").get().then((querySnapshot) => {
@@ -174,87 +315,142 @@
                     select.appendChild(opt);
                 });
 
-                select.value = 'boluhalus';
-                if (!select.value && firstTenant) select.value = firstTenant;
-                
+                if (defaultSelect && document.querySelector(`#tenantSelect option[value="${defaultSelect}"]`)) {
+                    select.value = defaultSelect;
+                } else if (firstTenant) {
+                    select.value = firstTenant;
+                }
+
                 if (select.value) {
                     switchTenant(select.value);
                 }
+                
+                updateConnectionStatus('connected', 'Firebase Cloud Connected');
             }).catch(err => {
                 console.error("Error loading tenants:", err);
+                updateConnectionStatus('error', 'Firestore Connection Failed');
                 showToast("Failed to fetch tenants from cloud.", true);
             });
-        });
+        }
 
-        // PENGAMBILAN DATA MURNI DARI FIRESTORE MAP "profile" KE SCREEN FORM
+        // MODE SWITCH: EXISTING TENANT
         function switchTenant(tenantId) {
-            currentActiveTenant = tenantId;
+            isNewTenantMode = false;
+            document.getElementById('modeIndicator').innerText = "Mode: Editing Existing Tenant";
+            document.getElementById('inputTenantId').value = tenantId;
+            document.getElementById('inputTenantId').disabled = true; // ID terkunci saat mode edit
+
             db.collection("tenants").doc(tenantId).get().then((doc) => {
-                // Reset form
+                // Reset form fields
                 document.getElementById('inputStoreName').value = '';
                 document.getElementById('inputClientName').value = '';
                 document.getElementById('inputClientPhone').value = '';
                 document.getElementById('inputClientEmail').value = '';
                 document.getElementById('inputStoreAddress').value = '';
                 document.getElementById('inputContractNo').value = '';
-                document.getElementById('inputSubTier').value = '';
+                document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
                 document.getElementById('inputExpiryDate').value = '';
                 document.getElementById('rawFirestoreViewer').innerText = "Loading raw snapshot...";
 
+                // Reset checkboxes
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+
                 if (doc.exists) {
                     const data = doc.data();
-                    
-                    // 1. Tampilkan raw JSON mentah apa adanya untuk membuktikan keaslian data dari database
                     document.getElementById('rawFirestoreViewer').innerText = JSON.stringify(data, null, 2);
 
-                    // 2. Ambil data secara persis dari objek map "profile" sesuai struktur Firestore Anda
                     const profile = data.profile || {};
-
                     document.getElementById('inputStoreName').value = profile.tenantName || '';
                     document.getElementById('inputClientName').value = profile.contactPerson || '';
                     document.getElementById('inputClientPhone').value = profile.phone || '';
                     document.getElementById('inputClientEmail').value = profile.email || '';
                     document.getElementById('inputStoreAddress').value = profile.address || '';
                     document.getElementById('inputContractNo').value = profile.contractNo || '';
-                    document.getElementById('inputSubTier').value = profile.tier || '';
+                    document.getElementById('inputSubTier').value = profile.tier || 'FREE SOCIAL TIER';
                     document.getElementById('inputExpiryDate').value = profile.expiryDate || '';
 
+                    // Load modules & rights toggles if saved
+                    const savedModules = data.modules || {};
+                    Object.keys(savedModules).forEach(modKey => {
+                        const cb = document.getElementById(modKey);
+                        if (cb) cb.checked = savedModules[modKey];
+                    });
+
+                    const savedRights = data.rights || {};
+                    Object.keys(savedRights).forEach(rightKey => {
+                        const cb = document.getElementById(rightKey);
+                        if (cb) cb.checked = savedRights[rightKey];
+                    });
                 } else {
                     document.getElementById('rawFirestoreViewer').innerText = "Document not found in Firestore!";
                 }
             }).catch(err => {
-                console.error("Error loading tenant details:", err);
-                document.getElementById('rawFirestoreViewer').innerText = "Error loading from Firestore: " + err.message;
+                console.error("Error loading tenant:", err);
             });
         }
 
+        // MODE SWITCH: PREPARE ADD NEW TENANT
+        function prepareNewTenant() {
+            isNewTenantMode = true;
+            document.getElementById('modeIndicator').innerText = "Mode: Creating New Tenant Entry";
+            document.getElementById('inputTenantId').value = "";
+            document.getElementById('inputTenantId').disabled = false; // Buka input agar admin bisa ketik ID unik baru
+            
+            // Clear fields
+            document.getElementById('inputStoreName').value = '';
+            document.getElementById('inputClientName').value = '';
+            document.getElementById('inputClientPhone').value = '';
+            document.getElementById('inputClientEmail').value = '';
+            document.getElementById('inputStoreAddress').value = '';
+            document.getElementById('inputContractNo').value = '';
+            document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
+            document.getElementById('inputExpiryDate').value = '';
+            document.getElementById('rawFirestoreViewer').innerText = "New Tenant Draft Mode (Ready for entry)";
+            
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true); // Default all checked for new
+            showToast("Ready to add new tenant. Fill in Tenant ID and details.");
+        }
+
+        // SAVE / UPSERT TO FIREBASE CLOUD
         function saveTenantSettings() {
-            if (!currentActiveTenant) {
-                alert("No tenant selected!");
+            const tenantId = document.getElementById('inputTenantId').value.trim().toLowerCase();
+            if (!tenantId) {
+                alert("Tenant ID / Slug is required!");
                 return;
             }
 
-            // Simpan kembali ke dalam map "profile" sesuai struktur asli database Anda
             const profileData = {
                 tenantName: document.getElementById('inputStoreName').value,
                 contactPerson: document.getElementById('inputClientName').value,
                 phone: document.getElementById('inputClientPhone').value,
-                email: document.getElementById('inputClientEmail').value,
+                email: document.getElementById('inputClientEmail').value, // Email untuk notifikasi renewal
                 address: document.getElementById('inputStoreAddress').value,
                 contractNo: document.getElementById('inputContractNo').value,
                 tier: document.getElementById('inputSubTier').value,
                 expiryDate: document.getElementById('inputExpiryDate').value
             };
 
-            db.collection("tenants").doc(currentActiveTenant).set({
+            let modulesData = {};
+            document.querySelectorAll('input[id^="toggle_"]').forEach(cb => {
+                modulesData[cb.id] = cb.checked;
+            });
+
+            let rightsData = {};
+            document.querySelectorAll('input[id^="right_"]').forEach(cb => {
+                rightsData[cb.id] = cb.checked;
+            });
+
+            db.collection("tenants").doc(tenantId).set({
                 profile: profileData,
+                modules: modulesData,
+                rights: rightsData,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
-                showToast(`Settings for [${currentActiveTenant}] successfully saved to cloud!`);
-                switchTenant(currentActiveTenant); // Refresh raw viewer
+                showToast(`Tenant [${tenantId}] successfully saved to Firebase Cloud!`);
+                loadTenantList(tenantId);
             }).catch(err => {
-                console.error("Error saving settings:", err);
-                showToast("Failed to save to Firebase: " + err.message, true);
+                console.error("Error saving tenant:", err);
+                showToast("Failed to save to Firestore: " + err.message, true);
             });
         }
     </script>

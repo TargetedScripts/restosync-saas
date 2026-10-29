@@ -23,7 +23,7 @@
                 <span class="text-xl font-bold tracking-wide">RestoSync <span class="text-indigo-300 font-light">System Console</span></span>
             </div>
             <div class="flex items-center space-x-4">
-                <span id="firebaseStatus" class="text-xs bg-yellow-600 text-white px-2.5 py-1 rounded-full"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i>Connecting Firebase...</span>
+                <span id="firebaseStatus" class="text-xs bg-yellow-600 text-white px-2.5 py-1 rounded-full"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i>Connecting Cloud...</span>
                 <div class="text-sm bg-indigo-800 px-3 py-1.5 rounded-lg border border-indigo-700">
                     <i class="fa-solid fa-shield-halved mr-2 text-green-400"></i>Super Admin: <strong>TargetedScripts</strong>
                 </div>
@@ -55,7 +55,7 @@
                 </div>
                 <div class="flex items-end">
                     <button onclick="saveTenantConfig()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200 shadow-sm">
-                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i>Save to Firebase Firestore
+                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i>Save to Firebase Cloud
                     </button>
                 </div>
             </div>
@@ -354,7 +354,7 @@
     <!-- JavaScript & Real Firebase Firestore Integration -->
     <script>
         // ==========================================
-        // 1. FIREBASE CONFIGURATION (Asli dari Project Anda)
+        // 1. FIREBASE CONFIGURATION (RestoSync-Web)
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
@@ -362,7 +362,7 @@
             projectId: "restosync-saas",
             storageBucket: "restosync-saas.firebasestorage.app",
             messagingSenderId: "780544019719",
-            appId: "1:780544019719:web:7925cca015a2e60179c9a2"
+            appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
         };
 
         // Inisialisasi Firebase
@@ -372,7 +372,7 @@
         const db = firebase.firestore();
 
         // Update indikator koneksi
-        document.getElementById('firebaseStatusclassName = "text-xs bg-green-600 text-white px-2.5 py-1 rounded-full";
+        document.getElementById('firebaseStatus').className = "text-xs bg-green-600 text-white px-2.5 py-1 rounded-full";
         document.getElementById('firebaseStatus').innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i>Firebase Connected';
 
         let tenantsDataCache = {};

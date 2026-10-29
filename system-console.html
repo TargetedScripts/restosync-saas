@@ -31,7 +31,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-white text-base">RestoSync SaaS &bull; Super Admin Console</h1>
-                <p class="text-xs text-stone-400">Global Tenant, Contract & Feature Management Hub</p>
+                <p class="text-xs text-stone-400">Global Tenant & Firestore Profile Management Hub</p>
             </div>
         </div>
         <div>
@@ -57,29 +57,48 @@
             </div>
         </div>
 
-        <!-- CLIENT PROFILE & CONTACT INFORMATION -->
+        <!-- LIVE FIRESTORE RAW DATA INSPECTOR (PROOF OF LIVE DB SYNC) -->
+        <div class="custom-card rounded-3xl p-6 space-y-3 shadow-xl border border-amber-500/30">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
+                    <i class="fa-solid fa-database text-sm"></i><span>Live Firestore Raw Data Inspector (Database Proof)</span>
+                </h2>
+                <span class="text-[10px] text-stone-400">Menampilkan JSON mentah apa adanya dari dokumen Firestore</span>
+            </div>
+            <pre id="rawFirestoreViewer" class="bg-[#030712] border border-[#1f2937] p-4 rounded-xl text-[11px] font-mono text-emerald-400 overflow-x-auto max-h-48">Loading raw database snapshot...</pre>
+        </div>
+
+        <!-- CLIENT PROFILE & STORE INFORMATION (MAPPED DIRECTLY FROM "profile") -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                <i class="fa-solid fa-user-gear text-sm"></i><span>Client Profile & Contact Information</span>
+                <i class="fa-solid fa-store text-sm"></i><span>Client Profile & Store Information (Firestore Map: "profile")</span>
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
                 <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Client / Owner Name</label>
-                    <input type="text" id="inputClientName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="e.g., Tedy Sutedja">
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Store / Restaurant Name (tenantName)</label>
+                    <input type="text" id="inputStoreName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
                 </div>
                 <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Phone Number</label>
-                    <input type="text" id="inputClientPhone" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="+64 ...">
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Contact Person (contactPerson)</label>
+                    <input type="text" id="inputClientName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
                 </div>
                 <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Email Address</label>
-                    <input type="email" id="inputClientEmail" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="client@restaurant.co.nz">
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Phone Number (phone)</label>
+                    <input type="text" id="inputClientPhone" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono">
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Email Address (email)</label>
+                    <input type="email" id="inputClientEmail" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Physical Address (address)</label>
+                    <input type="text" id="inputStoreAddress" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
                 </div>
             </div>
         </div>
 
-        <!-- CONTRACT METADATA & SUBSCRIPTION RIGHTS -->
+        <!-- CONTRACT METADATA & SUBSCRIPTION TIER -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
                 <i class="fa-solid fa-file-contract text-sm"></i><span>Contract Metadata & Subscription Tier</span>
@@ -87,125 +106,17 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
                 <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Contract Number (#)</label>
-                    <input type="text" id="inputContractNo" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="RS-2026-000X">
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Contract Number (contractNo)</label>
+                    <input type="text" id="inputContractNo" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono">
                 </div>
                 <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Subscription Tier</label>
-                    <select id="inputSubTier" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
-                        <option value="Free Social Tier">Free Social Tier</option>
-                        <option value="Standard Enterprise">Standard Enterprise</option>
-                        <option value="Premium Multi-Location">Premium Multi-Location</option>
-                    </select>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Subscription Tier (tier)</label>
+                    <input type="text" id="inputSubTier" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
                 </div>
                 <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Expiry Date</label>
-                    <input type="date" id="inputExpiryDate" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Expiry Date (expiryDate)</label>
+                    <input type="text" id="inputExpiryDate" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
                 </div>
-            </div>
-        </div>
-
-        <!-- ASSIGNED USER RIGHTS & ACCESS PERMISSIONS (TOGGLES) -->
-        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                <i class="fa-solid fa-shield-halved text-sm"></i><span>Assigned User Rights & Access Permissions</span>
-            </h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="right_manager_portal" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">Manager Portal Access</strong>
-                        <span class="text-[10px] text-stone-400">Access admin.html store portal.</span>
-                    </div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="right_pos_access" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">POS Operations</strong>
-                        <span class="text-[10px] text-stone-400">Cashier & order processing.</span>
-                    </div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="right_inventory_control" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">Inventory & Stock Control</strong>
-                        <span class="text-[10px] text-stone-400">Manage item stock and recipes.</span>
-                    </div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="right_kds_access" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">Kitchen Display (KDS)</strong>
-                        <span class="text-[10px] text-stone-400">View live kitchen orders.</span>
-                    </div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="right_financial_reports" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">Financial Reports & GST</strong>
-                        <span class="text-[10px] text-stone-400">View tax and sales auditing.</span>
-                    </div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="right_system_settings" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">System Settings & Hours</strong>
-                        <span class="text-[10px] text-stone-400">Configure operating hours & surcharges.</span>
-                    </div>
-                </label>
-            </div>
-        </div>
-
-        <!-- MODULES / FEATURE TOGGLES SECTION -->
-        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                <i class="fa-solid fa-toggle-on text-sm"></i><span>Master Feature Toggles & Module Access</span>
-            </h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_upload_logo" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">Self Logo Upload & Resize</strong>
-                        <span class="text-[10px] text-stone-400">Allow client to manage store logo.</span>
-                    </div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_custom_colors" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">Theme Color Customization</strong>
-                        <span class="text-[10px] text-stone-400">Allow modifying global palette colors.</span>
-                    </div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_online_ordering" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">General Online Ordering</strong>
-                        <span class="text-[10px] text-stone-400">Enable customer digital ordering cart.</span>
-                    </div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_qr_dine_in" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">QR Dine-In Ordering</strong>
-                        <span class="text-[10px] text-stone-400">Table QR code ordering support.</span>
-                    </div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_kitchen_display_system" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">Kitchen Display (KDS)</strong>
-                        <span class="text-[10px] text-stone-400">Live order routing to kitchen screen.</span>
-                    </div>
-                </label>
-                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
-                    <input type="checkbox" id="toggle_gst_calculation" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                    <div>
-                        <strong class="block text-stone-200">15% NZ GST Calculator</strong>
-                        <span class="text-[10px] text-stone-400">Automatic tax breakdown for IRD compliance.</span>
-                    </div>
-                </label>
             </div>
         </div>
 
@@ -213,7 +124,7 @@
 
     <!-- FOOTER -->
     <footer class="bg-[#030712] border-t border-[#1f2937] py-6 text-center text-xs text-stone-500">
-        RestoSync SaaS System Console &bull; Centralized Enterprise Control Center
+        RestoSync SaaS System Console &bull; Direct Database Mirroring
     </footer>
 
     <!-- FIREBASE & CONSOLE LOGIC -->
@@ -234,24 +145,6 @@
         const db = firebase.firestore();
 
         let currentActiveTenant = '';
-        
-        const moduleMapping = {
-            toggle_upload_logo: ['toggle_upload_logo', 'selfLogoUpload', 'logoUpload'],
-            toggle_custom_colors: ['toggle_custom_colors', 'themeColorCustomization', 'customColors'],
-            toggle_online_ordering: ['toggle_online_ordering', 'onlineOrdering', 'ordering'],
-            toggle_qr_dine_in: ['toggle_qr_dine_in', 'qrDineIn', 'qrOrdering'],
-            toggle_kitchen_display_system: ['toggle_kitchen_display_system', 'kitchenDisplay', 'kds'],
-            toggle_gst_calculation: ['toggle_gst_calculation', 'gstCalculation', 'gst']
-        };
-
-        const rightsMapping = {
-            right_manager_portal: ['right_manager_portal', 'managerPortal'],
-            right_pos_access: ['right_pos_access', 'posAccess'],
-            right_inventory_control: ['right_inventory_control', 'inventoryControl'],
-            right_kds_access: ['right_kds_access', 'kdsAccess'],
-            right_financial_reports: ['right_financial_reports', 'financialReports'],
-            right_system_settings: ['right_system_settings', 'systemSettings']
-        };
 
         function showToast(message, isError = false) {
             const toast = document.getElementById('toastNotification');
@@ -263,7 +156,7 @@
             }, 3500);
         }
 
-        // LOAD TENANTS FROM FIRESTORE AUTOMATICALLY INTO DROPDOWN
+        // LOAD TENANTS AUTOMATICALLY FROM FIRESTORE
         document.addEventListener('DOMContentLoaded', () => {
             const select = document.getElementById('tenantSelect');
             
@@ -281,7 +174,7 @@
                     select.appendChild(opt);
                 });
 
-                select.value = 'bangkokthaipalmy';
+                select.value = 'boluhalus';
                 if (!select.value && firstTenant) select.value = firstTenant;
                 
                 if (select.value) {
@@ -293,76 +186,45 @@
             });
         });
 
+        // PENGAMBILAN DATA MURNI DARI FIRESTORE MAP "profile" KE SCREEN FORM
         function switchTenant(tenantId) {
             currentActiveTenant = tenantId;
             db.collection("tenants").doc(tenantId).get().then((doc) => {
-                // Reset form fields
+                // Reset form
+                document.getElementById('inputStoreName').value = '';
                 document.getElementById('inputClientName').value = '';
                 document.getElementById('inputClientPhone').value = '';
                 document.getElementById('inputClientEmail').value = '';
+                document.getElementById('inputStoreAddress').value = '';
                 document.getElementById('inputContractNo').value = '';
-                document.getElementById('inputSubTier').value = 'Free Social Tier';
+                document.getElementById('inputSubTier').value = '';
                 document.getElementById('inputExpiryDate').value = '';
-
-                Object.keys(moduleMapping).forEach(uiKey => {
-                    const cb = document.getElementById(uiKey);
-                    if (cb) cb.checked = false;
-                });
-                Object.keys(rightsMapping).forEach(uiKey => {
-                    const cb = document.getElementById(uiKey);
-                    if (cb) cb.checked = false;
-                });
+                document.getElementById('rawFirestoreViewer').innerText = "Loading raw snapshot...";
 
                 if (doc.exists) {
                     const data = doc.data();
                     
-                    // Populate Profile & Contact info
+                    // 1. Tampilkan raw JSON mentah apa adanya untuk membuktikan keaslian data dari database
+                    document.getElementById('rawFirestoreViewer').innerText = JSON.stringify(data, null, 2);
+
+                    // 2. Ambil data secara persis dari objek map "profile" sesuai struktur Firestore Anda
                     const profile = data.profile || {};
-                    document.getElementById('inputClientName').value = profile.clientName || profile.tenantName || '';
+
+                    document.getElementById('inputStoreName').value = profile.tenantName || '';
+                    document.getElementById('inputClientName').value = profile.contactPerson || '';
                     document.getElementById('inputClientPhone').value = profile.phone || '';
                     document.getElementById('inputClientEmail').value = profile.email || '';
+                    document.getElementById('inputStoreAddress').value = profile.address || '';
+                    document.getElementById('inputContractNo').value = profile.contractNo || '';
+                    document.getElementById('inputSubTier').value = profile.tier || '';
+                    document.getElementById('inputExpiryDate').value = profile.expiryDate || '';
 
-                    // Populate Contract info
-                    const contract = data.contract || {};
-                    document.getElementById('inputContractNo').value = contract.contractNo || contract.contractNumber || '';
-                    document.getElementById('inputSubTier').value = contract.subTier || contract.tier || 'Free Social Tier';
-                    document.getElementById('inputExpiryDate').value = contract.expiryDate || '';
-
-                    // Gabungkan data untuk pembacaan modul & hak akses
-                    const rawData = { 
-                        ...(data.modules || {}), 
-                        ...(data.config?.modules || {}),
-                        ...(data.rights || {}),
-                        ...(data.userRights || {}),
-                        ...data 
-                    };
-
-                    // Populate Feature Modules Toggles
-                    Object.entries(moduleMapping).forEach(([uiKey, possibleKeys]) => {
-                        const checkbox = document.getElementById(uiKey);
-                        if (checkbox) {
-                            let isActive = false;
-                            possibleKeys.forEach(k => {
-                                if (rawData[k] === true) isActive = true;
-                            });
-                            checkbox.checked = isActive;
-                        }
-                    });
-
-                    // Populate User Rights Toggles
-                    Object.entries(rightsMapping).forEach(([uiKey, possibleKeys]) => {
-                        const checkbox = document.getElementById(uiKey);
-                        if (checkbox) {
-                            let isActive = false;
-                            possibleKeys.forEach(k => {
-                                if (rawData[k] === true) isActive = true;
-                            });
-                            checkbox.checked = isActive;
-                        }
-                    });
+                } else {
+                    document.getElementById('rawFirestoreViewer').innerText = "Document not found in Firestore!";
                 }
             }).catch(err => {
                 console.error("Error loading tenant details:", err);
+                document.getElementById('rawFirestoreViewer').innerText = "Error loading from Firestore: " + err.message;
             });
         }
 
@@ -372,42 +234,24 @@
                 return;
             }
 
-            let updatedModules = {};
-            Object.keys(moduleMapping).forEach(uiKey => {
-                const checkbox = document.getElementById(uiKey);
-                if (checkbox) {
-                    updatedModules[uiKey] = checkbox.checked;
-                }
-            });
-
-            let updatedRights = {};
-            Object.keys(rightsMapping).forEach(uiKey => {
-                const checkbox = document.getElementById(uiKey);
-                if (checkbox) {
-                    updatedRights[uiKey] = checkbox.checked;
-                }
-            });
-
+            // Simpan kembali ke dalam map "profile" sesuai struktur asli database Anda
             const profileData = {
-                clientName: document.getElementById('inputClientName').value,
+                tenantName: document.getElementById('inputStoreName').value,
+                contactPerson: document.getElementById('inputClientName').value,
                 phone: document.getElementById('inputClientPhone').value,
-                email: document.getElementById('inputClientEmail').value
-            };
-
-            const contractData = {
+                email: document.getElementById('inputClientEmail').value,
+                address: document.getElementById('inputStoreAddress').value,
                 contractNo: document.getElementById('inputContractNo').value,
-                subTier: document.getElementById('inputSubTier').value,
+                tier: document.getElementById('inputSubTier').value,
                 expiryDate: document.getElementById('inputExpiryDate').value
             };
 
             db.collection("tenants").doc(currentActiveTenant).set({
                 profile: profileData,
-                contract: contractData,
-                modules: updatedModules,
-                rights: updatedRights,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
                 showToast(`Settings for [${currentActiveTenant}] successfully saved to cloud!`);
+                switchTenant(currentActiveTenant); // Refresh raw viewer
             }).catch(err => {
                 console.error("Error saving settings:", err);
                 showToast("Failed to save to Firebase: " + err.message, true);

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestoSync | Client Dynamic Portal & Operations</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK Compat (App & Firestore) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+        .custom-card { background-color: #1e293b; border: 1px solid #334155; }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Header Portal Klien -->
+    <header style="background-color: #1e293b; border-bottom: 1px solid #334155;" class="px-6 py-4 flex justify-between items-center flex-wrap gap-4">
+        <div class="flex items-center space-x-3">
+            <div class="bg-amber-500/10 border border-amber-500/30 text-amber-400 p-2.5 rounded-xl font-bold flex items-center justify-center">
+                <i class="fa-solid fa-store"></i>
+            </div>
+            <div>
+                <h1 id="clientBusinessName" class="text-base font-bold text-white">Loading Restaurant...</h1>
+                <span id="clientTierBadge" class="text-xs bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded border border-amber-500/30 font-semibold">-</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <span id="portalStatus" class="text-xs bg-yellow-600 text-white px-3 py-1 rounded-full"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i>Syncing Cloud...</span>
+            <a href="index.html" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold px-3.5 py-2 rounded-lg border border-gray-700 transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-house text-amber-400"></i>
+                <span>Home</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 flex-grow">
+        <!-- Informasi Metadata Klien -->
+        <div class="custom-card rounded-xl p-6 mb-8 shadow-lg">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-id-card mr-2"></i>Restaurant Profile & Metadata</h2>
+                <span id="contractDisplay" class="text-xs text-gray-400">Contract: <strong>-</strong></span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div><span class="text-gray-400 block text-xs">Contact Person:</span><strong id="pContact" class="text-white">-</strong></div>
+                <div><span class="text-gray-400 block text-xs">Phone Number:</span><strong id="pPhone" class="text-white">-</strong></div>
+                <div><span class="text-gray-400 block text-xs">Support Email:</span><strong id="pEmail" class="text-white">-</strong></div>
+                <div><span class="text-gray-400 block text-xs">Expiry Date:</span><strong id="pExpiry" class="text-red-400">-</strong></div>
+            </div>
+        </div>
+
+        <!-- Modul Aktif Berdasarkan Konfigurasi System Console (Feature Toggles) -->
+        <h2 class="text-base font-bold text-white mb-4"><i class="fa-solid fa-cubes mr-2 text-indigo-400"></i>Active Operational Modules (Cloud Controlled)</h2>
+        <div id="modulesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <!-- Dinamis dirender berdasarkan database Firestore -->
+        </div>
+
+        <!-- Quick Launch Module Buttons (POS, Menu, Staff) -->
+        <div class="custom-card rounded-xl p-6 shadow-lg">
+            <h2 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-4"><i class="fa-solid fa-rocket mr-2"></i>Quick Access Operational Modules</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <a href="cashier.html" class="bg-gray-900/60 border border-gray-700 hover:border-amber-500 p-4 rounded-xl text-white transition flex items-center space-x-3">
+                    <div class="text-amber-400 text-xl"><i class="fa-solid fa-cash-register"></i></div>
+                    <div>
+                        <strong class="block text-sm">POS Cashier</strong>
+                        <span class="text-xs text-gray-400">15% NZ GST & Orders</span>
+                    </div>
+                </a>
+                <a href="menu.html" class="bg-gray-900/60 border border-gray-700 hover:border-amber-500 p-4 rounded-xl text-white transition flex items-center space-x-3">
+                    <div class="text-indigo-400 text-xl"><i class="fa-solid fa-utensils"></i></div>
+                    <div>
+                        <strong class="block text-sm">Menu Catalog</strong>
+                        <span class="text-xs text-gray-400">Bilingual EN / 中文</span>
+                    </div>
+                </a>
+                <a href="staff.html" class="bg-gray-900/60 border border-gray-700 hover:border-amber-500 p-4 rounded-xl text-white transition flex items-center space-x-3">
+                    <div class="text-purple-400 text-xl"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <strong class="block text-sm">Staff Roster</strong>
+                        <span class="text-xs text-gray-400">Shifts & NZ Standards</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background-color: #1e293b; border-top: 1px solid #334155;" class="py-6 text-center text-xs text-gray-400">
+        <p>&copy; 2026 RestoSync SaaS &bull; Powered & Developed by TargetedScripts.com</p>
+    </footer>
+
+    <!-- Script Dynamic Loader dari Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
+            authDomain: "restosync-saas.firebaseapp.com",
+            projectId: "restosync-saas",
+            storageBucket: "restosync-saas.firebasestorage.app",
+            messagingSenderId: "780544019719",
+            appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
+        };
+
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+
+        // Tangkap parameter tenant dari URL (misal: admin.html?tenant=bangkokthai)
+        const urlParams = new URLSearchParams(window.location.search);
+        const tenantId = urlParams.get('tenant');
+
+        async function loadTenantPortal() {
+            const statusBadge = document.getElementById('portalStatus');
+
+            if (!tenantId) {
+                statusBadge.className = "text-xs bg-red-600 text-white px-3 py-1 rounded-full";
+                statusBadge.textContent = "Missing Tenant Parameter";
+                document.getElementById('clientBusinessName').textContent = "Error: No Tenant Specified";
+                alert("Please specify a tenant ID in the URL, e.g., admin.html?tenant=bangkokthai");
+                return;
+            }
+
+            try {
+                const docRef = await db.collection("tenants").doc(tenantId).get();
+                if (!docRef.exists) {
+                    statusBadge.className = "text-xs bg-red-600 text-white px-3 py-1 rounded-full";
+                    statusBadge.textContent = "Tenant Not Found";
+                    document.getElementById('clientBusinessName').textContent = `Tenant "${tenantId}" Not Found`;
+                    alert(`Tenant configuration for ID "${tenantId}" was not found in Firebase Cloud!`);
+                    return;
+                }
+
+                const data = docRef.data();
+                const profile = data.profile || {};
+                const modules = data.modules || {};
+
+                // Render Profil Klien
+                document.getElementById('clientBusinessName').textContent = profile.tenantName || 'RestoSync Client';
+                document.getElementById('clientTierBadge').textContent = profile.tier || 'STANDARD';
+                document.getElementById('contractDisplay').innerHTML = `Contract: <strong>${profile.contractNo || '-'}</strong>`;
+                document.getElementById('pContact').textContent = profile.contactPerson || '-';
+                document.getElementById('pPhone').textContent = profile.phone || '-';
+                document.getElementById('pEmail').textContent = profile.email || '-';
+                document.getElementById('pExpiry').textContent = profile.expiryDate || '-';
+
+                statusBadge.className = "text-xs bg-green-600 text-white px-3 py-1 rounded-full";
+                statusBadge.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i>Synced with Cloud';
+
+                // Pemetaan modul berdasarkan feature toggles
+                const moduleMeta = {
+                    toggle_upload_logo: { name: "Self Logo Upload", icon: "fa-image" },
+                    toggle_custom_colors: { name: "Theme Color Customization", icon: "fa-palette" },
+                    toggle_seo_metadata: { name: "SEO Metadata Management", icon: "fa-globe" },
+                    toggle_custom_domain: { name: "Custom Domain (.co.nz)", icon: "fa-network-wired" },
+                    toggle_online_ordering: { name: "General Online Ordering", icon: "fa-cart-shopping" },
+                    toggle_qr_dine_in: { name: "QR Scan-to-Order (Dine-In)", icon: "fa-qrcode" },
+                    toggle_table_reservation: { name: "Table Reservation & Floorplan", icon: "fa-chair" },
+                    toggle_scheduled_orders: { name: "Scheduled Orders (Bakery)", icon: "fa-calendar-days" },
+                    toggle_kitchen_display_system: { name: "Kitchen Display System (KDS)", icon: "fa-fire-burner" },
+                    toggle_fcp_temperature_log: { name: "MPI FCP Temp Logging", icon: "fa-temperature-low" },
+                    toggle_allergen_management: { name: "Food Allergen Management", icon: "fa-triangle-exclamation" },
+                    toggle_cleaning_sanitation_checklist: { name: "Cleaning & Sanitation Checklist", icon: "fa-spray-can-sparkles" },
+                    toggle_gst_calculation: { name: "Automated 15% NZ GST Calculator", icon: "fa-calculator" },
+                    toggle_receipt_print: { name: "Physical Receipt Printing", icon: "fa-receipt" },
+                    toggle_cash_drawer_audit_trail: { name: "Cash Drawer Audit Trail", icon: "fa-cash-register" },
+                    toggle_void_refund_authorization: { name: "Manager PIN Void/Refund Auth", icon: "fa-shield-halved" },
+                    toggle_advanced_analytics: { name: "Advanced Sales Dashboard", icon: "fa-chart-line" },
+                    toggle_vip_guest_profiles: { name: "VVIP Guest Profiles & History", icon: "fa-crown" },
+                    toggle_vintage_cellar_tracking: { name: "Wine Cellar Inventory Tracking", icon: "fa-wine-bottle" },
+                    toggle_service_role_permissions: { name: "Strict Staff Role Hierarchy", icon: "fa-user-lock" }
+                };
+
+                const container = document.getElementById('modulesContainer');
+                container.innerHTML = "";
+
+                let activeCount = 0;
+                for (const [key, active] of Object.entries(modules)) {
+                    if (active && moduleMeta[key]) {
+                        activeCount++;
+                        const m = moduleMeta[key];
+                        const card = document.createElement('div');
+                        card.className = "custom-card p-4 rounded-xl border border-gray-700 hover:border-amber-500 transition flex items-center space-x-3 shadow-sm";
+                        card.innerHTML = `
+                            <div class="bg-amber-500/10 text-amber-400 p-3 rounded-lg text-base flex-shrink-0"><i class="fa-solid ${m.icon}"></i></div>
+                            <div>
+                                <h3 class="font-bold text-white text-xs mb-0.5">${m.name}</h3>
+                                <span class="text-[10px] text-green-400"><i class="fa-solid fa-circle text-[5px] mr-1"></i>Active Module</span>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    }
+                }
+
+                if (activeCount === 0) {
+                    container.innerHTML = `<div class="col-span-full text-center text-gray-500 text-sm py-4">No active modules configured for this tenant.</div>`;
+                }
+
+            } catch (error) {
+                console.error("Error loading tenant portal:", error);
+                statusBadge.className = "text-xs bg-red-600 text-white px-3 py-1 rounded-full";
+                statusBadge.textContent = "Cloud Sync Error";
+            }
+        }
+
+        window.onload = loadTenantPortal;
+    </script>
+</body>
+</html>

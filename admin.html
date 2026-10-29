@@ -81,6 +81,18 @@
                     <label class="block text-stone-400 mb-1.5 font-semibold">Logo Image URL</label>
                     <input type="text" id="inputStoreLogo" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="./assets/images/logo.png">
                 </div>
+
+                <!-- CONDITIONAL THEME COLOR PICKER (Muncul jika toggle_custom_colors aktif di System Console) -->
+                <div id="themeColorWrapper" class="hidden md:col-span-3 bg-[#030712] border border-[#1f2937] p-4 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <strong class="block text-stone-200 text-xs mb-0.5"><i class="fa-solid fa-palette text-amber-400 mr-2"></i>Theme & Accent Color Customization</strong>
+                        <span class="text-[11px] text-stone-400">Diizinkan oleh Super Admin (Tab 1 Console). Pilih warna utama toko Anda.</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <input type="color" id="inputThemeColor" value="#f59e0b" class="w-10 h-10 rounded-xl bg-transparent cursor-pointer border border-zinc-700">
+                        <span id="colorHexText" class="font-mono text-xs text-amber-400">#f59e0b</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -169,7 +181,6 @@
                 if (doc.exists) {
                     const data = doc.data();
                     
-                    // Ambil config store & menu
                     if (data.config) {
                         activeConfig = data.config;
                     } else {
@@ -179,20 +190,15 @@
                             phone: data.profile?.phone || '+64 6 356 0000',
                             address: data.profile?.address || '642 Pioneer Highway, Palmerston North'
                         };
-                        activeConfig.branding = { logo: './assets/images/RS Logo.png' };
+                        activeConfig.branding = { logo: './assets/images/RS Logo.png', themeColor: '#f59e0b' };
                         activeConfig.menuItems = [
                             { id: "M1", name: "Pad Thai Chicken", category: "Noodles", price: 18.50, description: "Classic Thai stir-fried rice noodles.", isHidden: false },
                             { id: "M2", name: "Green Curry Beef", category: "Curry", price: 19.50, description: "Traditional green curry with tender beef.", isHidden: false }
                         ];
                     }
 
-                    // Ambil modules (feature toggles) dari database
-                    activeModules = data.modules || {
-                        toggle_online_ordering: true,
-                        toggle_qr_dine_in: true,
-                        toggle_gst_calculation: true,
-                        toggle_kitchen_display_system: true
-                    };
+                    // Ambil modules (feature toggles) langsung dari database tenant
+                    activeModules = data.modules || {};
 
                     populateAdminForm();
                     renderModulesContainer();
@@ -210,6 +216,11 @@
                 statusBadge.innerText = "Sync Error";
                 showToast("Gagal terhubung ke database cloud.", true);
             });
+
+            // Update hex label when color changes
+            document.getElementById('inputThemeColor').addEventListener('input', (e) => {
+                document.getElementById('colorHexText').innerText = e.target.value;
+            });
         });
 
         function populateAdminForm() {
@@ -221,6 +232,16 @@
             document.getElementById('inputStorePhone').value = store.phone || '';
             document.getElementById('inputStoreAddress').value = store.address || '';
             document.getElementById('inputStoreLogo').value = branding.logo || '';
+            
+            if (branding.themeColor) {
+                document.getElementById('inputThemeColor').value = branding.themeColor;
+                document.getElementById('colorHexText').innerText = branding.themeColor;
+            }
+
+            // Tampilkan pengaturan warna jika modul toggle_custom_colors aktif di database
+            if (activeModules.toggle_custom_colors) {
+                document.getElementById('themeColorWrapper').classList.remove('hidden');
+            }
 
             renderAdminMenuList();
         }
@@ -228,13 +249,26 @@
         function renderModulesContainer() {
             const container = document.getElementById('modulesContainer');
             const moduleMeta = {
-                toggle_online_ordering: { name: "Online Ordering", icon: "fa-cart-shopping" },
-                toggle_qr_dine_in: { name: "QR Dine-In Ordering", icon: "fa-qrcode" },
-                toggle_table_reservation: { name: "Table Reservation", icon: "fa-chair" },
+                toggle_upload_logo: { name: "Self Logo Upload", icon: "fa-image" },
+                toggle_custom_colors: { name: "Theme Color Customization", icon: "fa-palette" },
+                toggle_seo_metadata: { name: "SEO Metadata Management", icon: "fa-globe" },
+                toggle_custom_domain: { name: "Custom Domain (.co.nz)", icon: "fa-network-wired" },
+                toggle_online_ordering: { name: "General Online Ordering", icon: "fa-cart-shopping" },
+                toggle_qr_dine_in: { name: "QR Scan-to-Order (Dine-In)", icon: "fa-qrcode" },
+                toggle_table_reservation: { name: "Table Reservation & Floorplan", icon: "fa-chair" },
+                toggle_scheduled_orders: { name: "Scheduled Orders (Bakery)", icon: "fa-calendar-days" },
                 toggle_kitchen_display_system: { name: "Kitchen Display (KDS)", icon: "fa-fire-burner" },
-                toggle_fcp_temperature_log: { name: "MPI FCP Temp Logs", icon: "fa-temperature-low" },
-                toggle_gst_calculation: { name: "15% NZ GST Calculator", icon: "fa-calculator" },
-                toggle_advanced_analytics: { name: "Sales Analytics", icon: "fa-chart-line" }
+                toggle_fcp_temperature_log: { name: "MPI FCP Temp Logging", icon: "fa-temperature-low" },
+                toggle_allergen_management: { name: "Food Allergen Management", icon: "fa-triangle-exclamation" },
+                toggle_cleaning_sanitation_checklist: { name: "Cleaning & Sanitation Checklist", icon: "fa-spray-can-sparkles" },
+                toggle_gst_calculation: { name: "Automated 15% NZ GST Calculator", icon: "fa-calculator" },
+                toggle_receipt_print: { name: "Physical Receipt Printing", icon: "fa-receipt" },
+                toggle_cash_drawer_audit_trail: { name: "Cash Drawer Audit Trail", icon: "fa-cash-register" },
+                toggle_void_refund_authorization: { name: "Manager PIN Void/Refund Auth", icon: "fa-shield-halved" },
+                toggle_advanced_analytics: { name: "Advanced Sales Dashboard", icon: "fa-chart-line" },
+                toggle_vip_guest_profiles: { name: "VVIP Guest Profiles & History", icon: "fa-crown" },
+                toggle_vintage_cellar_tracking: { name: "Wine Cellar Inventory Tracking", icon: "fa-wine-bottle" },
+                toggle_service_role_permissions: { name: "Strict Staff Role Hierarchy", icon: "fa-user-lock" }
             };
 
             container.innerHTML = "";
@@ -337,12 +371,13 @@
             activeConfig.store.phone = document.getElementById('inputStorePhone').value;
             activeConfig.store.address = document.getElementById('inputStoreAddress').value;
             activeConfig.branding.logo = document.getElementById('inputStoreLogo').value;
+            activeConfig.branding.themeColor = document.getElementById('inputThemeColor').value;
 
             db.collection("tenants").doc(TENANT_ID).set({
                 config: activeConfig,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
-                showToast("Konfigurasi & menu berhasil disimpan ke Cloud Firestore!");
+                showToast("Konfigurasi, warna tema & menu berhasil disimpan ke Cloud Firestore!");
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }).catch(err => {
                 console.error("Error saving:", err);

@@ -196,14 +196,11 @@
         const db = firebase.firestore();
 
         const urlParams = new URLSearchParams(window.location.search);
-        const TENANT_ID = urlParams.get('tenant');
-        
-        if (!TENANT_ID) {
-            alert("Error: No tenant ID specified in URL! Example: admin.html?tenant=bangkokthai");
-        }
+        // Default tenant diarahkan ke bangkokthaipalmy sesuai database lengkap Anda
+        const TENANT_ID = urlParams.get('tenant') || 'bangkokthaipalmy';
 
-        document.getElementById('currentTenantId').innerText = TENANT_ID || 'none';
-        document.getElementById('liveStoreBtn').href = `index.html?tenant=${TENANT_ID || ''}`;
+        document.getElementById('currentTenantId').innerText = TENANT_ID;
+        document.getElementById('liveStoreBtn').href = `index.html?tenant=${TENANT_ID}`;
 
         let activeConfig = {
             store: {},
@@ -239,40 +236,26 @@
             currentLogoWidth = Math.max(20, Math.min(120, currentLogoWidth + amount));
             const img = document.getElementById('liveLogoPreview');
             img.style.width = currentLogoWidth + 'px';
-            document.getElementById('logoSizeDisplay.innerText', currentLogoWidth + 'px');
             document.getElementById('logoSizeDisplay').innerText = currentLogoWidth + 'px';
         }
 
-        // FETCH TENANT CONFIG DYNAMICALLY FROM FIRESTORE (NO HARDCODED MENU)
+        // FETCH TENANT CONFIG DYNAMICALLY FROM FIRESTORE
         document.addEventListener('DOMContentLoaded', () => {
             const statusBadge = document.getElementById('dbStatusBadge');
             
-            if (!TENANT_ID) return;
-
             db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
                     
                     if (data.config) {
                         activeConfig = data.config;
-                    } else {
-                        // Fallback generic info based on tenant profile registration
-                        activeConfig.store = {
-                            name: data.profile?.tenantName || 'RestoSync Partner Restaurant',
-                            tagline: 'Powered by RestoSync SaaS Enterprise',
-                            phone: data.profile?.phone || '',
-                            address: data.profile?.address || ''
-                        };
-                        activeConfig.branding = {
-                            logo: '',
-                            logoWidth: 40,
-                            bgColor: '#090d16',
-                            cardColor: '#111827',
-                            accentColor: '#f59e0b',
-                            textColor: '#f1f5f9'
-                        };
-                        activeConfig.menuItems = [];
+                    } else if (data.menuItems) {
+                        // Jika struktur langsung di dokumen
+                        activeConfig.menuItems = data.menuItems;
                     }
+
+                    if (!activeConfig.store) activeConfig.store = {};
+                    if (!activeConfig.branding) activeConfig.branding = {};
 
                     activeModules = data.modules || {};
 
@@ -438,7 +421,7 @@
                     </div>
                     <div class="flex justify-end items-center space-x-3 pt-4">
                         <label class="flex items-center space-x-1.5 cursor-pointer text-stone-400 select-none">
-                            <input type="checkbox" ${item.isHidden ? 'checked' : ''} onchange="updateItemField(${idx}, 'isHidden', this.checked)" class="rounded bg-[#111827] border-zinc-700 text-amber-500 w-4 h-4 cursor-pointer">
+                            <input type="checkbox" ${item.isHidden || item.isAvailable === false ? 'checked' : ''} onchange="updateItemField(${idx}, 'isHidden', this.checked)" class="rounded bg-[#111827] border-zinc-700 text-amber-500 w-4 h-4 cursor-pointer">
                             <span class="text-xs">Hide</span>
                         </label>
                         <button onclick="removeMenuItem(${idx})" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 px-3 py-2 rounded-xl border border-red-900/40 transition">
@@ -489,11 +472,9 @@
             activeConfig.store.phone = document.getElementById('inputStorePhone').value;
             activeConfig.store.address = document.getElementById('inputStoreAddress').value;
             
-            // Branding & Logo Resize
             activeConfig.branding.logo = document.getElementById('inputStoreLogo').value;
             activeConfig.branding.logoWidth = currentLogoWidth;
             
-            // Color Customization
             activeConfig.branding.bgColor = document.getElementById('inputBgColor').value;
             activeConfig.branding.cardColor = document.getElementById('inputCardColor').value;
             activeConfig.branding.accentColor = document.getElementById('inputAccentColor').value;

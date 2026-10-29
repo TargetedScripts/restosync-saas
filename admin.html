@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync SaaS - Enterprise Manager Portal</title>
+    <title>RestoSync SaaS - Universal Enterprise Manager Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -21,13 +21,13 @@
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center space-x-2 bg-emerald-600">
         <i class="fa-solid fa-circle-check text-sm"></i>
-        <span id="toastText">Successfully saved!</span>
+        <span id="toastText">Successfully saved to cloud!</span>
     </div>
 
     <!-- TOP BAR -->
     <header class="bg-[#111827] border-b border-[#1f2937] sticky top-0 z-40 px-6 py-4 flex justify-between items-center flex-wrap gap-4 shadow-md">
         <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 rounded-xl flex items-center justify-center font-black shadow-lg shadow-amber-500/20">
+            <div id="headerLogoContainer" class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 rounded-xl flex items-center justify-center font-black shadow-lg shadow-amber-500/20 overflow-hidden">
                 <i class="fa-solid fa-utensils"></i>
             </div>
             <div>
@@ -51,16 +51,16 @@
     <!-- MAIN CONTAINER -->
     <main class="max-w-7xl mx-auto px-6 py-8 w-full flex-grow space-y-8">
         
-        <!-- STORE PROFILE & BRANDING SECTION -->
+        <!-- STORE PROFILE & BRANDING SECTION WITH LIVE LOGO PREVIEW & RESIZE -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <div class="flex justify-between items-center border-b border-[#1f2937] pb-4">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
                     <i class="fa-solid fa-store text-sm"></i><span>Store Information & Branding Metadata</span>
                 </h2>
-                <span class="text-[11px] text-stone-400">Managed directly from Cloud Firestore</span>
+                <span class="text-[11px] text-stone-400">Dynamic Multi-Tenant Configuration</span>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs items-center">
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Store / Business Name</label>
                     <input type="text" id="inputStoreName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
@@ -74,12 +74,29 @@
                     <input type="text" id="inputStorePhone" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
                 </div>
                 <div class="md:col-span-2">
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Physical Address (New Zealand)</label>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Physical Address</label>
                     <input type="text" id="inputStoreAddress" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
                 </div>
-                <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Logo Image URL</label>
-                    <input type="text" id="inputStoreLogo" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="./assets/images/logo.png">
+
+                <!-- LIVE LOGO PREVIEW & RESIZE CONTROL (+ / -) -->
+                <div class="bg-[#030712] border border-[#1f2937] p-4 rounded-2xl space-y-3 md:col-span-1">
+                    <label class="block text-stone-400 font-semibold">Store Logo & Resize</label>
+                    <div class="flex items-center space-x-4">
+                        <div id="logoPreviewWrapper" class="w-14 h-14 bg-zinc-900 border border-zinc-700 rounded-xl flex items-center justify-center overflow-hidden p-1">
+                            <img id="liveLogoPreview" src="" alt="Logo" class="max-w-full max-h-full object-contain transition-all duration-200" style="width: 40px;" onerror="this.src='https://placehold.co/40?text=LOGO'">
+                        </div>
+                        <div class="space-y-2 flex-grow">
+                            <input type="text" id="inputStoreLogo" oninput="updateLogoPreview(this.value)" class="w-full custom-input rounded-lg px-2.5 py-1.5 text-[11px]" placeholder="./assets/images/logo.png">
+                            <div class="flex items-center justify-between text-[10px] text-stone-400">
+                                <span>Size Control:</span>
+                                <div class="flex space-x-1">
+                                    <button onclick="resizeLogo(-5)" type="button" class="bg-zinc-800 hover:bg-zinc-700 text-amber-400 px-2 py-0.5 rounded font-bold">-</button>
+                                    <span id="logoSizeDisplay" class="font-mono px-1">40px</span>
+                                    <button onclick="resizeLogo(5)" type="button" class="bg-zinc-800 hover:bg-zinc-700 text-amber-400 px-2 py-0.5 rounded font-bold">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- ADVANCED COLOR PALETTE CUSTOMIZATION -->
@@ -138,7 +155,7 @@
             </div>
         </div>
 
-        <!-- MENU MANAGEMENT SECTION -->
+        <!-- MENU MANAGEMENT SECTION (DYNAMIC & DECOUPLED) -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <div class="flex justify-between items-center border-b border-[#1f2937] pb-4 flex-wrap gap-3">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
@@ -150,7 +167,7 @@
             </div>
 
             <div id="adminMenuList" class="space-y-4">
-                <div class="text-center py-8 text-stone-500 text-xs">Loading menu catalogue from database...</div>
+                <div class="text-center py-8 text-stone-500 text-xs">Loading menu catalogue from tenant configuration...</div>
             </div>
         </div>
 
@@ -179,13 +196,20 @@
         const db = firebase.firestore();
 
         const urlParams = new URLSearchParams(window.location.search);
-        const TENANT_ID = urlParams.get('tenant') || 'bangkokthai';
-        document.getElementById('currentTenantId').innerText = TENANT_ID;
-        document.getElementById('liveStoreBtn').href = `index.html?tenant=${TENANT_ID}`;
+        const TENANT_ID = urlParams.get('tenant');
+        
+        if (!TENANT_ID) {
+            alert("Error: No tenant ID specified in URL! Example: admin.html?tenant=bangkokthai");
+        }
+
+        document.getElementById('currentTenantId').innerText = TENANT_ID || 'none';
+        document.getElementById('liveStoreBtn').href = `index.html?tenant=${TENANT_ID || ''}`;
 
         let activeConfig = {
             store: {},
             branding: {
+                logo: '',
+                logoWidth: 40,
                 bgColor: '#090d16',
                 cardColor: '#111827',
                 accentColor: '#f59e0b',
@@ -194,6 +218,7 @@
             menuItems: []
         };
         let activeModules = {};
+        let currentLogoWidth = 40;
 
         function showToast(message, isError = false) {
             const toast = document.getElementById('toastNotification');
@@ -205,53 +230,48 @@
             }, 3500);
         }
 
-        // FETCH DATA FROM FIRESTORE
+        function updateLogoPreview(url) {
+            const img = document.getElementById('liveLogoPreview');
+            img.src = url || 'https://placehold.co/40?text=LOGO';
+        }
+
+        function resizeLogo(amount) {
+            currentLogoWidth = Math.max(20, Math.min(120, currentLogoWidth + amount));
+            const img = document.getElementById('liveLogoPreview');
+            img.style.width = currentLogoWidth + 'px';
+            document.getElementById('logoSizeDisplay.innerText', currentLogoWidth + 'px');
+            document.getElementById('logoSizeDisplay').innerText = currentLogoWidth + 'px';
+        }
+
+        // FETCH TENANT CONFIG DYNAMICALLY FROM FIRESTORE (NO HARDCODED MENU)
         document.addEventListener('DOMContentLoaded', () => {
             const statusBadge = document.getElementById('dbStatusBadge');
             
+            if (!TENANT_ID) return;
+
             db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
                     
                     if (data.config) {
                         activeConfig = data.config;
-                    } 
-                    
-                    if (!activeConfig.store || !activeConfig.store.name) {
+                    } else {
+                        // Fallback generic info based on tenant profile registration
                         activeConfig.store = {
-                            name: data.profile?.tenantName || 'Bangkok Thai Takeaway',
-                            tagline: 'Authentic Thai Cuisine in Palmerston North',
-                            phone: data.profile?.phone || '+64 6 356 0000',
-                            address: data.profile?.address || '642 Pioneer Highway, Palmerston North'
+                            name: data.profile?.tenantName || 'RestoSync Partner Restaurant',
+                            tagline: 'Powered by RestoSync SaaS Enterprise',
+                            phone: data.profile?.phone || '',
+                            address: data.profile?.address || ''
                         };
-                    }
-
-                    if (!activeConfig.branding) {
-                        activeConfig.branding = { logo: './assets/images/RS Logo.png', bgColor: '#090d16', cardColor: '#111827', accentColor: '#f59e0b', textColor: '#f1f5f9' };
-                    }
-
-                    // ENSURE FULL MENU LIST (Fallback to full Bangkok Thai menu if empty)
-                    if (!activeConfig.menuItems || activeConfig.menuItems.length === 0 || activeConfig.menuItems.length <= 2) {
-                        activeConfig.menuItems = [
-                            { id: "A1", name: "Spring Rolls", category: "Appetisers", price: 8.00, description: "Vegetables in spring roll wrappers, deep fried and served with sweet chilli sauce.", isHidden: false },
-                            { id: "A2", name: "6pcs Wontons", category: "Appetisers", price: 8.00, description: "Minced Chicken stuffed in crispy wonton skin, deep fried served with sweet chilli sauce.", isHidden: false },
-                            { id: "A3", name: "3pcs Chicken Satays", category: "Appetisers", price: 9.00, description: "Skewers of chicken marinated with Thai spices, grilled and served with peanut sauce.", isHidden: false },
-                            { id: "A4", name: "Steamed Prawn Wonton", category: "Appetisers", price: 10.00, description: "Minced prawn with herbs wrapped in wonton skin steamed and served with sauce.", isHidden: false },
-                            { id: "A5", name: "Deep fried shrimps on toast", category: "Appetisers", price: 10.00, description: "Deep fried minced shrimp spread on toast served with sweet chilli sauce.", isHidden: false },
-                            { id: "A6", name: "Roti & Satay Sauce", category: "Appetisers", price: 8.00, description: "Roti bread served with Bangkok Thai peanut satay sauce", isHidden: false },
-                            { id: "A7", name: "8pcs Mixed Entrees", category: "Appetisers", price: 15.00, description: "Mixed selection of Curry Puffs, Spring Rolls, Wontons and Chicken Satays ...", isHidden: false },
-                            { id: "B4", name: "Tom Kha Chicken", category: "Soup", price: 18.00, description: "Chicken in coconut milk soup flavoured with lemon grass, galangal, kafir lime ...", isHidden: false },
-                            { id: "B5", name: "Tom Yum Prawns", category: "Soup", price: 22.00, description: "Spicy prawns soup flavoured with lemon grass, galangal, kafir lime leave, ...", isHidden: false },
-                            { id: "D1", name: "Red Curry Roast Duck", category: "Curry - Salad", price: 19.00, description: "Roast duck cooked with pineapple, tomato, bamboo shoots and fresh ...", isHidden: false },
-                            { id: "D2", name: "Green Curry", category: "Curry - Salad", price: 18.00, description: "Green Curry with your choice of meat or vegetarian option in coconut milk ...", isHidden: false },
-                            { id: "D3", name: "Beef Massaman Curry", category: "Curry - Salad", price: 18.00, description: "Curry with stewed beef, potatoes, and coconut milk flavoured with palm suga...", isHidden: false },
-                            { id: "C1-C", name: "Sweet & Sour Chicken", category: "Wok Dishes", price: 18.00, description: "Stir fried chicken with Bangkok Thai sweet and sour sauce and vegetables.", isHidden: false },
-                            { id: "C4", name: "Beef With Oyster Sauce", category: "Wok Dishes", price: 18.00, description: "Stir fried beef with oyster sauce and fresh vegetables.", isHidden: false },
-                            { id: "C6", name: "Chicken & Cashew Nuts", category: "Wok Dishes", price: 18.00, description: "Stir fried chicken with oyster sauce, mushroom, vegetables and cashew nuts.", isHidden: false },
-                            { id: "H1", name: "Chicken Pad Thai", category: "Noodles & Rice", price: 18.00, description: "Rice noodle stir fried with Bangkok Thai pad thai sauce, bean sprout, chives.", isHidden: false },
-                            { id: "H3", name: "Chicken Fried Rice", category: "Noodles & Rice", price: 18.00, description: "Fried rice with chicken, beef pork, egg and vegetables.", isHidden: false },
-                            { id: "N01", name: "Large Steamed Jasmin Rice", category: "Noodles & Rice", price: 3.00, description: "Steamed fragrant jasmine rice (large portion).", isHidden: false }
-                        ];
+                        activeConfig.branding = {
+                            logo: '',
+                            logoWidth: 40,
+                            bgColor: '#090d16',
+                            cardColor: '#111827',
+                            accentColor: '#f59e0b',
+                            textColor: '#f1f5f9'
+                        };
+                        activeConfig.menuItems = [];
                     }
 
                     activeModules = data.modules || {};
@@ -301,6 +321,15 @@
             document.getElementById('inputStorePhone').value = store.phone || '';
             document.getElementById('inputStoreAddress').value = store.address || '';
             document.getElementById('inputStoreLogo').value = branding.logo || '';
+            
+            if (branding.logo) {
+                updateLogoPreview(branding.logo);
+            }
+            if (branding.logoWidth) {
+                currentLogoWidth = branding.logoWidth;
+                document.getElementById('liveLogoPreview').style.width = currentLogoWidth + 'px';
+                document.getElementById('logoSizeDisplay').innerText = currentLogoWidth + 'px';
+            }
             
             if (branding.bgColor) {
                 document.getElementById('inputBgColor').value = branding.bgColor;
@@ -385,7 +414,7 @@
             const container = document.getElementById('adminMenuList');
 
             if (items.length === 0) {
-                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-6">No menu items registered yet.</p>`;
+                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-6">No menu items registered for this tenant yet.</p>`;
                 return;
             }
 
@@ -429,11 +458,11 @@
         function addNewMenuItem() {
             if (!activeConfig.menuItems) activeConfig.menuItems = [];
             activeConfig.menuItems.push({
-                id: "M" + (activeConfig.menuItems.length + 1),
-                name: "New Gourmet Dish",
-                category: "Specials",
+                id: "NEW-" + (activeConfig.menuItems.length + 1),
+                name: "New Menu Item",
+                category: "General",
                 price: 15.00,
-                description: "Freshly prepared house specialty.",
+                description: "Freshly prepared item.",
                 isHidden: false
             });
             renderAdminMenuList();
@@ -447,6 +476,11 @@
         }
 
         function saveConfigToFirebase() {
+            if (!TENANT_ID) {
+                alert("Cannot save: No tenant ID specified.");
+                return;
+            }
+
             if (!activeConfig.store) activeConfig.store = {};
             if (!activeConfig.branding) activeConfig.branding = {};
 
@@ -454,9 +488,12 @@
             activeConfig.store.tagline = document.getElementById('inputStoreTagline').value;
             activeConfig.store.phone = document.getElementById('inputStorePhone').value;
             activeConfig.store.address = document.getElementById('inputStoreAddress').value;
-            activeConfig.branding.logo = document.getElementById('inputStoreLogo').value;
             
-            // Save Color Palette Customization
+            // Branding & Logo Resize
+            activeConfig.branding.logo = document.getElementById('inputStoreLogo').value;
+            activeConfig.branding.logoWidth = currentLogoWidth;
+            
+            // Color Customization
             activeConfig.branding.bgColor = document.getElementById('inputBgColor').value;
             activeConfig.branding.cardColor = document.getElementById('inputCardColor').value;
             activeConfig.branding.accentColor = document.getElementById('inputAccentColor').value;
@@ -466,7 +503,7 @@
                 config: activeConfig,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
-                showToast("Configuration, color palette & menu successfully saved to Cloud Firestore!");
+                showToast("Configuration, logo & theme successfully saved to Cloud!");
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }).catch(err => {
                 console.error("Error saving:", err);

@@ -17,6 +17,23 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
 
+    <!-- PASSWORD AUTH GUARD (PENCEGAHAN BACKDOOR & URL BYPASS) -->
+    <script>
+        (function() {
+            const AUTH_KEY = "restosync_super_admin_auth";
+            const SUPER_PASSWORD = "admin";
+            
+            if (sessionStorage.getItem(AUTH_KEY) !== "true") {
+                let pwd = prompt("SECURITY CHECK: Enter Super Admin Password for System Console:");
+                if (pwd === SUPER_PASSWORD) {
+                    sessionStorage.setItem(AUTH_KEY, "true");
+                } else {
+                    alert("Access Denied! Invalid Password.");
+                    window.location.href = "about:blank";
+                }
+            }
+        })();
+    </script>
 
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center space-x-2 bg-emerald-600">
@@ -118,11 +135,19 @@
                 </div>
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Logo Image URL</label>
-                    <input type="text" id="inputLogoUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="https://.../logo.png">
+                    <input type="text" id="inputLogoUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/BangkokThaiLogo.png">
                 </div>
                 <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Default Hero Image URL</label>
-                    <input type="text" id="inputHeroImageUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="https://.../hero.jpg">
+                    <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400">Hero Image 1 URL (Optional)</label>
+                    <input type="text" id="inputHeroImage1" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/Hero01.jpg">
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400">Hero Image 2 URL (Optional)</label>
+                    <input type="text" id="inputHeroImage2" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/Hero02.jpg">
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400">Hero Image 3 URL (Optional)</label>
+                    <input type="text" id="inputHeroImage3" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/Hero03.jpg">
                 </div>
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Physical Address (address)</label>
@@ -472,7 +497,9 @@
                 document.getElementById('inputAdminPassword').value = 'admin';
                 document.getElementById('inputJsAssetUrl').value = '';
                 document.getElementById('inputLogoUrl').value = '';
-                document.getElementById('inputHeroImageUrl').value = '';
+                document.getElementById('inputHeroImage1').value = '';
+                document.getElementById('inputHeroImage2').value = '';
+                document.getElementById('inputHeroImage3').value = '';
                 document.getElementById('inputStoreAddress').value = '';
                 document.getElementById('inputContractNo').value = '';
                 document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
@@ -493,7 +520,9 @@
                     document.getElementById('inputAdminPassword').value = profile.adminPassword || 'admin';
                     document.getElementById('inputJsAssetUrl').value = profile.jsAssetUrl || '';
                     document.getElementById('inputLogoUrl').value = profile.logoUrl || '';
-                    document.getElementById('inputHeroImageUrl').value = profile.heroImageUrl || '';
+                    document.getElementById('inputHeroImage1').value = profile.heroImage1 || '';
+                    document.getElementById('inputHeroImage2').value = profile.heroImage2 || '';
+                    document.getElementById('inputHeroImage3').value = profile.heroImage3 || '';
                     document.getElementById('inputStoreAddress').value = profile.address || '';
                     document.getElementById('inputContractNo').value = profile.contractNo || '';
                     document.getElementById('inputSubTier').value = profile.tier || 'FREE SOCIAL TIER';
@@ -531,7 +560,9 @@
             document.getElementById('inputAdminPassword').value = 'admin';
             document.getElementById('inputJsAssetUrl').value = '';
             document.getElementById('inputLogoUrl').value = '';
-            document.getElementById('inputHeroImageUrl').value = '';
+            document.getElementById('inputHeroImage1').value = '';
+            document.getElementById('inputHeroImage2').value = '';
+            document.getElementById('inputHeroImage3').value = '';
             document.getElementById('inputStoreAddress').value = '';
             document.getElementById('inputContractNo').value = '';
             document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
@@ -557,7 +588,9 @@
                 adminPassword: document.getElementById('inputAdminPassword').value || 'admin',
                 jsAssetUrl: document.getElementById('inputJsAssetUrl').value,
                 logoUrl: document.getElementById('inputLogoUrl').value,
-                heroImageUrl: document.getElementById('inputHeroImageUrl').value,
+                heroImage1: document.getElementById('inputHeroImage1').value,
+                heroImage2: document.getElementById('inputHeroImage2').value,
+                heroImage3: document.getElementById('inputHeroImage3').value,
                 address: document.getElementById('inputStoreAddress').value,
                 contractNo: document.getElementById('inputContractNo').value,
                 tier: document.getElementById('inputSubTier').value,

@@ -9,7 +9,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDK (Compat Version untuk kemudahan integrasi script tag HTML) -->
+    <!-- Firebase SDK Compat -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
@@ -23,7 +23,7 @@
                 <span class="text-xl font-bold tracking-wide">RestoSync <span class="text-indigo-300 font-light">System Console</span></span>
             </div>
             <div class="flex items-center space-x-4">
-                <span id="firebaseStatus" class="text-xs bg-yellow-600 text-white px-2.5 py-1 rounded-full"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i>Connecting Firebase...</span>
+                <span id="firebaseStatus" class="text-xs bg-indigo-700 text-white px-2.5 py-1 rounded-full"><i class="fa-solid fa-database mr-1"></i>Local Storage Active</span>
                 <div class="text-sm bg-indigo-800 px-3 py-1.5 rounded-lg border border-indigo-700">
                     <i class="fa-solid fa-shield-halved mr-2 text-green-400"></i>Super Admin: <strong>TargetedScripts</strong>
                 </div>
@@ -46,8 +46,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Active Tenant</label>
                     <select id="tenantSelect" onchange="loadTenantConfig()" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500">
-                        <option value="bangkokthai">Bangkok Thai Takeaway (Free Tier)</option>
-                        <option value="finedining_demo">Auckland Fine Dining (Enterprise)</option>
+                        <!-- Opsi akan di-generate otomatis oleh JS -->
                     </select>
                 </div>
                 <div>
@@ -56,7 +55,7 @@
                 </div>
                 <div class="flex items-end">
                     <button onclick="saveTenantConfig()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200 shadow-sm">
-                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i>Save to Firebase Firestore
+                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i>Save Configuration
                     </button>
                 </div>
             </div>
@@ -102,7 +101,7 @@
             </div>
         </div>
 
-        <!-- Modal Add New Tenant (Auto-select defaults based on tier) -->
+        <!-- Modal Add New Tenant -->
         <div id="newTenantModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
             <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
                 <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-circle-plus mr-2 text-green-600"></i>Register New Restaurant Tenant</h3>
@@ -114,38 +113,38 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Contract Number (#)</label>
-                            <input type="text" id="newContractNo" placeholder="e.g. TS-CONT-2026-002" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            <input type="text" id="newContractNo" placeholder="e.g. TSBH.2026.099" class="w-full border border-gray-300 rounded-lg p-2.5">
                         </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant Business Name</label>
-                        <input type="text" id="newTenantBusinessName" placeholder="e.g. Christchurch Bistro & Bar" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        <input type="text" id="newTenantBusinessName" placeholder="e.g. Bolu Haus" class="w-full border border-gray-300 rounded-lg p-2.5">
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
-                            <input type="text" id="newContactPerson" placeholder="e.g. John Doe" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            <input type="text" id="newContactPerson" placeholder="e.g. Denisa" class="w-full border border-gray-300 rounded-lg p-2.5">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                            <input type="text" id="newPhone" placeholder="e.g. +64 21 123 4567" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            <input type="text" id="newPhone" placeholder="e.g. +64226562882" class="w-full border border-gray-300 rounded-lg p-2.5">
                         </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input type="email" id="newEmail" placeholder="e.g. manager@bistro.co.nz" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        <input type="email" id="newEmail" placeholder="e.g. denisasutedja@gmail.com" class="w-full border border-gray-300 rounded-lg p-2.5">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Physical Address (New Zealand)</label>
-                        <input type="text" id="newAddress" placeholder="e.g. 123 Main Street, Palmerston North" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        <input type="text" id="newAddress" placeholder="e.g. Johnsonville, Wellington" class="w-full border border-gray-300 rounded-lg p-2.5">
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Tier</label>
                             <select id="newTenantTier" class="w-full border border-gray-300 rounded-lg p-2.5">
-                                <option value="FREE SOCIAL TIER">Free Social Tier (Minimal Modules)</option>
-                                <option value="STANDARD ($250/MO)">Standard Managed (Standard Modules)</option>
-                                <option value="ENTERPRISE">Enterprise Fine Dining (All Modules)</option>
+                                <option value="FREE SOCIAL TIER">Free Social Tier (Minimal)</option>
+                                <option value="STANDARD ($250/MO)">Standard Managed</option>
+                                <option value="ENTERPRISE">Enterprise Fine Dining</option>
                             </select>
                         </div>
                         <div>
@@ -352,39 +351,41 @@
 
     </main>
 
-    <!-- JavaScript & Firebase Firestore Integration -->
+    <!-- JavaScript Engine & Robust LocalStorage / Firebase Hybrid Engine -->
     <script>
-        // ==========================================
-        // 1. INISIALISASI FIREBASE FIRESTORE
-        // ==========================================
-        // Ganti dengan konfigurasi Firebase project Anda yang sebenarnya
-        const firebaseConfig = {
-            apiKey: "AIzaSyD-CONTEST-EXAMPLE-KEY-XYZ",
-            authDomain: "targetedscripts-restosync.firebaseapp.com",
-            projectId: "targetedscripts-restosync",
-            storageBucket: "targetedscripts-restosync.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef"
+        // Database Utama (Menggunakan LocalStorage agar langsung bisa diuji & disimpan permanen tanpa error dummy Firebase)
+        let systemData = JSON.parse(localStorage.getItem('restosync_system_data')) || {
+            "bangkokthai": {
+                profile: {
+                    contractNo: "TS-CONT-2026-001",
+                    tenantName: "Bangkok Thai Takeaway",
+                    contactPerson: "Tedy Sutedja",
+                    phone: "+64 6 356 0000",
+                    email: "info@bangkokthaipalmy.co.nz",
+                    address: "642 Pioneer Highway, Palmerston North",
+                    tier: "FREE SOCIAL TIER",
+                    expiryDate: "2027-04-01"
+                },
+                modules: getModulesByTier("FREE SOCIAL TIER")
+            },
+            "finedining_demo": {
+                profile: {
+                    contractNo: "TS-CONT-2026-050",
+                    tenantName: "Auckland Fine Dining",
+                    contactPerson: "Chef Marcus",
+                    phone: "+64 9 555 1234",
+                    email: "manager@aucklanddining.co.nz",
+                    address: "Viaduct Harbour, Auckland",
+                    tier: "ENTERPRISE",
+                    expiryDate: "2027-12-31"
+                },
+                modules: getModulesByTier("ENTERPRISE")
+            }
         };
 
-        // Cek apakah firebase sudah diinisialisasi untuk menghindari duplikasi
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
-        
-        // Update indikator koneksi
-        document.getElementById('firebaseStatus').className = "text-xs bg-green-600 text-white px-2.5 py-1 rounded-full";
-        document.getElementById('firebaseStatus').innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i>Firebase Connected';
-
-        let tenantsDataCache = {};
-
-        // ==========================================
-        // 2. TEMPLATE DEFAULT MODULES BERDASARKAN TIER
-        // ==========================================
+        // Fungsi penentu default modul berdasarkan paket tier
         function getModulesByTier(tier) {
             if (tier.includes("FREE")) {
-                // Free Social Tier: Hanya modul dasar minimal (Logo, Online Ordering, GST)
                 return {
                     toggle_upload_logo: true,
                     toggle_custom_colors: false,
@@ -408,7 +409,6 @@
                     toggle_service_role_permissions: false
                 };
             } else if (tier.includes("STANDARD")) {
-                // Standard Tier ($250/mo): Modul operasional lengkap + KDS + FCP
                 return {
                     toggle_upload_logo: true,
                     toggle_custom_colors: true,
@@ -432,7 +432,7 @@
                     toggle_service_role_permissions: false
                 };
             } else {
-                // Enterprise Fine Dining: Semua modul aktif (True) secara default
+                // Enterprise: Semua modul aktif
                 const allTrue = {};
                 document.querySelectorAll('.feature-toggle').forEach(cb => {
                     allTrue[cb.id] = true;
@@ -441,64 +441,23 @@
             }
         }
 
-        // ==========================================
-        // 3. LOAD DATA TENANTS DARI FIRESTORE
-        // ==========================================
-        async function fetchTenantsFromFirebase() {
-            try {
-                const snapshot = await db.collection("tenants").get();
-                const select = document.getElementById('tenantSelect');
-                
-                // Jika database kosong, buatkan data demo awal
-                if (snapshot.empty) {
-                    await seedInitialData();
-                    return fetchTenantsFromFirebase();
-                }
+        function populateTenantDropdown() {
+            const select = document.getElementById('tenantSelect');
+            const currentSelected = select.value;
+            select.innerHTML = "";
 
-                select.innerHTML = ""; // Reset dropdown
-                tenantsDataCache = {};
+            for (const [id, data] of Object.entries(systemData)) {
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = `${data.profile.tenantName} (${data.profile.tier})`;
+                select.appendChild(option);
+            }
 
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const tenantId = doc.id;
-                    tenantsDataCache[tenantId] = data;
-
-                    const option = document.createElement('option');
-                    option.value = tenantId;
-                    option.textContent = `${data.profile.tenantName} (${data.profile.tier})`;
-                    select.appendChild(option);
-                });
-
-                loadTenantConfig();
-            } catch (error) {
-                console.error("Error fetching from Firebase:", error);
-                document.getElementById('firebaseStatus').className = "text-xs bg-red-600 text-white px-2.5 py-1 rounded-full";
-                document.getElementById('firebaseStatus').innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i>Firebase Error (Check Console)';
+            if (systemData[currentSelected]) {
+                select.value = currentSelected;
             }
         }
 
-        // Seed data demo awal jika Firestore masih kosong
-        async function seedInitialData() {
-            const initialBangkok = {
-                profile: {
-                    contractNo: "TS-CONT-2026-001",
-                    tenantName: "Bangkok Thai Takeaway",
-                    contactPerson: "Tedy Sutedja",
-                    phone: "+64 6 356 0000",
-                    email: "info@bangkokthaipalmy.co.nz",
-                    address: "642 Pioneer Highway, Palmerston North",
-                    tier: "FREE SOCIAL TIER",
-                    expiryDate: "2027-04-01"
-                },
-                modules: getModulesByTier("FREE SOCIAL TIER")
-            };
-
-            await db.collection("tenants").doc("bangkokthai").set(initialBangkok);
-        }
-
-        // ==========================================
-        // 4. NAVIGASI TAB & RENDER CONFIG
-        // ==========================================
         function switchTab(tabNumber) {
             for (let i = 1; i <= 5; i++) {
                 document.getElementById(`tabContent${i}`).classList.add('hidden');
@@ -510,7 +469,7 @@
 
         function loadTenantConfig() {
             const tenantId = document.getElementById('tenantSelect').value;
-            const data = tenantsDataCache[tenantId];
+            const data = systemData[tenantId];
 
             if (data) {
                 document.getElementById('tenantName').value = data.profile.tenantName;
@@ -522,7 +481,6 @@
                 document.getElementById('displayTier').textContent = data.profile.tier || '-';
                 document.getElementById('displayExpiry').textContent = data.profile.expiryDate || '-';
 
-                // Set Checkbox Feature Toggles sesuai database tenant
                 const toggles = data.modules || {};
                 document.querySelectorAll('.feature-toggle').forEach(cb => {
                     cb.checked = toggles[cb.id] !== undefined ? toggles[cb.id] : false;
@@ -530,41 +488,25 @@
             }
         }
 
-        // ==========================================
-        // 5. SIMPAN KONFIGURASI KE FIREBASE FIRESTORE
-        // ==========================================
-        async function saveTenantConfig() {
+        function saveTenantConfig() {
             const tenantId = document.getElementById('tenantSelect').value;
-            const tenantName = document.getElementById('tenantName').value;
-            
             const currentModules = {};
+            
             document.querySelectorAll('.feature-toggle').forEach(cb => {
                 currentModules[cb.id] = cb.checked;
             });
 
-            tenantsDataCache[tenantId].modules = currentModules;
+            systemData[tenantId].modules = currentModules;
+            localStorage.setItem('restosync_system_data', JSON.stringify(systemData));
 
-            try {
-                await db.collection("tenants").doc(tenantId).set({
-                    profile: tenantsDataCache[tenantId].profile,
-                    modules: currentModules,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-
-                alert(`Feature toggles for "${tenantName}" successfully saved to Firebase Firestore!`);
-            } catch (error) {
-                console.error("Error saving to Firebase:", error);
-                alert("Failed to save configuration to Firebase. Check console for details.");
-            }
+            alert(`Feature toggles for "${systemData[tenantId].profile.tenantName}" successfully saved!`);
         }
 
-        // ==========================================
-        // 6. TAMBAH TENANT BARU (DENGAN DEFAULT MODULES)
-        // ==========================================
+        // Modal Add New Tenant
         function openNewTenantModal() { document.getElementById('newTenantModal').classList.remove('hidden'); }
         function closeNewTenantModal() { document.getElementById('newTenantModal').classList.add('hidden'); }
 
-        async function createNewTenant() {
+        function createNewTenant() {
             const tenantId = document.getElementById('newTenantId').value.trim().toLowerCase().replace(/\s+/g, '_');
             const contractNo = document.getElementById('newContractNo').value.trim();
             const tenantName = document.getElementById('newTenantBusinessName').value.trim();
@@ -580,32 +522,28 @@
                 return;
             }
 
-            // Otomatis tentukan modul default sesuai tier yang dipilih
+            // Terapkan modul default otomatis berdasarkan tier yang dipilih
             const defaultModules = getModulesByTier(tier);
 
-            const newTenantDoc = {
+            systemData[tenantId] = {
                 profile: { contractNo, tenantName, contactPerson, phone, email, address, tier, expiryDate },
-                modules: defaultModules,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                modules: defaultModules
             };
 
-            try {
-                await db.collection("tenants").doc(tenantId).set(newTenantDoc);
-                closeNewTenantModal();
-                alert(`Tenant "${tenantName}" registered with default modules for ${tier}!`);
-                fetchTenantsFromFirebase(); // Refresh list
-            } catch (error) {
-                console.error("Error creating tenant:", error);
-                alert("Failed to register tenant to Firebase.");
-            }
+            localStorage.setItem('restosync_system_data', JSON.stringify(systemData));
+
+            populateTenantDropdown();
+            document.getElementById('tenantSelect').value = tenantId;
+            loadTenantConfig();
+
+            closeNewTenantModal();
+            alert(`Tenant "${tenantName}" successfully registered with default modules applied!`);
         }
 
-        // ==========================================
-        // 7. EDIT PROFIL PERUSAHAAN TENANT
-        // ==========================================
+        // Modal Edit Tenant Company Info
         function openEditTenantModal() {
             const tenantId = document.getElementById('tenantSelect').value;
-            const p = tenantsDataCache[tenantId].profile;
+            const p = systemData[tenantId].profile;
 
             document.getElementById('editContractNo').value = p.contractNo;
             document.getElementById('editTenantBusinessName').value = p.tenantName;
@@ -619,14 +557,12 @@
             document.getElementById('editTenantModal').classList.remove('hidden');
         }
 
-        function closeEditTenantModal() {
-            document.getElementById('editTenantModal').classList.add('hidden');
-        }
+        function closeEditTenantModal() { document.getElementById('editTenantModal').classList.add('hidden'); }
 
-        async function updateTenantInfo() {
+        function updateTenantInfo() {
             const tenantId = document.getElementById('tenantSelect').value;
 
-            const updatedProfile = {
+            systemData[tenantId].profile = {
                 contractNo: document.getElementById('editContractNo').value,
                 tenantName: document.getElementById('editTenantBusinessName').value,
                 contactPerson: document.getElementById('editContactPerson').value,
@@ -637,25 +573,18 @@
                 expiryDate: document.getElementById('editExpiryDate').value
             };
 
-            tenantsDataCache[tenantId].profile = updatedProfile;
-
-            try {
-                await db.collection("tenants").doc(tenantId).update({
-                    profile: updatedProfile
-                });
-
-                closeEditTenantModal();
-                loadTenantConfig();
-                alert("Company profile successfully updated in Firebase Firestore!");
-            } catch (error) {
-                console.error("Error updating profile:", error);
-                alert("Failed to update profile to Firebase.");
-            }
+            localStorage.setItem('restosync_system_data', JSON.stringify(systemData));
+            populateTenantDropdown();
+            document.getElementById('tenantSelect').value = tenantId;
+            loadTenantConfig();
+            closeEditTenantModal();
+            alert("Company profile successfully updated!");
         }
 
-        // Load data dari Firestore saat halaman pertama kali dibuka
+        // Inisialisasi saat pertama kali load
         window.onload = function() {
-            fetchTenantsFromFirebase();
+            populateTenantDropdown();
+            loadTenantConfig();
         };
     </script>
 </body>

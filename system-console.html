@@ -440,12 +440,11 @@
         // ==========================================
         // 3. FETCH DATA DARI FIRESTORE
         // ==========================================
-        async function fetchTenantsFromFirebase() {
+async function fetchTenantsFromFirebase() {
             try {
                 const snapshot = await db.collection("tenants").get();
                 const select = document.getElementById('tenantSelect');
                 
-                // Jika database kosong, buatkan data awal (Bangkok Thai)
                 if (snapshot.empty) {
                     await seedInitialData();
                     return fetchTenantsFromFirebase();
@@ -457,22 +456,35 @@
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     const tenantId = doc.id;
-                    tenantsDataCache[tenantId] = data;
 
-                    const option = document.createElement('option');
-                    option.value = tenantId;
-                    option.textContent = `${data.profile.tenantName} (${data.profile.tier})`;
-                    select.appendChild(option);
+                    // Validasi: pastikan dokumen memiliki properti profile & tenantName yang valid
+                    if (data && data.profile && data.profile.tenantName) {
+                        tenantsDataCache[tenantId] = data;
+
+                        const option = document.createElement('option');
+                        option.value = tenantId;
+                        option.textContent = `${data.profile.tenantName} (${data.profile.tier || 'STANDARD'})`;
+                        select.appendChild(option);
+                    }
                 });
 
-                loadTenantConfig();
+                // Jika ada data valid, load konfigurasinya
+                if (Object.keys(tenantsDataCache).length > 0) {
+                    loadTenantConfig();
+                    document.getElementById('firebaseStatus').className = "text-xs bg-green-600 text-white px-2.5 py-1 rounded-full";
+                    document.getElementById('firebaseStatus').innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i>Firebase Connected';
+                } else {
+                    // Jika database kosong/belum ada profil valid, buatkan seed data awal
+                    await seedInitialData();
+                    return fetchTenantsFromFirebase();
+                }
             } catch (error) {
                 console.error("Error fetching from Firebase:", error);
                 document.getElementById('firebaseStatus').className = "text-xs bg-red-600 text-white px-2.5 py-1 rounded-full";
                 document.getElementById('firebaseStatus').innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i>Firebase Sync Error';
             }
         }
-
+        
         async function seedInitialData() {
             const initialBangkok = {
                 profile: {

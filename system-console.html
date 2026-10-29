@@ -23,6 +23,9 @@
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col justify-between">
 
+    <!-- Toast Notification Container -->
+    <div id="toastNotification" class="fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-xl text-white text-sm font-medium z-50 transition-all duration-300 opacity-0 pointer-events-none bg-green-600"></div>
+
     <!-- Header / Navbar -->
     <header style="background-color: #1e293b; border-bottom: 1px solid #334155;" class="px-6 py-4 flex justify-between items-center flex-wrap gap-4">
         <div style="display: flex; align-items: center; gap: 1rem;">
@@ -42,13 +45,18 @@
     </header>
 
     <main class="container mx-auto px-6 py-8 flex-grow">
-        <!-- Tenant Selector & Creator Panel -->
+        <!-- Tenant Selector, Creator & Deletion Panel -->
         <div class="custom-card rounded-xl shadow-lg p-6 mb-6">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
                 <h2 class="text-lg font-bold text-white flex items-center"><i class="fa-solid fa-store mr-2 text-amber-400"></i>Manage Restaurant Tenants</h2>
-                <button onclick="openNewTenantModal()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-200 shadow-sm flex items-center">
-                    <i class="fa-solid fa-plus mr-2"></i>Add New Tenant
-                </button>
+                <div class="flex space-x-2">
+                    <button onclick="deleteCurrentTenant()" class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-200 shadow-sm flex items-center">
+                        <i class="fa-solid fa-trash mr-2"></i>Delete Tenant
+                    </button>
+                    <button onclick="openNewTenantModal()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-200 shadow-sm flex items-center">
+                        <i class="fa-solid fa-plus mr-2"></i>Add New Tenant
+                    </button>
+                </div>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -219,6 +227,34 @@
 
     <!-- JavaScript & Real Firebase Firestore Integration -->
     <script>
+        // ==========================================
+        // 0. SESSION SECURITY CHECK
+        // ==========================================
+        if (sessionStorage.getItem('restosync_admin_auth') !== 'true') {
+            let pin = prompt("Authentication Required. Enter Super Admin PIN:");
+            if (pin === "1967") {
+                sessionStorage.setItem('restosync_admin_auth', 'true');
+            } else {
+                alert("Access Denied! Redirecting to home.");
+                window.location.href = "index.html";
+            }
+        }
+
+        // ==========================================
+        // TOAST NOTIFICATION HELPER
+        // ==========================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            toast.textContent = message;
+            toast.className = `fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-xl text-white text-sm font-medium z-50 transition-all duration-300 ${type === 'error' ? 'bg-red-600' : 'bg-green-600'} opacity-100`;
+            setTimeout(() => {
+                toast.className = toast.className.replace('opacity-100', 'opacity-0');
+            }, 3000);
+        }
+
+        // ==========================================
+        // 1. FIREBASE CONFIGURATION (RestoSync-Web)
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
             authDomain: "restosync-saas.firebaseapp.com",
@@ -367,10 +403,31 @@
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
 
-                alert(`Feature toggles for "${tenantName}" successfully saved to Firebase Cloud!`);
+                showToast(`Feature toggles for "${tenantName}" successfully saved!`, 'success');
             } catch (error) {
                 console.error("Error saving to Firebase:", error);
-                alert("Failed to save to Firebase.");
+                showToast("Failed to save to Firebase.", 'error');
+            }
+        }
+
+        async function deleteCurrentTenant() {
+            const tenantId = document.getElementById('tenantSelect').value;
+            const tenantName = document.getElementById('tenantName').value;
+
+            if (Object.keys(tenantsDataCache).length <= 1) {
+                alert("Cannot delete the last remaining tenant!");
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete tenant "${tenantName}" (${tenantId}) from Firebase Cloud?`)) {
+                try {
+                    await db.collection("tenants").doc(tenantId).delete();
+                    showToast(`Tenant "${tenantName}" successfully deleted!`, 'success');
+                    fetchTenantsFromFirebase();
+                } catch (error) {
+                    console.error("Error deleting tenant:", error);
+                    showToast("Failed to delete tenant.", 'error');
+                }
             }
         }
 
@@ -403,11 +460,11 @@
             try {
                 await db.collection("tenants").doc(tenantId).set(newTenantDoc);
                 closeNewTenantModal();
-                alert(`Tenant "${tenantName}" successfully registered!`);
+                showToast(`Tenant "${tenantName}" successfully registered!`, 'success');
                 fetchTenantsFromFirebase();
             } catch (error) {
                 console.error("Error creating tenant:", error);
-                alert("Failed to register tenant.");
+                showToast("Failed to register tenant.", 'error');
             }
         }
 
@@ -456,10 +513,10 @@
 
                 closeEditTenantModal();
                 loadTenantConfig();
-                alert("Company profile successfully updated!");
+                showToast("Company profile successfully updated!", 'success');
             } catch (error) {
                 console.error("Error updating profile:", error);
-                alert("Failed to update profile.");
+                showToast("Failed to update profile.", 'error');
             }
         }
 

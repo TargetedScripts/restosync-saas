@@ -49,7 +49,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-white text-base">RestoSync SaaS &bull; Super Admin System Console</h1>
-                <p class="text-xs text-stone-400">Secured Master Hub &bull; Direct Firestore Mirroring</p>
+                <p class="text-xs text-stone-400">Secured Master Hub &bull; Direct Firestore & Storage Mirroring</p>
             </div>
         </div>
         
@@ -83,7 +83,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">Tenant ID / Slug (Unique)</label>
-                    <input type="text" id="inputTenantId" class="custom-input rounded-xl px-4 py-2 text-xs font-mono w-56 text-amber-300 font-bold" placeholder="e.g. bangkokthai">
+                    <input type="text" id="inputTenantId" class="custom-input rounded-xl px-4 py-2 text-xs font-mono w-56 text-amber-300 font-bold" placeholder="e.g. bangkokthaipalmy">
                 </div>
             </div>
             <div class="text-right">
@@ -100,6 +100,31 @@
                 <span class="text-[10px] text-stone-400">Menampilkan JSON mentah apa adanya langsung dari dokumen Firestore</span>
             </div>
             <pre id="rawFirestoreViewer" class="bg-[#030712] border border-[#1f2937] p-4 rounded-xl text-[11px] font-mono text-emerald-400 overflow-x-auto max-h-40">Loading raw database snapshot...</pre>
+        </div>
+
+        <!-- FIREBASE STORAGE ASSET UPLOADER MODULE -->
+        <div class="custom-card rounded-3xl p-6 space-y-4 shadow-xl border border-amber-500/30">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                <i class="fa-solid fa-cloud-arrow-up text-sm"></i><span>Firebase Storage & Tenant Asset Manager</span>
+            </h2>
+            <p class="text-[11px] text-stone-400">Unggah logo atau aset gambar awal untuk tenant aktif. Sistem secara otomatis membuat jalur isolasi folder: <code class="text-amber-300 font-mono">tenants/{tenantId}/images/</code></p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Pilih File Aset / Logo (Image File)</label>
+                    <input type="file" id="tenantStorageFile" accept="image/*" class="w-full text-xs text-stone-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="uploadTenantAssetToStorage()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 py-2.5 rounded-xl font-bold text-xs shadow-lg transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-upload"></i><span>Upload to Cloud Storage</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="storageStatusBox" class="hidden space-y-2 pt-2">
+                <p id="storageStatusText" class="text-[11px] font-mono text-cyan-400">Status: Mengunggah file...</p>
+                <input type="text" id="storageResultUrl" readonly class="w-full custom-input rounded-xl p-2.5 text-[11px] font-mono text-amber-300 select-all" placeholder="URL file hasil upload akan muncul di sini...">
+            </div>
         </div>
 
         <!-- CLIENT PROFILE & STORE INFORMATION -->
@@ -386,9 +411,10 @@
         RestoSync SaaS System Console &bull; Secured Super Admin Hub
     </footer>
 
-    <!-- FIREBASE & CONSOLE LOGIC -->
+    <!-- FIREBASE SDKs (FIRESTORE & STORAGE COMPATIBILITY) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -402,6 +428,7 @@
 
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const storage = firebase.storage();
 
         let isNewTenantMode = false;
 
@@ -450,7 +477,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             updateConnectionStatus('loading', 'Connecting to Firestore...');
-            loadTenantList('bangkokthai');
+            loadTenantList('bangkokthaipalmy');
         });
 
         function loadTenantList(defaultSelect) {
@@ -571,6 +598,57 @@
             
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
             showToast("Ready to add new tenant. Fill in Tenant ID and details.");
+        }
+
+        function uploadTenantAssetToStorage() {
+            const tenantId = document.getElementById('inputTenantId').value.trim().toLowerCase();
+            const fileInput = document.getElementById('tenantStorageFile');
+            const statusBox = document.getElementById('storageStatusBox');
+            const statusText = document.getElementById('storageStatusText');
+            const resultUrlInput = document.getElementById('storageResultUrl');
+
+            if (!tenantId) {
+                alert("Tenant ID / Slug harus diisi terlebih dahulu!");
+                return;
+            }
+            if (fileInput.files.length === 0) {
+                alert("Silakan pilih file gambar yang ingin diunggah!");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const storagePath = `tenants/${tenantId}/images/${Date.now()}_${file.name}`;
+            const storageRef = storage.ref().child(storagePath);
+
+            statusBox.classList.remove('hidden');
+            statusText.innerText = `Mengunggah [${file.name}] ke folder tenant [${tenantId}]...`;
+            resultUrlInput.value = "";
+
+            const uploadTask = storageRef.put(file);
+
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    statusText.innerText = `Progress Upload: ${Math.round(progress)}% selesai...`;
+                }, 
+                (error) => {
+                    console.error("Storage upload error:", error);
+                    statusText.innerText = `Gagal Upload: ${error.message}`;
+                    statusText.className = "text-[11px] font-mono text-red-400";
+                    showToast("Gagal mengunggah file ke Storage.", true);
+                }, 
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        statusText.innerText = "SUCCESS: Berkas berhasil disimpan di Firebase Storage!";
+                        statusText.className = "text-[11px] font-mono text-emerald-400";
+                        
+                        document.getElementById('inputLogoUrl').value = downloadURL;
+                        resultUrlInput.value = downloadURL;
+
+                        showToast("File berhasil diunggah & tautan terpasang ke profil tenant!");
+                    });
+                }
+            );
         }
 
         function saveTenantSettings() {

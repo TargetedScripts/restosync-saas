@@ -26,25 +26,60 @@
 
     <main class="container mx-auto px-6 py-8">
         
-        <!-- Tenant Selector Panel -->
+        <!-- Tenant Selector & Creator Panel -->
         <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-200">
-            <h2 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-store mr-2 text-indigo-600"></i>Select or Add Restaurant Tenant</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-store mr-2 text-indigo-600"></i>Manage Restaurant Tenants</h2>
+                <button onclick="openNewTenantModal()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-200 shadow-sm flex items-center">
+                    <i class="fa-solid fa-plus mr-2"></i>Add New Tenant
+                </button>
+            </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Active Tenant</label>
-                    <select id="tenantSelect" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500">
+                    <select id="tenantSelect" onchange="loadTenantConfig()" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500">
                         <option value="bangkokthai">Bangkok Thai Takeaway (Free Tier)</option>
                         <option value="finedining_demo">Auckland Fine Dining (Enterprise)</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant / Client Name</label>
-                    <input type="text" id="tenantName" value="Bangkok Thai Takeaway" class="w-full border border-gray-300 rounded-lg p-2.5">
+                    <input type="text" id="tenantName" value="Bangkok Thai Takeaway" class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50" readonly>
                 </div>
                 <div class="flex items-end">
                     <button onclick="saveTenantConfig()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200 shadow-sm">
                         <i class="fa-solid fa-floppy-disk mr-2"></i>Save Configuration
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Add New Tenant -->
+        <div id="newTenantModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+            <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+                <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-circle-plus mr-2 text-green-600"></i>Register New Restaurant Tenant</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tenant ID (Unique Slug, e.g. <i>pukekohe_cafe</i>)</label>
+                        <input type="text" id="newTenantId" placeholder="e.g. christchurch_bistro" class="w-full border border-gray-300 rounded-lg p-2.5">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant Business Name</label>
+                        <input type="text" id="newTenantBusinessName" placeholder="e.g. Christchurch Bistro & Bar" class="w-full border border-gray-300 rounded-lg p-2.5">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Tier</label>
+                        <select id="newTenantTier" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            <option value="free">Free Social Tier (e.g. Bangkok Thai)</option>
+                            <option value="standard">Standard Managed (NZD $250/mo)</option>
+                            <option value="enterprise">Enterprise Fine Dining</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button onclick="closeNewTenantModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition">Cancel</button>
+                    <button onclick="createNewTenant()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition">Create Tenant</button>
                 </div>
             </div>
         </div>
@@ -252,7 +287,7 @@
 
     </main>
 
-    <!-- JavaScript Tab & Config Save Logic -->
+    <!-- JavaScript Tab, Tenant Management & Config Save Logic -->
     <script>
         function switchTab(tabNumber) {
             for (let i = 1; i <= 5; i++) {
@@ -261,6 +296,45 @@
             }
             document.getElementById(`tabContent${tabNumber}`).classList.remove('hidden');
             document.getElementById(`tabBtn${tabNumber}`).className = "tab-btn px-6 py-4 font-semibold text-indigo-600 border-b-2 border-indigo-600 flex items-center whitespace-nowrap focus:outline-none";
+        }
+
+        function openNewTenantModal() {
+            document.getElementById('newTenantModal').classList.remove('hidden');
+        }
+
+        function closeNewTenantModal() {
+            document.getElementById('newTenantModal').classList.add('hidden');
+        }
+
+        function createNewTenant() {
+            const tenantId = document.getElementById('newTenantId').value.trim().toLowerCase().replace(/\s+/g, '_');
+            const tenantName = document.getElementById('newTenantBusinessName').value.trim();
+            const tenantTier = document.getElementById('newTenantTier').value;
+
+            if (!tenantId || !tenantName) {
+                alert("Please fill in both Tenant ID and Restaurant Name!");
+                return;
+            }
+
+            const select = document.getElementById('tenantSelect');
+            const option = document.createElement('option');
+            option.value = tenantId;
+            option.textContent = `${tenantName} (${tenantTier.toUpperCase()})`;
+            select.appendChild(option);
+            
+            select.value = tenantId;
+            document.getElementById('tenantName').value = tenantName;
+
+            closeNewTenantModal();
+            alert(`Tenant "${tenantName}" (ID: ${tenantId}) successfully created! You can now configure its feature toggles below and click 'Save Configuration'.`);
+        }
+
+        function loadTenantConfig() {
+            const select = document.getElementById('tenantSelect');
+            const selectedText = select.options[select.selectedIndex].text;
+            // Extract restaurant name roughly from dropdown text
+            const cleanName = selectedText.split(' (')[0];
+            document.getElementById('tenantName').value = cleanName;
         }
 
         function saveTenantConfig() {

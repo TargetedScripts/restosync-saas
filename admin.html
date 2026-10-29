@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <!-- TAB 1: BRANDING, THEMES, OFFICE HOURS & HERO EXTRAS -->
+        <!-- TAB 1: BRANDING, THEMES, OFFICE HOURS & STORAGE UPLOADER -->
         <div id="tab-branding" class="tab-content active space-y-6">
             
             <!-- STORE PROFILE & COLOR PALETTE -->
@@ -124,6 +124,25 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- FIREBASE STORAGE ASSET UPLOADER MODULE -->
+            <div class="custom-card rounded-3xl p-6 space-y-4 shadow-xl border border-amber-500/30">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                    <i class="fa-solid fa-cloud-arrow-up text-sm"></i><span>Firebase Storage & Logo Asset Uploader</span>
+                </h2>
+                <p class="text-[11px] text-stone-400">Unggah file logo baru langsung ke folder privat tenant di Firebase Storage (<code class="text-amber-300 font-mono">tenants/{tenantId}/images/</code>).</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <input type="file" id="tenantLogoFile" accept="image/*" class="w-full text-xs text-stone-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer">
+                    </div>
+                    <div>
+                        <button onclick="uploadLogoToStorage()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 py-2.5 rounded-xl font-bold text-xs shadow-lg transition">
+                            <i class="fa-solid fa-upload mr-2"></i>Upload Logo to Cloud Storage
+                        </button>
+                    </div>
+                </div>
+                <div id="storageUploadStatus" class="text-[11px] font-mono text-cyan-400 hidden">Status: Menunggu upload...</div>
             </div>
 
             <!-- HERO SECTION & 3 HERO IMAGES -->
@@ -226,9 +245,10 @@
         RestoSync SaaS Manager Portal &bull; Multi-Tenant Control Hub
     </footer>
 
-    <!-- FIREBASE SDK -->
+    <!-- FIREBASE SDKs (FIRESTORE & STORAGE) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -242,6 +262,7 @@
 
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const storage = firebase.storage();
 
         const urlParams = new URLSearchParams(window.location.search);
         const tenantId = urlParams.get('tenant') || 'bangkokthaipalmy';
@@ -311,7 +332,6 @@
             scriptTag.onload = function() {
                 addTrace(`SUCCESS: External .js asset loaded successfully!`, false);
                 
-                // Mendeteksi RESTOSYNC_CONFIG sesuai file .js klien Anda
                 if(typeof RESTOSYNC_CONFIG !== 'undefined') {
                     addTrace(`Found RESTOSYNC_CONFIG global object. Merging store data, menu & hours.`, false);
                     
@@ -322,7 +342,6 @@
                     tenantData.profile.heroImage2 = RESTOSYNC_CONFIG.branding.heroImages[1] || '';
                     tenantData.profile.heroImage3 = RESTOSYNC_CONFIG.branding.heroImages[2] || '';
                     
-                    // Mapping operatingHours dari format .js
                     tenantData.officeHours = {
                         Monday: RESTOSYNC_CONFIG.operatingHours.mon,
                         Tuesday: RESTOSYNC_CONFIG.operatingHours.tue,
@@ -333,7 +352,6 @@
                         Sunday: RESTOSYNC_CONFIG.operatingHours.sun
                     };
 
-                    // Mapping menuItems dari RESTOSYNC_CONFIG
                     tenantData.menuItems = RESTOSYNC_CONFIG.menuItems || [];
                 } else {
                     addTrace(`Warning: RESTOSYNC_CONFIG not found in .js file, using Firestore data.`, true);
@@ -442,6 +460,43 @@
         function deleteMenuItem(index) {
             tenantData.menuItems.splice(index, 1);
             renderMenuTable(tenantData.menuItems);
+        }
+
+        function uploadLogoToStorage() {
+            const fileInput = document.getElementById('tenantLogoFile');
+            const statusBox = document.getElementById('storageUploadStatus');
+
+            if (fileInput.files.length === 0) {
+                alert("Pilih file gambar logo terlebih dahulu!");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const storagePath = `tenants/${tenantId}/images/${Date.now()}_${file.name}`;
+            const storageRef = storage.ref().child(storagePath);
+
+            statusBox.classList.remove('hidden');
+            statusBox.innerText = `Mengunggah [${file.name}] ke Firebase Storage...`;
+
+            const uploadTask = storageRef.put(file);
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    statusBox.innerText = `Progress Upload: ${Math.round(progress)}%...`;
+                }, 
+                (error) => {
+                    statusBox.innerText = `Gagal upload: ${error.message}`;
+                    statusBox.className = "text-[11px] font-mono text-red-400";
+                }, 
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        statusBox.innerText = "SUCCESS: Logo berhasil diunggah ke Storage!";
+                        statusBox.className = "text-[11px] font-mono text-emerald-400";
+                        document.getElementById('logoUrl').value = downloadURL;
+                        showToast("Logo berhasil diunggah ke Firebase Storage!");
+                    });
+                }
+            );
         }
 
         function saveChanges() {

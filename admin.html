@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { background-color: #090d16; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
-        .custom-card { background-color: #111827; border: 1px solid #1f2937; }
+        body { background-color: var(--bg-color, #090d16); color: var(--text-color, #f1f5f9); font-family: system-ui, -apple-system, sans-serif; transition: background-color 0.3s, color 0.3s; }
+        .custom-card { background-color: var(--card-color, #111827); border: 1px solid #1f2937; }
         .custom-input { background-color: #030712; border: 1px solid #1f2937; color: #f1f5f9; }
-        .custom-input:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15); }
+        .custom-input:focus { border-color: var(--accent-color, #f59e0b); outline: none; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
@@ -21,7 +21,7 @@
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center space-x-2 bg-emerald-600">
         <i class="fa-solid fa-circle-check text-sm"></i>
-        <span id="toastText">Berhasil disimpan!</span>
+        <span id="toastText">Successfully saved!</span>
     </div>
 
     <!-- TOP BAR -->
@@ -57,7 +57,7 @@
                 <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
                     <i class="fa-solid fa-store text-sm"></i><span>Store Information & Branding Metadata</span>
                 </h2>
-                <span class="text-[11px] text-stone-400">Dikendalikan langsung dari Cloud Firestore</span>
+                <span class="text-[11px] text-stone-400">Managed directly from Cloud Firestore</span>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
@@ -82,15 +82,44 @@
                     <input type="text" id="inputStoreLogo" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="./assets/images/logo.png">
                 </div>
 
-                <!-- CONDITIONAL THEME COLOR PICKER (Muncul jika toggle_custom_colors aktif di System Console) -->
-                <div id="themeColorWrapper" class="hidden md:col-span-3 bg-[#030712] border border-[#1f2937] p-4 rounded-2xl flex items-center justify-between">
-                    <div>
-                        <strong class="block text-stone-200 text-xs mb-0.5"><i class="fa-solid fa-palette text-amber-400 mr-2"></i>Theme & Accent Color Customization</strong>
-                        <span class="text-[11px] text-stone-400">Diizinkan oleh Super Admin (Tab 1 Console). Pilih warna utama toko Anda.</span>
+                <!-- ADVANCED COLOR PALETTE CUSTOMIZATION (Unlocked via System Console toggle_custom_colors) -->
+                <div id="themeColorWrapper" class="hidden md:col-span-3 bg-[#030712] border border-[#1f2937] p-5 rounded-2xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-[#1f2937] pb-3">
+                        <div>
+                            <strong class="block text-stone-200 text-xs mb-0.5"><i class="fa-solid fa-palette text-amber-400 mr-2"></i>Global Color Palette & Theme Customization</strong>
+                            <span class="text-[11px] text-stone-400">Customize background, card containers, accent colors, and font text colors across your customer storefront.</span>
+                        </div>
+                        <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full font-mono">Super Admin Allowed</span>
                     </div>
-                    <div class="flex items-center space-x-3">
-                        <input type="color" id="inputThemeColor" value="#f59e0b" class="w-10 h-10 rounded-xl bg-transparent cursor-pointer border border-zinc-700">
-                        <span id="colorHexText" class="font-mono text-xs text-amber-400">#f59e0b</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+                        <div class="flex items-center justify-between bg-[#111827] p-3 rounded-xl border border-zinc-800">
+                            <span class="text-stone-300">Background Color</span>
+                            <div class="flex items-center space-x-2">
+                                <input type="color" id="inputBgColor" value="#090d16" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer border border-zinc-700">
+                                <span id="bgHexText" class="font-mono text-[11px] text-stone-400">#090d16</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between bg-[#111827] p-3 rounded-xl border border-zinc-800">
+                            <span class="text-stone-300">Card / Box Color</span>
+                            <div class="flex items-center space-x-2">
+                                <input type="color" id="inputCardColor" value="#111827" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer border border-zinc-700">
+                                <span id="cardHexText" class="font-mono text-[11px] text-stone-400">#111827</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between bg-[#111827] p-3 rounded-xl border border-zinc-800">
+                            <span class="text-stone-300">Accent / Button Color</span>
+                            <div class="flex items-center space-x-2">
+                                <input type="color" id="inputAccentColor" value="#f59e0b" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer border border-zinc-700">
+                                <span id="accentHexText" class="font-mono text-[11px] text-amber-400">#f59e0b</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between bg-[#111827] p-3 rounded-xl border border-zinc-800">
+                            <span class="text-stone-300">Font Text Color</span>
+                            <div class="flex items-center space-x-2">
+                                <input type="color" id="inputTextColor" value="#f1f5f9" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer border border-zinc-700">
+                                <span id="textHexText" class="font-mono text-[11px] text-stone-300">#f1f5f9</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -102,11 +131,10 @@
                 <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center space-x-2">
                     <i class="fa-solid fa-cubes text-sm"></i><span>Active Operational Modules (Cloud Controlled)</span>
                 </h2>
-                <span class="text-[10px] text-stone-400">Dikelola via System Console</span>
+                <span class="text-[10px] text-stone-400">Managed via System Console</span>
             </div>
             <div id="modulesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-                <!-- Dynamic Modules Rendered Here -->
-                <div class="text-xs text-stone-500 col-span-full py-2">Memuat status modul...</div>
+                <div class="text-xs text-stone-500 col-span-full py-2">Loading module statuses...</div>
             </div>
         </div>
 
@@ -122,8 +150,7 @@
             </div>
 
             <div id="adminMenuList" class="space-y-4">
-                <!-- Dynamic Menu List Generated Here -->
-                <div class="text-center py-8 text-stone-500 text-xs">Memuat katalog menu dari database...</div>
+                <div class="text-center py-8 text-stone-500 text-xs">Loading menu catalogue from database...</div>
             </div>
         </div>
 
@@ -158,7 +185,12 @@
 
         let activeConfig = {
             store: {},
-            branding: {},
+            branding: {
+                bgColor: '#090d16',
+                cardColor: '#111827',
+                accentColor: '#f59e0b',
+                textColor: '#f1f5f9'
+            },
             menuItems: []
         };
         let activeModules = {};
@@ -173,7 +205,7 @@
             }, 3500);
         }
 
-        // FETCH DATA DARI FIRESTORE
+        // FETCH DATA FROM FIRESTORE
         document.addEventListener('DOMContentLoaded', () => {
             const statusBadge = document.getElementById('dbStatusBadge');
             
@@ -183,21 +215,37 @@
                     
                     if (data.config) {
                         activeConfig = data.config;
-                    } else {
+                    } 
+                    
+                    // Fallback or ensure default store info
+                    if (!activeConfig.store || !activeConfig.store.name) {
                         activeConfig.store = {
                             name: data.profile?.tenantName || 'Bangkok Thai Takeaway',
                             tagline: 'Authentic Thai Cuisine in Palmerston North',
                             phone: data.profile?.phone || '+64 6 356 0000',
                             address: data.profile?.address || '642 Pioneer Highway, Palmerston North'
                         };
-                        activeConfig.branding = { logo: './assets/images/RS Logo.png', themeColor: '#f59e0b' };
+                    }
+
+                    if (!activeConfig.branding) {
+                        activeConfig.branding = { logo: './assets/images/RS Logo.png', bgColor: '#090d16', cardColor: '#111827', accentColor: '#f59e0b', textColor: '#f1f5f9' };
+                    }
+
+                    // ENSURE FULL MENU LIST (Fallback to full Bangkok Thai menu if empty or missing)
+                    if (!activeConfig.menuItems || activeConfig.menuItems.length === 0) {
                         activeConfig.menuItems = [
-                            { id: "M1", name: "Pad Thai Chicken", category: "Noodles", price: 18.50, description: "Classic Thai stir-fried rice noodles.", isHidden: false },
-                            { id: "M2", name: "Green Curry Beef", category: "Curry", price: 19.50, description: "Traditional green curry with tender beef.", isHidden: false }
+                            { id: "M1", name: "Spring Rolls (4 pcs)", category: "Appetisers", price: 10.50, description: "Crispy vegetable spring rolls served with sweet chilli sauce.", isHidden: false },
+                            { id: "M2", name: "Curry Puffs (4 pcs)", category: "Appetisers", price: 11.50, description: "Golden pastry filled with spiced potatoes and peas.", isHidden: false },
+                            { id: "M3", name: "Pad Thai Chicken", category: "Noodles", price: 18.50, description: "Classic Thai stir-fried rice noodles with chicken, egg, and peanuts.", isHidden: false },
+                            { id: "M4", name: "Pad See Ew Beef", category: "Noodles", price: 19.00, description: "Flat rice noodles stir-fried with dark soy sauce and beef.", isHidden: false },
+                            { id: "M5", name: "Green Curry Beef", category: "Curry", price: 19.50, description: "Traditional green curry paste in coconut milk with tender beef and vegetables.", isHidden: false },
+                            { id: "M6", name: "Massaman Lamb Curry", category: "Curry", price: 21.00, description: "Slow-cooked lamb shank in rich Massaman curry with potatoes and peanuts.", isHidden: false },
+                            { id: "M7", name: "Casmond Nut Chicken", category: "Mains", price: 20.00, description: "Stir-fried chicken with roasted cashew nuts and chilli jam.", isHidden: false },
+                            { id: "M8", name: "Thai Jasmine Rice", category: "Sides", price: 4.00, description: "Fragrant steamed premium jasmine rice.", isHidden: false }
                         ];
                     }
 
-                    // Ambil modules (feature toggles) langsung dari database tenant
+                    // Fetch modules (feature toggles)
                     activeModules = data.modules || {};
 
                     populateAdminForm();
@@ -208,18 +256,31 @@
                 } else {
                     statusBadge.className = "text-[10px] bg-red-500/10 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full font-mono";
                     statusBadge.innerText = "Tenant Not Found";
-                    showToast("Tenant tidak ditemukan di database Firestore!", true);
+                    showToast("Tenant configuration not found in Firestore database!", true);
                 }
             }).catch(err => {
                 console.error("Firebase connection error:", err);
                 statusBadge.className = "text-[10px] bg-red-500/10 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full font-mono";
                 statusBadge.innerText = "Sync Error";
-                showToast("Gagal terhubung ke database cloud.", true);
+                showToast("Failed to connect to cloud database.", true);
             });
 
-            // Update hex label when color changes
-            document.getElementById('inputThemeColor').addEventListener('input', (e) => {
-                document.getElementById('colorHexText').innerText = e.target.value;
+            // Live Color Picker Listeners
+            document.getElementById('inputBgColor').addEventListener('input', (e) => {
+                document.getElementById('bgHexText').innerText = e.target.value;
+                document.documentElement.style.setProperty('--bg-color', e.target.value);
+            });
+            document.getElementById('inputCardColor').addEventListener('input', (e) => {
+                document.getElementById('cardHexText').innerText = e.target.value;
+                document.documentElement.style.setProperty('--card-color', e.target.value);
+            });
+            document.getElementById('inputAccentColor').addEventListener('input', (e) => {
+                document.getElementById('accentHexText').innerText = e.target.value;
+                document.documentElement.style.setProperty('--accent-color', e.target.value);
+            });
+            document.getElementById('inputTextColor').addEventListener('input', (e) => {
+                document.getElementById('textHexText').innerText = e.target.value;
+                document.documentElement.style.setProperty('--text-color', e.target.value);
             });
         });
 
@@ -233,12 +294,29 @@
             document.getElementById('inputStoreAddress').value = store.address || '';
             document.getElementById('inputStoreLogo').value = branding.logo || '';
             
-            if (branding.themeColor) {
-                document.getElementById('inputThemeColor').value = branding.themeColor;
-                document.getElementById('colorHexText').innerText = branding.themeColor;
+            // Set Color Pickers if configured
+            if (branding.bgColor) {
+                document.getElementById('inputBgColor').value = branding.bgColor;
+                document.getElementById('bgHexText').innerText = branding.bgColor;
+                document.documentElement.style.setProperty('--bg-color', branding.bgColor);
+            }
+            if (branding.cardColor) {
+                document.getElementById('inputCardColor').value = branding.cardColor;
+                document.getElementById('cardHexText').innerText = branding.cardColor;
+                document.documentElement.style.setProperty('--card-color', branding.cardColor);
+            }
+            if (branding.accentColor) {
+                document.getElementById('inputAccentColor').value = branding.accentColor;
+                document.getElementById('accentHexText').innerText = branding.accentColor;
+                document.documentElement.style.setProperty('--accent-color', branding.accentColor);
+            }
+            if (branding.textColor) {
+                document.getElementById('inputTextColor').value = branding.textColor;
+                document.getElementById('textHexText').innerText = branding.textColor;
+                document.documentElement.style.setProperty('--text-color', branding.textColor);
             }
 
-            // Tampilkan pengaturan warna jika modul toggle_custom_colors aktif di database
+            // Display Theme Color Customization panel only if enabled in System Console
             if (activeModules.toggle_custom_colors) {
                 document.getElementById('themeColorWrapper').classList.remove('hidden');
             }
@@ -292,7 +370,7 @@
             }
 
             if (count === 0) {
-                container.innerHTML = `<div class="text-xs text-stone-500 col-span-full">Tidak ada modul aktif yang dikonfigurasi.</div>`;
+                container.innerHTML = `<div class="text-xs text-stone-500 col-span-full">No active modules configured.</div>`;
             }
         }
 
@@ -301,7 +379,7 @@
             const container = document.getElementById('adminMenuList');
 
             if (items.length === 0) {
-                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-6">Belum ada menu item yang terdaftar.</p>`;
+                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-6">No menu items registered yet.</p>`;
                 return;
             }
 
@@ -356,7 +434,7 @@
         }
 
         function removeMenuItem(idx) {
-            if (confirm("Apakah Anda yakin ingin menghapus menu item ini?")) {
+            if (confirm("Are you sure you want to delete this menu item?")) {
                 activeConfig.menuItems.splice(idx, 1);
                 renderAdminMenuList();
             }
@@ -371,17 +449,22 @@
             activeConfig.store.phone = document.getElementById('inputStorePhone').value;
             activeConfig.store.address = document.getElementById('inputStoreAddress').value;
             activeConfig.branding.logo = document.getElementById('inputStoreLogo').value;
-            activeConfig.branding.themeColor = document.getElementById('inputThemeColor').value;
+            
+            // Save Color Customization
+            activeConfig.branding.bgColor = document.getElementById('inputBgColor').value;
+            activeConfig.branding.cardColor = document.getElementById('inputCardColor').value;
+            activeConfig.branding.accentColor = document.getElementById('inputAccentColor').value;
+            activeConfig.branding.textColor = document.getElementById('inputTextColor').value;
 
             db.collection("tenants").doc(TENANT_ID).set({
                 config: activeConfig,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
-                showToast("Konfigurasi, warna tema & menu berhasil disimpan ke Cloud Firestore!");
+                showToast("Configuration, color palette & menu successfully saved to Cloud Firestore!");
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }).catch(err => {
                 console.error("Error saving:", err);
-                showToast("Gagal menyimpan ke Firebase: " + err.message, true);
+                showToast("Failed to save to Firebase: " + err.message, true);
             });
         }
     </script>

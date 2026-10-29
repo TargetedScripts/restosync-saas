@@ -57,10 +57,32 @@
             </div>
         </div>
 
-        <!-- CONTRACT & SUBSCRIPTION DETAILS SECTION -->
+        <!-- CLIENT PROFILE & CONTACT INFORMATION -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                <i class="fa-solid fa-file-contract text-sm"></i><span>Contract Metadata & Subscription Rights</span>
+                <i class="fa-solid fa-user-gear text-sm"></i><span>Client Profile & Contact Information</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Client / Owner Name</label>
+                    <input type="text" id="inputClientName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="e.g., Tedy Sutedja">
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Phone Number</label>
+                    <input type="text" id="inputClientPhone" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="+64 ...">
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Email Address</label>
+                    <input type="email" id="inputClientEmail" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="client@restaurant.co.nz">
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTRACT METADATA & SUBSCRIPTION RIGHTS -->
+        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                <i class="fa-solid fa-file-contract text-sm"></i><span>Contract Metadata & Subscription Tier</span>
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
@@ -80,10 +102,58 @@
                     <label class="block text-stone-400 mb-1.5 font-semibold">Expiry Date</label>
                     <input type="date" id="inputExpiryDate" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
                 </div>
-                <div class="md:col-span-3">
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Assigned User Rights & Access Permissions</label>
-                    <input type="text" id="inputUserRights" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Manager Portal, POS Access, Inventory Control, KDS">
-                </div>
+            </div>
+        </div>
+
+        <!-- ASSIGNED USER RIGHTS & ACCESS PERMISSIONS (TOGGLES) -->
+        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                <i class="fa-solid fa-shield-halved text-sm"></i><span>Assigned User Rights & Access Permissions</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_manager_portal" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div>
+                        <strong class="block text-stone-200">Manager Portal Access</strong>
+                        <span class="text-[10px] text-stone-400">Access admin.html store portal.</span>
+                    </div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_pos_access" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div>
+                        <strong class="block text-stone-200">POS Operations</strong>
+                        <span class="text-[10px] text-stone-400">Cashier & order processing.</span>
+                    </div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_inventory_control" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div>
+                        <strong class="block text-stone-200">Inventory & Stock Control</strong>
+                        <span class="text-[10px] text-stone-400">Manage item stock and recipes.</span>
+                    </div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_kds_access" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div>
+                        <strong class="block text-stone-200">Kitchen Display (KDS)</strong>
+                        <span class="text-[10px] text-stone-400">View live kitchen orders.</span>
+                    </div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_financial_reports" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div>
+                        <strong class="block text-stone-200">Financial Reports & GST</strong>
+                        <span class="text-[10px] text-stone-400">View tax and sales auditing.</span>
+                    </div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_system_settings" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div>
+                        <strong class="block text-stone-200">System Settings & Hours</strong>
+                        <span class="text-[10px] text-stone-400">Configure operating hours & surcharges.</span>
+                    </div>
+                </label>
             </div>
         </div>
 
@@ -174,6 +244,15 @@
             toggle_gst_calculation: ['toggle_gst_calculation', 'gstCalculation', 'gst']
         };
 
+        const rightsMapping = {
+            right_manager_portal: ['right_manager_portal', 'managerPortal'],
+            right_pos_access: ['right_pos_access', 'posAccess'],
+            right_inventory_control: ['right_inventory_control', 'inventoryControl'],
+            right_kds_access: ['right_kds_access', 'kdsAccess'],
+            right_financial_reports: ['right_financial_reports', 'financialReports'],
+            right_system_settings: ['right_system_settings', 'systemSettings']
+        };
+
         function showToast(message, isError = false) {
             const toast = document.getElementById('toastNotification');
             const text = toast.querySelector('span');
@@ -217,34 +296,61 @@
         function switchTenant(tenantId) {
             currentActiveTenant = tenantId;
             db.collection("tenants").doc(tenantId).get().then((doc) => {
-                // Reset form
+                // Reset form fields
+                document.getElementById('inputClientName').value = '';
+                document.getElementById('inputClientPhone').value = '';
+                document.getElementById('inputClientEmail').value = '';
+                document.getElementById('inputContractNo').value = '';
+                document.getElementById('inputSubTier').value = 'Free Social Tier';
+                document.getElementById('inputExpiryDate').value = '';
+
                 Object.keys(moduleMapping).forEach(uiKey => {
                     const cb = document.getElementById(uiKey);
                     if (cb) cb.checked = false;
                 });
-                document.getElementById('inputContractNo').value = '';
-                document.getElementById('inputSubTier').value = 'Free Social Tier';
-                document.getElementById('inputExpiryDate').value = '';
-                document.getElementById('inputUserRights').value = '';
+                Object.keys(rightsMapping).forEach(uiKey => {
+                    const cb = document.getElementById(uiKey);
+                    if (cb) cb.checked = false;
+                });
 
                 if (doc.exists) {
                     const data = doc.data();
                     
-                    // Populate Contract & Rights info if present
-                    const contract = data.contract || data.profile || {};
+                    // Populate Profile & Contact info
+                    const profile = data.profile || {};
+                    document.getElementById('inputClientName').value = profile.clientName || profile.tenantName || '';
+                    document.getElementById('inputClientPhone').value = profile.phone || '';
+                    document.getElementById('inputClientEmail').value = profile.email || '';
+
+                    // Populate Contract info
+                    const contract = data.contract || {};
                     document.getElementById('inputContractNo').value = contract.contractNo || contract.contractNumber || '';
                     document.getElementById('inputSubTier').value = contract.subTier || contract.tier || 'Free Social Tier';
                     document.getElementById('inputExpiryDate').value = contract.expiryDate || '';
-                    document.getElementById('inputUserRights').value = contract.userRights || contract.rights || '';
 
-                    // Populate Modules
+                    // Gabungkan data untuk pembacaan modul & hak akses
                     const rawData = { 
                         ...(data.modules || {}), 
-                        ...(data.config?.modules || {}), 
+                        ...(data.config?.modules || {}),
+                        ...(data.rights || {}),
+                        ...(data.userRights || {}),
                         ...data 
                     };
 
+                    // Populate Feature Modules Toggles
                     Object.entries(moduleMapping).forEach(([uiKey, possibleKeys]) => {
+                        const checkbox = document.getElementById(uiKey);
+                        if (checkbox) {
+                            let isActive = false;
+                            possibleKeys.forEach(k => {
+                                if (rawData[k] === true) isActive = true;
+                            });
+                            checkbox.checked = isActive;
+                        }
+                    });
+
+                    // Populate User Rights Toggles
+                    Object.entries(rightsMapping).forEach(([uiKey, possibleKeys]) => {
                         const checkbox = document.getElementById(uiKey);
                         if (checkbox) {
                             let isActive = false;
@@ -274,16 +380,31 @@
                 }
             });
 
+            let updatedRights = {};
+            Object.keys(rightsMapping).forEach(uiKey => {
+                const checkbox = document.getElementById(uiKey);
+                if (checkbox) {
+                    updatedRights[uiKey] = checkbox.checked;
+                }
+            });
+
+            const profileData = {
+                clientName: document.getElementById('inputClientName').value,
+                phone: document.getElementById('inputClientPhone').value,
+                email: document.getElementById('inputClientEmail').value
+            };
+
             const contractData = {
                 contractNo: document.getElementById('inputContractNo').value,
                 subTier: document.getElementById('inputSubTier').value,
-                expiryDate: document.getElementById('inputExpiryDate').value,
-                userRights: document.getElementById('inputUserRights').value
+                expiryDate: document.getElementById('inputExpiryDate').value
             };
 
             db.collection("tenants").doc(currentActiveTenant).set({
-                modules: updatedModules,
+                profile: profileData,
                 contract: contractData,
+                modules: updatedModules,
+                rights: updatedRights,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
                 showToast(`Settings for [${currentActiveTenant}] successfully saved to cloud!`);

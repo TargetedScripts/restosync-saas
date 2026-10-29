@@ -105,7 +105,7 @@
         <!-- CLIENT PROFILE & STORE INFORMATION -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                <i class="fa-solid fa-store text-sm"></i><span>Client Profile & Store Information</span>
+                <i class="fa-solid fa-store text-sm"></i><span>Client Profile, Store Information & Admin Password Reset</span>
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
@@ -122,10 +122,14 @@
                     <input type="text" id="inputClientPhone" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="+64...">
                 </div>
                 <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Email Address <span class="text-amber-400 text-[10px]">(For Contract Renewal Alerts)</span></label>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Email Address <span class="text-amber-400 text-[10px]">(For Contract Renewal)</span></label>
                     <input type="email" id="inputClientEmail" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="client@domain.co.nz">
                 </div>
-                <div class="md:col-span-2">
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold text-amber-300">Admin.html Password (Reset)</label>
+                    <input type="text" id="inputAdminPassword" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-amber-300 font-mono font-bold" placeholder="admin">
+                </div>
+                <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Physical Address (address)</label>
                     <input type="text" id="inputStoreAddress" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Johnsonville">
                 </div>
@@ -158,7 +162,7 @@
             </div>
         </div>
 
-        <!-- USER RIGHTS & ACCESS PERMISSIONS (TABS - PARENT CONTROLS) -->
+        <!-- USER RIGHTS & ACCESS PERMISSIONS (TABS & ROLES) -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
                 <i class="fa-solid fa-shield-halved text-sm"></i><span>Assigned User Rights & Tab Permissions (Master Tabs)</span>
@@ -190,19 +194,31 @@
                     <input type="checkbox" id="right_system_settings" onchange="toggleTabGroup('right_system_settings', ['toggle_upload_logo', 'toggle_custom_colors'])" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
                     <div><strong class="block text-stone-200">System Settings Tab</strong><span class="text-[10px] text-stone-400">Hours, surcharges & configs</span></div>
                 </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_staff_management" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Staff Management Tab</strong><span class="text-[10px] text-stone-400">Employee roles & PIN access</span></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_customer_crm" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Customer CRM & Loyalty Tab</strong><span class="text-[10px] text-stone-400">Member points & database</span></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
+                    <input type="checkbox" id="right_audit_logs" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Audit Logs & Security Tab</strong><span class="text-[10px] text-stone-400">Transaction & void history</span></div>
+                </label>
             </div>
         </div>
 
-        <!-- MASTER FEATURE TOGGLES (CHILD MODULES) -->
+        <!-- MASTER FEATURE TOGGLES (DIKELOMPOKKAN KE DALAM KATEGORI) -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                <i class="fa-solid fa-layer-group text-sm"></i><span>Master Feature Toggles & Module Access (Categorized Sub-Modules)</span>
+                <i class="fa-solid fa-layer-group text-sm"></i><span>Master Feature Toggles & Module Access (Categorized by Function)</span>
             </h2>
 
-            <!-- KELOMPOK 1: POS, TRANSAKSI & PEMBAYARAN (Di bawah POS Tab) -->
+            <!-- KELOMPOK 1: POS, TRANSAKSI & PEMBAYARAN -->
             <div class="space-y-3">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
-                    <i class="fa-solid fa-cash-register"></i><span>1. POS, Transactions & Payments (Linked to POS Operations Tab)</span>
+                    <i class="fa-solid fa-cash-register"></i><span>1. POS, Transactions & Payments</span>
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                     <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
@@ -228,10 +244,10 @@
                 </div>
             </div>
 
-            <!-- KELOMPOK 2: DAPUR, KDS & OPERASIONAL RESTORAN (Di bawah KDS Tab) -->
+            <!-- KELOMPOK 2: DAPUR, KDS & OPERASIONAL RESTORAN -->
             <div class="space-y-3 pt-4 border-t border-zinc-800">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
-                    <i class="fa-solid fa-utensils"></i><span>2. Kitchen, KDS & Restaurant Operations (Linked to KDS Tab)</span>
+                    <i class="fa-solid fa-utensils"></i><span>2. Kitchen, KDS & Restaurant Operations</span>
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                     <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
@@ -249,10 +265,10 @@
                 </div>
             </div>
 
-            <!-- KELOMPOK 3: INVENTARIS, RESEP & STOK (Di bawah Inventory Tab) -->
+            <!-- KELOMPOK 3: INVENTARIS, RESEP & STOK -->
             <div class="space-y-3 pt-4 border-t border-zinc-800">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
-                    <i class="fa-solid fa-boxes-stacked"></i><span>3. Inventory, Recipe & Stock Control (Linked to Inventory Tab)</span>
+                    <i class="fa-solid fa-boxes-stacked"></i><span>3. Inventory, Recipe & Stock Control</span>
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                     <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
@@ -270,10 +286,10 @@
                 </div>
             </div>
 
-            <!-- KELOMPOK 4: KEUANGAN, PAJAK & LAPORAN (Di bawah Financial Tab) -->
+            <!-- KELOMPOK 4: KEUANGAN, PAJAK & LAPORAN -->
             <div class="space-y-3 pt-4 border-t border-zinc-800">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
-                    <i class="fa-solid fa-chart-line"></i><span>4. Finance, Tax & Reporting (Linked to Financial Reports Tab)</span>
+                    <i class="fa-solid fa-chart-line"></i><span>4. Finance, Tax & Reporting</span>
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                     <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
@@ -291,10 +307,10 @@
                 </div>
             </div>
 
-            <!-- KELOMPOK 5: HARDWARE & INTEGRASI (Di bawah POS/System) -->
+            <!-- KELOMPOK 5: HARDWARE, PERIPHERAL & INTEGRASI -->
             <div class="space-y-3 pt-4 border-t border-zinc-800">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
-                    <i class="fa-solid fa-print"></i><span>5. Hardware, Peripherals & Integrations (Linked to POS/Settings)</span>
+                    <i class="fa-solid fa-print"></i><span>5. Hardware, Peripherals & Integrations</span>
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                     <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
@@ -324,10 +340,10 @@
                 </div>
             </div>
 
-            <!-- KELOMPOK 6: BRANDING & KUSTOMISASI (Di bawah System Settings Tab) -->
+            <!-- KELOMPOK 6: BRANDING, TEMA & KUSTOMISASI -->
             <div class="space-y-3 pt-4 border-t border-zinc-800">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
-                    <i class="fa-solid fa-paintbrush"></i><span>6. Branding, Themes & Customization (Linked to Settings Tab)</span>
+                    <i class="fa-solid fa-paintbrush"></i><span>6. Branding, Themes & Customization</span>
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                     <label class="flex items-center space-x-3 bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 cursor-pointer hover:border-amber-500/50 transition">
@@ -471,6 +487,7 @@
                 document.getElementById('inputClientName').value = '';
                 document.getElementById('inputClientPhone').value = '';
                 document.getElementById('inputClientEmail').value = '';
+                document.getElementById('inputAdminPassword').value = 'admin';
                 document.getElementById('inputStoreAddress').value = '';
                 document.getElementById('inputContractNo').value = '';
                 document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
@@ -489,6 +506,7 @@
                     document.getElementById('inputClientName').value = profile.contactPerson || '';
                     document.getElementById('inputClientPhone').value = profile.phone || '';
                     document.getElementById('inputClientEmail').value = profile.email || '';
+                    document.getElementById('inputAdminPassword').value = profile.adminPassword || 'admin';
                     document.getElementById('inputStoreAddress').value = profile.address || '';
                     document.getElementById('inputContractNo').value = profile.contractNo || '';
                     document.getElementById('inputSubTier').value = profile.tier || 'FREE SOCIAL TIER';
@@ -526,6 +544,7 @@
             document.getElementById('inputClientName').value = '';
             document.getElementById('inputClientPhone').value = '';
             document.getElementById('inputClientEmail').value = '';
+            document.getElementById('inputAdminPassword').value = 'admin';
             document.getElementById('inputStoreAddress').value = '';
             document.getElementById('inputContractNo').value = '';
             document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
@@ -548,7 +567,8 @@
                 tenantName: document.getElementById('inputStoreName').value,
                 contactPerson: document.getElementById('inputClientName').value,
                 phone: document.getElementById('inputClientPhone').value,
-                email: document.getElementById('inputClientEmail').value, // Email untuk notifikasi renewal
+                email: document.getElementById('inputClientEmail').value,
+                adminPassword: document.getElementById('inputAdminPassword').value || 'admin',
                 address: document.getElementById('inputStoreAddress').value,
                 contractNo: document.getElementById('inputContractNo').value,
                 tier: document.getElementById('inputSubTier').value,

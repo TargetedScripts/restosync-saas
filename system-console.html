@@ -19,7 +19,7 @@
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center space-x-2 bg-emerald-600">
         <i class="fa-solid fa-circle-check text-sm"></i>
-        <span id="toastText">Settings saved successfully!</span>
+        <span>Settings saved successfully!</span>
     </div>
 
     <!-- HEADER -->
@@ -133,14 +133,16 @@
         const db = firebase.firestore();
 
         let currentActiveTenant = '';
-        let moduleKeys = [
-            'toggle_upload_logo',
-            'toggle_custom_colors',
-            'toggle_online_ordering',
-            'toggle_qr_dine_in',
-            'toggle_kitchen_display_system',
-            'toggle_gst_calculation'
-        ];
+        
+        // Mapping kunci modul agar fleksibel mendeteksi berbagai variasi penamaan data di database
+        const moduleMapping = {
+            toggle_upload_logo: ['toggle_upload_logo', 'selfLogoUpload', 'logoUpload'],
+            toggle_custom_colors: ['toggle_custom_colors', 'themeColorCustomization', 'customColors'],
+            toggle_online_ordering: ['toggle_online_ordering', 'onlineOrdering', 'ordering'],
+            toggle_qr_dine_in: ['toggle_qr_dine_in', 'qrDineIn', 'qrOrdering'],
+            toggle_kitchen_display_system: ['toggle_kitchen_display_system', 'kitchenDisplay', 'kds'],
+            toggle_gst_calculation: ['toggle_gst_calculation', 'gstCalculation', 'gst']
+        };
 
         function showToast(message, isError = false) {
             const toast = document.getElementById('toastNotification');
@@ -170,9 +172,11 @@
                     select.appendChild(opt);
                 });
 
-                if (firstTenant) {
-                    select.value = 'bangkokthaipalmy'; // Prioritaskan bangkokthaipalmy jika ada
-                    if (!select.value) select.value = firstTenant;
+                // Prioritaskan bangkokthaipalmy jika ada di dalam Firestore
+                select.value = 'bangkokthaipalmy';
+                if (!select.value && firstTenant) select.value = firstTenant;
+                
+                if (select.value) {
                     switchTenant(select.value);
                 }
             }).catch(err => {
@@ -184,20 +188,31 @@
         function switchTenant(tenantId) {
             currentActiveTenant = tenantId;
             db.collection("tenants").doc(tenantId).get().then((doc) => {
+                // Reset semua checkbox ke false terlebih dahulu
+                Object.keys(moduleMapping).forEach(uiKey => {
+                    const cb = document.getElementById(uiKey);
+                    if (cb) cb.checked = false;
+                });
+
                 if (doc.exists) {
                     const data = doc.data();
-                    const modules = data.modules || {};
+                    
+                    // Gabungkan semua data dari berbagai lapis dokumen (modules, config, atau root)
+                    const rawData = { 
+                        ...(data.modules || {}), 
+                        ...(data.config?.modules || {}), 
+                        ...data 
+                    };
 
-                    moduleKeys.forEach(key => {
-                        const checkbox = document.getElementById(key);
+                    Object.entries(moduleMapping).forEach(([uiKey, possibleKeys]) => {
+                        const checkbox = document.getElementById(uiKey);
                         if (checkbox) {
-                            checkbox.checked = modules[key] === true;
+                            let isActive = false;
+                            possibleKeys.forEach(k => {
+                                if (rawData[k] === true) isActive = true;
+                            });
+                            checkbox.checked = isActive;
                         }
-                    });
-                } else {
-                    moduleKeys.forEach(key => {
-                        const checkbox = document.getElementById(key);
-                        if (checkbox) checkbox.checked = false;
                     });
                 }
             }).catch(err => {
@@ -212,10 +227,10 @@
             }
 
             let updatedModules = {};
-            moduleKeys.forEach(key => {
-                const checkbox = document.getElementById(key);
+            Object.keys(moduleMapping).forEach(uiKey => {
+                const checkbox = document.getElementById(uiKey);
                 if (checkbox) {
-                    updatedModules[key] = checkbox.checked;
+                    updatedModules[uiKey] = checkbox.checked;
                 }
             });
 

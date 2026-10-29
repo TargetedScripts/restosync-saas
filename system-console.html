@@ -55,9 +55,9 @@
             </div>
         </div>
 
-        <!-- Modal Add New Tenant -->
+        <!-- Modal Add New Tenant (Expanded with Contact & Expiry) -->
         <div id="newTenantModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-            <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+            <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
                 <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-circle-plus mr-2 text-green-600"></i>Register New Restaurant Tenant</h3>
                 <div class="space-y-4">
                     <div>
@@ -68,13 +68,37 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant Business Name</label>
                         <input type="text" id="newTenantBusinessName" placeholder="e.g. Christchurch Bistro & Bar" class="w-full border border-gray-300 rounded-lg p-2.5">
                     </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
+                            <input type="text" id="newContactPerson" placeholder="e.g. John Doe" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <input type="text" id="newPhone" placeholder="e.g. +64 21 123 4567" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
+                    </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Tier</label>
-                        <select id="newTenantTier" class="w-full border border-gray-300 rounded-lg p-2.5">
-                            <option value="free">Free Social Tier (e.g. Bangkok Thai)</option>
-                            <option value="standard">Standard Managed (NZD $250/mo)</option>
-                            <option value="enterprise">Enterprise Fine Dining</option>
-                        </select>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="newEmail" placeholder="e.g. manager@bistro.co.nz" class="w-full border border-gray-300 rounded-lg p-2.5">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Physical Address (New Zealand)</label>
+                        <input type="text" id="newAddress" placeholder="e.g. 123 Main Street, Palmerston North" class="w-full border border-gray-300 rounded-lg p-2.5">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Tier</label>
+                            <select id="newTenantTier" class="w-full border border-gray-300 rounded-lg p-2.5">
+                                <option value="free">Free Social Tier</option>
+                                <option value="standard">Standard (NZD $250/mo)</option>
+                                <option value="enterprise">Enterprise Fine Dining</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                            <input type="date" id="newExpiryDate" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
@@ -309,30 +333,48 @@
         function createNewTenant() {
             const tenantId = document.getElementById('newTenantId').value.trim().toLowerCase().replace(/\s+/g, '_');
             const tenantName = document.getElementById('newTenantBusinessName').value.trim();
-            const tenantTier = document.getElementById('newTenantTier').value;
+            const contactPerson = document.getElementById('newContactPerson').value.trim();
+            const phone = document.getElementById('newPhone').value.trim();
+            const email = document.getElementById('newEmail').value.trim();
+            const address = document.getElementById('newAddress').value.trim();
+            const tier = document.getElementById('newTenantTier').value;
+            const expiryDate = document.getElementById('newExpiryDate').value;
 
-            if (!tenantId || !tenantName) {
-                alert("Please fill in both Tenant ID and Restaurant Name!");
+            if (!tenantId || !tenantName || !email) {
+                alert("Please fill in Tenant ID, Restaurant Name, and Email Address!");
                 return;
             }
+
+            const tenantPayload = {
+                tenantId: tenantId,
+                tenantName: tenantName,
+                contactPerson: contactPerson,
+                phone: phone,
+                email: email,
+                address: address,
+                subscriptionTier: tier,
+                expiryDate: expiryDate,
+                createdAt: new Date().toISOString()
+            };
+
+            console.log("New Tenant Payload:", tenantPayload);
 
             const select = document.getElementById('tenantSelect');
             const option = document.createElement('option');
             option.value = tenantId;
-            option.textContent = `${tenantName} (${tenantTier.toUpperCase()})`;
+            option.textContent = `${tenantName} (${tier.toUpperCase()})`;
             select.appendChild(option);
             
             select.value = tenantId;
             document.getElementById('tenantName').value = tenantName;
 
             closeNewTenantModal();
-            alert(`Tenant "${tenantName}" (ID: ${tenantId}) successfully created! You can now configure its feature toggles below and click 'Save Configuration'.`);
+            alert(`Tenant "${tenantName}" successfully registered with complete metadata!`);
         }
 
         function loadTenantConfig() {
             const select = document.getElementById('tenantSelect');
             const selectedText = select.options[select.selectedIndex].text;
-            // Extract restaurant name roughly from dropdown text
             const cleanName = selectedText.split(' (')[0];
             document.getElementById('tenantName').value = cleanName;
         }

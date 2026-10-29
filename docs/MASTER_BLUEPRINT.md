@@ -15,7 +15,7 @@ RestoSync SaaS adalah platform manajemen F&B *all-in-one* berbasis web (*cloud-r
 
 ## 2. Dynamic Modular Feature Toggles (Control Panel Admin)
 
-Administrator Sistem (Bapak Tedy) memiliki kendali penuh melalui file konfigurasi pusat (`assets/js/config.js`) atau *Admin Panel* untuk mengaktifkan (*enable*) atau menonaktifkan (*disable*) modul sesuai dengan paket langganan dan kontrak klien:
+Administrator Sistem memiliki kendali penuh melalui file konfigurasi pusat (`assets/js/config.js`) atau *Admin Panel* (`system-console.html`) untuk mengaktifkan (*enable*) atau menonaktifkan (*disable*) modul sesuai dengan paket langganan dan kontrak klien:
 
 | Nama Modul / Fitur | Deskripsi Fungsional | Kontrol Admin (On / Off) | Skala Industri yang Cocok |
 | :--- | :--- | :---: | :--- |
@@ -83,13 +83,17 @@ Setiap paket langganan mencakup website digital pelanggan dengan spesifikasi des
 4. **Privacy Act 2020 Compliance:** Perlindungan data pribadi pelanggan dengan prinsip *data minimization*.
 5. **Managed Onboarding & Hardware:** Layanan pengaturan awal menu oleh TargetedScripts.com serta kompatibilitas dengan printer thermal ESC/POS standar NZ.
 
+---
+
 ## 7. Modular File Structure Strategy (Pemisahan Modul Kode)
 
-Untuk menjaga agar *codebase* tetap ringan dan mudah dikelola, seluruh pengembangan script HTML/JS/CSS **wajib dipecah ke dalam file terpisah berdasarkan fungsinya** (tidak boleh digabung dalam satu file monolitik):
+Untuk menjaga agar *codebase* tetap ringan dan mudah dikelola, seluruh pengembangan script HTML/JS/CSS **wajib dipecah ke dalam file terpisah berdasarkan fungsinya**:
 * **`index.html`:** Landing page utama / Core Hub SaaS SaaS / Admin Navigation Dashboard.
+* **`system-console.html`:** Super Admin Control Panel (Firebase Multi-Tenant Feature Toggles & Profile Management).
+* **`admin.html`:** Dynamic Client Portal (membaca konfigurasi tenant secara real-time dari Firestore).
 * **`menu.html`:** Modul katalog produk dwibahasa (pilihan template *Modern Grid* atau *Classic Menu Book*).
 * **`cashier.html`:** Modul POS kasir (kalkulasi GST 15%, EFTPOS, dan *Split Bill*).
 * **`staff.html`:** Modul manajemen staf, jadwal *roster*, dan kepatuhan tenaga kerja NZ.
 * **`system_architecture_flow.html`:** Peta visual alur sistem dan dokumentasi arsitektur internal.
-* **`assets/js/config.js`:** File konfigurasi pusat untuk *Feature Toggles* ($150, $250, $400) dan parameter global.
-* **`docs/MASTER_BLUEPRINT.md`:** Dokumentasi master sistem secara utuh.
+* **`assets/js/config.js`:** File konfigurasi pusat untuk *Feature Toggles* dan parameter global.
+* **`MASTER_BLUEPRINT.md`:** Dokumentasi master sistem secara utuh.

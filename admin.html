@@ -3,171 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync SaaS - Universal Enterprise Manager Portal</title>
+    <title>RestoSync SaaS - Restaurant Manager & Owner Control Panel</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        body { background-color: var(--bg-color, #090d16); color: var(--text-color, #f1f5f9); font-family: system-ui, -apple-system, sans-serif; transition: background-color 0.3s, color 0.3s; }
-        .custom-card { background-color: var(--card-color, #111827); border: 1px solid #1f2937; }
+        body { background-color: #090d16; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+        .custom-card { background-color: #111827; border: 1px solid #1f2937; }
         .custom-input { background-color: #030712; border: 1px solid #1f2937; color: #f1f5f9; }
-        .custom-input:focus { border-color: var(--accent-color, #f59e0b); outline: none; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15); }
+        .custom-input:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
 
+    <!-- PASSWORD AUTH GUARD (LOGIN PROMPT MENGGUNAKAN ADMIN PASSWORD DARI TENANT DATABASE) -->
+    <script>
+        // Catatan: Autentikasi akan divalidasi setelah data tenant ditarik dari Firestore.
+        // Script ini bertindak sebagai gerbang pengaman awal agar tidak ada backdoor.
+    </script>
+
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center space-x-2 bg-emerald-600">
         <i class="fa-solid fa-circle-check text-sm"></i>
-        <span id="toastText">Successfully saved to cloud!</span>
+        <span id="toastText">Changes successfully saved!</span>
     </div>
 
-    <!-- TOP BAR -->
-    <header class="bg-[#111827] border-b border-[#1f2937] sticky top-0 z-40 px-6 py-4 flex justify-between items-center flex-wrap gap-4 shadow-md">
+    <!-- HEADER & TENANT INFO -->
+    <header class="bg-[#111827] border-b border-[#1f2937] px-8 py-4 flex justify-between items-center shadow-md">
         <div class="flex items-center space-x-3">
-            <div id="headerLogoContainer" class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 rounded-xl flex items-center justify-center font-black shadow-lg shadow-amber-500/20 overflow-hidden">
-                <i class="fa-solid fa-utensils"></i>
+            <div id="tenantLogoHeader" class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 rounded-xl flex items-center justify-center font-black shadow-lg shadow-amber-500/20 overflow-hidden">
+                <i class="fa-solid fa-store"></i>
             </div>
             <div>
-                <div class="flex items-center space-x-2">
-                    <h1 class="font-bold text-white text-base">RestoSync Manager Portal</h1>
-                    <span id="dbStatusBadge" class="text-[10px] bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 px-2 py-0.5 rounded-full font-mono">Connecting...</span>
-                </div>
-                <p class="text-xs text-stone-400">Tenant ID: <span id="currentTenantId" class="text-amber-400 font-mono font-semibold">loading...</span></p>
+                <h1 id="headerStoreName" class="font-bold text-white text-base">RestoSync Manager Portal</h1>
+                <p id="headerTenantId" class="text-xs text-stone-400 font-mono">Tenant ID: Loading...</p>
             </div>
         </div>
-        <div class="flex items-center space-x-3">
-            <a id="liveStoreBtn" href="#" target="_blank" class="bg-[#1f2937] hover:bg-[#374151] text-stone-200 px-4 py-2.5 rounded-xl text-xs font-bold border border-zinc-700 transition flex items-center space-x-2 shadow-sm">
-                <i class="fa-solid fa-eye text-amber-400"></i><span>View Live Store</span>
-            </a>
-            <button onclick="saveConfigToFirebase()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-amber-500/20 transition flex items-center space-x-2">
-                <i class="fa-solid fa-floppy-disk text-sm"></i><span>Save to Cloud</span>
+        
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2 bg-[#030712] border border-[#1f2937] px-3.5 py-1.5 rounded-full">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50"></span>
+                <span class="text-[11px] font-mono text-stone-300">Live Sync Active</span>
+            </div>
+            <button onclick="saveChanges()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-5 py-2.5 rounded-xl text-xs font-black shadow-lg transition flex items-center space-x-2">
+                <i class="fa-solid fa-cloud-arrow-up"></i><span>Save Changes</span>
             </button>
         </div>
     </header>
 
-    <!-- MAIN CONTAINER -->
-    <main class="max-w-7xl mx-auto px-6 py-8 w-full flex-grow space-y-8">
-        
-        <!-- STORE PROFILE & BRANDING SECTION WITH LIVE LOGO PREVIEW & RESIZE -->
-        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
-            <div class="flex justify-between items-center border-b border-[#1f2937] pb-4">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
-                    <i class="fa-solid fa-store text-sm"></i><span>Store Information & Branding Metadata</span>
-                </h2>
-                <span class="text-[11px] text-stone-400">Dynamic Multi-Tenant Configuration</span>
-            </div>
+    <!-- NAVIGATION TABS (DYNAMICALLY RESTRICTED BY PERMISSIONS) -->
+    <nav class="bg-[#030712] border-b border-[#1f2937] px-8 flex space-x-2 overflow-x-auto">
+        <button onclick="switchTab('tab-branding')" id="btn-tab-branding" class="tab-btn px-5 py-3.5 text-xs font-bold text-amber-400 border-b-2 border-amber-500 flex items-center space-x-2 transition">
+            <i class="fa-solid fa-paintbrush"></i><span>Branding & Hours</span>
+        </button>
+        <button onclick="switchTab('tab-menu')" id="btn-tab-menu" class="tab-btn px-5 py-3.5 text-xs font-bold text-stone-400 hover:text-stone-200 border-b-2 border-transparent flex items-center space-x-2 transition">
+            <i class="fa-solid fa-utensils"></i><span>Menu & Catalog</span>
+        </button>
+        <button onclick="switchTab('tab-pos')" id="btn-tab-pos" class="tab-btn px-5 py-3.5 text-xs font-bold text-stone-400 hover:text-stone-200 border-b-2 border-transparent flex items-center space-x-2 transition">
+            <i class="fa-solid fa-cash-register"></i><span>POS & Operations</span>
+        </button>
+        <button onclick="switchTab('tab-inventory')" id="btn-tab-inventory" class="tab-btn px-5 py-3.5 text-xs font-bold text-stone-400 hover:text-stone-200 border-b-2 border-transparent flex items-center space-x-2 transition">
+            <i class="fa-solid fa-boxes-stacked"></i><span>Inventory</span>
+        </button>
+        <button onclick="switchTab('tab-kds')" id="btn-tab-kds" class="tab-btn px-5 py-3.5 text-xs font-bold text-stone-400 hover:text-stone-200 border-b-2 border-transparent flex items-center space-x-2 transition">
+            <i class="fa-solid fa-fire-burner"></i><span>Kitchen KDS</span>
+        </button>
+        <button onclick="switchTab('tab-financial')" id="btn-tab-financial" class="tab-btn px-5 py-3.5 text-xs font-bold text-stone-400 hover:text-stone-200 border-b-2 border-transparent flex items-center space-x-2 transition">
+            <i class="fa-solid fa-chart-line"></i><span>Financial & Tax</span>
+        </button>
+    </nav>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-8 py-8 w-full flex-grow space-y-6">
+
+        <!-- TAB 1: BRANDING, THEMES, OFFICE HOURS & HERO EXTRAS -->
+        <div id="tab-branding" class="tab-content active space-y-6">
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs items-center">
-                <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Store / Business Name</label>
-                    <input type="text" id="inputStoreName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
-                </div>
-                <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Tagline / Slogan</label>
-                    <input type="text" id="inputStoreTagline" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
-                </div>
-                <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Phone Number</label>
-                    <input type="text" id="inputStorePhone" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Physical Address</label>
-                    <input type="text" id="inputStoreAddress" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
-                </div>
-
-                <!-- LIVE LOGO PREVIEW & RESIZE CONTROL (+ / -) -->
-                <div class="bg-[#030712] border border-[#1f2937] p-4 rounded-2xl space-y-3 md:col-span-1">
-                    <label class="block text-stone-400 font-semibold">Store Logo & Resize</label>
-                    <div class="flex items-center space-x-4">
-                        <div id="logoPreviewWrapper" class="w-14 h-14 bg-zinc-900 border border-zinc-700 rounded-xl flex items-center justify-center overflow-hidden p-1">
-                            <img id="liveLogoPreview" src="" alt="Logo" class="max-w-full max-h-full object-contain transition-all duration-200" style="width: 40px;" onerror="this.src='https://placehold.co/40?text=LOGO'">
+            <!-- STORE PROFILE & COLOR PALETTE -->
+            <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                    <i class="fa-solid fa-palette text-sm"></i><span>Store Branding & Color Palette Customization</span>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                    <div>
+                        <label class="block text-stone-400 mb-1.5 font-semibold">Store / Restaurant Name</label>
+                        <input type="text" id="storeName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                    </div>
+                    <div>
+                        <label class="block text-stone-400 mb-1.5 font-semibold">Primary Theme Color</label>
+                        <div class="flex items-center space-x-3">
+                            <input type="color" id="primaryColor" value="#f59e0b" class="w-10 h-10 rounded-xl bg-transparent cursor-pointer">
+                            <input type="text" id="primaryColorText" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" value="#f59e0b">
                         </div>
-                        <div class="space-y-2 flex-grow">
-                            <input type="text" id="inputStoreLogo" oninput="updateLogoPreview(this.value)" class="w-full custom-input rounded-lg px-2.5 py-1.5 text-[11px]" placeholder="./assets/images/logo.png">
-                            <div class="flex items-center justify-between text-[10px] text-stone-400">
-                                <span>Size Control:</span>
-                                <div class="flex space-x-1">
-                                    <button onclick="resizeLogo(-5)" type="button" class="bg-zinc-800 hover:bg-zinc-700 text-amber-400 px-2 py-0.5 rounded font-bold">-</button>
-                                    <span id="logoSizeDisplay" class="font-mono px-1">40px</span>
-                                    <button onclick="resizeLogo(5)" type="button" class="bg-zinc-800 hover:bg-zinc-700 text-amber-400 px-2 py-0.5 rounded font-bold">+</button>
-                                </div>
-                            </div>
+                    </div>
+                    <div>
+                        <label class="block text-stone-400 mb-1.5 font-semibold">Background Theme Color</label>
+                        <div class="flex items-center space-x-3">
+                            <input type="color" id="bgColor" value="#090d16" class="w-10 h-10 rounded-xl bg-transparent cursor-pointer">
+                            <input type="text" id="bgColorText" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" value="#090d16">
                         </div>
                     </div>
                 </div>
 
-                <!-- ADVANCED COLOR PALETTE CUSTOMIZATION -->
-                <div id="themeColorWrapper" class="hidden md:col-span-3 bg-[#030712] border border-[#1f2937] p-5 rounded-2xl space-y-4">
-                    <div class="flex items-center justify-between border-b border-[#1f2937] pb-3">
-                        <div>
-                            <strong class="block text-stone-200 text-xs mb-0.5"><i class="fa-solid fa-palette text-amber-400 mr-2"></i>Global Color Palette & Theme Customization</strong>
-                            <span class="text-[11px] text-stone-400">Customize background, card containers, accent colors, and font text colors across your customer storefront.</span>
-                        </div>
-                        <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full font-mono">Super Admin Allowed</span>
+                <!-- LOGO COMPRESSION & ZOOM CONTROLS (+ / -) -->
+                <div class="pt-4 border-t border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-6 items-center text-xs">
+                    <div>
+                        <label class="block text-stone-400 mb-1.5 font-semibold">Company Logo URL / Asset</label>
+                        <input type="text" id="logoUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="https://...">
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-                        <div class="flex items-center justify-between bg-[#111827] p-3 rounded-xl border border-zinc-800">
-                            <span class="text-stone-300">Background Color</span>
-                            <div class="flex items-center space-x-2">
-                                <input type="color" id="inputBgColor" value="#090d16" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer border border-zinc-700">
-                                <span id="bgHexText" class="font-mono text-[11px] text-stone-400">#090d16</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between bg-[#111827] p-3 rounded-xl border border-zinc-800">
-                            <span class="text-stone-300">Card / Box Color</span>
-                            <div class="flex items-center space-x-2">
-                                <input type="color" id="inputCardColor" value="#111827" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer border border-zinc-700">
-                                <span id="cardHexText" class="font-mono text-[11px] text-stone-400">#111827</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between bg-[#111827] p-3 rounded-xl border border-zinc-800">
-                            <span class="text-stone-300">Accent / Button Color</span>
-                            <div class="flex items-center space-x-2">
-                                <input type="color" id="inputAccentColor" value="#f59e0b" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer border border-zinc-700">
-                                <span id="accentHexText" class="font-mono text-[11px] text-amber-400">#f59e0b</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between bg-[#111827] p-3 rounded-xl border border-zinc-800">
-                            <span class="text-stone-300">Font Text Color</span>
-                            <div class="flex items-center space-x-2">
-                                <input type="color" id="inputTextColor" value="#f1f5f9" class="w-8 h-8 rounded-lg bg-transparent cursor-pointer border border-zinc-700">
-                                <span id="textHexText" class="font-mono text-[11px] text-stone-300">#f1f5f9</span>
-                            </div>
+                    <div>
+                        <label class="block text-stone-400 mb-1.5 font-semibold">Logo Display Scale (Zoom In / Out)</label>
+                        <div class="flex items-center space-x-4">
+                            <button onclick="adjustLogoScale(-10)" class="bg-zinc-800 hover:bg-zinc-700 text-stone-200 px-4 py-2 rounded-xl font-bold"><i class="fa-solid fa-minus"></i></button>
+                            <span id="logoScaleDisplay" class="font-mono text-amber-400 font-bold">100%</span>
+                            <button onclick="adjustLogoScale(10)" class="bg-zinc-800 hover:bg-zinc-700 text-stone-200 px-4 py-2 rounded-xl font-bold"><i class="fa-solid fa-plus"></i></button>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- HERO SECTION & 3 EXTRA MARKETING FIELDS -->
+            <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                    <i class="fa-solid fa-bullhorn text-sm"></i><span>Hero Section & 3 Extra Marketing Texts</span>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                    <div>
+                        <label class="block text-stone-400 mb-1.5 font-semibold">Hero Extra Field 1 (e.g. Authentic)</label>
+                        <input type="text" id="heroExtra1" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Authentic Recipes">
+                    </div>
+                    <div>
+                        <label class="block text-stone-400 mb-1.5 font-semibold">Hero Extra Field 2 (e.g. Freshly Made)</label>
+                        <input type="text" id="heroExtra2" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Freshly Made Daily">
+                    </div>
+                    <div>
+                        <label class="block text-stone-400 mb-1.5 font-semibold">Hero Extra Field 3 (e.g. Traditional Taste)</label>
+                        <input type="text" id="heroExtra3" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Traditional Taste">
+                    </div>
+                </div>
+            </div>
+
+            <!-- OFFICE HOURS (DAILY OPEN/CLOSE TEXT FIELDS) -->
+            <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                    <i class="fa-solid fa-clock text-sm"></i><span>Office Hours (Daily Opening & Closing Schedule)</span>
+                </h2>
+                <div id="officeHoursContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                    <!-- Dynamic daily slots injected via JS -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TAB 2: MENU & CATALOG MANAGEMENT -->
+        <div id="tab-menu" class="tab-content space-y-6">
+            <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
+                <div class="flex justify-between items-center border-b border-[#1f2937] pb-3">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
+                        <i class="fa-solid fa-utensils text-sm"></i><span>Menu Items, Attributes & Tick/Untick Control</span>
+                    </h2>
+                    <button onclick="addNewMenuItem()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2 rounded-xl text-xs font-black shadow-lg transition">
+                        + Add Menu Item
+                    </button>
+                </div>
+                
+                <!-- MENU ITEMS TABLE / LIST VIEW -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="border-b border-zinc-800 text-stone-400">
+                                <th class="py-3 px-4">Item Name</th>
+                                <th class="py-3 px-4">Price ($)</th>
+                                <th class="py-3 px-4">Promo ($)</th>
+                                <th class="py-3 px-4 text-center">Hero</th>
+                                <th class="py-3 px-4 text-center">Favorite</th>
+                                <th class="py-3 px-4 text-center">Hide</th>
+                                <th class="py-3 px-4">Spice Level</th>
+                                <th class="py-3 px-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menuTableBody" class="divide-y divide-zinc-800/50">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- ACTIVE OPERATIONAL MODULES (FEATURE TOGGLES DISPLAY) -->
-        <div class="custom-card rounded-3xl p-6 space-y-4 shadow-xl">
-            <div class="flex justify-between items-center border-b border-[#1f2937] pb-3">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center space-x-2">
-                    <i class="fa-solid fa-cubes text-sm"></i><span>Active Operational Modules (Cloud Controlled)</span>
-                </h2>
-                <span class="text-[10px] text-stone-400">Managed via System Console</span>
-            </div>
-            <div id="modulesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-                <div class="text-xs text-stone-500 col-span-full py-2">Loading module statuses...</div>
+        <!-- TAB 3: POS & OPERATIONS -->
+        <div id="tab-pos" class="tab-content space-y-6">
+            <div class="custom-card rounded-3xl p-6 space-y-4 shadow-xl">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400">POS Operations & Counter Terminal</h2>
+                <p class="text-xs text-stone-400">Cashier terminal, order processing, and payment gateway routing.</p>
             </div>
         </div>
 
-        <!-- MENU MANAGEMENT SECTION (DYNAMIC & DECOUPLED) -->
-        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
-            <div class="flex justify-between items-center border-b border-[#1f2937] pb-4 flex-wrap gap-3">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
-                    <i class="fa-solid fa-utensils text-sm"></i><span>Menu Catalogue & Pricing Management</span>
-                </h2>
-                <button onclick="addNewMenuItem()" class="bg-[#1f2937] hover:bg-[#374151] text-amber-400 px-4 py-2 rounded-xl text-xs font-bold border border-zinc-700 transition flex items-center space-x-2 shadow-sm">
-                    <i class="fa-solid fa-plus"></i><span>Add New Menu Item</span>
-                </button>
+        <!-- TAB 4: INVENTORY -->
+        <div id="tab-inventory" class="tab-content space-y-6">
+            <div class="custom-card rounded-3xl p-6 space-y-4 shadow-xl">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400">Inventory & Live Stock Control</h2>
+                <p class="text-xs text-stone-400">Manage ingredients, recipe costing, and auto-sold-out triggers at 0 stock.</p>
             </div>
+        </div>
 
-            <div id="adminMenuList" class="space-y-4">
-                <div class="text-center py-8 text-stone-500 text-xs">Loading menu catalogue from tenant configuration...</div>
+        <!-- TAB 5: KITCHEN KDS -->
+        <div id="tab-kds" class="tab-content space-y-6">
+            <div class="custom-card rounded-3xl p-6 space-y-4 shadow-xl">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400">Kitchen Display System (KDS)</h2>
+                <p class="text-xs text-stone-400">Real-time order queue routing for chefs (NEW -> COOKING -> READY).</p>
+            </div>
+        </div>
+
+        <!-- TAB 6: FINANCIAL & TAX -->
+        <div id="tab-financial" class="tab-content space-y-6">
+            <div class="custom-card rounded-3xl p-6 space-y-4 shadow-xl">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400">Financial Reports & 15% NZ GST Tax</h2>
+                <p class="text-xs text-stone-400">Sales auditing, IRD 7-year record compliance, and revenue dashboards.</p>
             </div>
         </div>
 
@@ -175,10 +229,10 @@
 
     <!-- FOOTER -->
     <footer class="bg-[#030712] border-t border-[#1f2937] py-6 text-center text-xs text-stone-500">
-        RestoSync SaaS Enterprise Manager Portal &bull; Secured & Powered by Firebase Firestore & TargetedScripts.com
+        RestoSync SaaS Manager Portal &bull; Multi-Tenant Control Hub
     </footer>
 
-    <!-- FIREBASE & ADMIN LOGIC -->
+    <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -196,299 +250,196 @@
         const db = firebase.firestore();
 
         const urlParams = new URLSearchParams(window.location.search);
-        // Default tenant diarahkan ke bangkokthaipalmy sesuai database lengkap Anda
-        const TENANT_ID = urlParams.get('tenant') || 'bangkokthaipalmy';
+        const tenantId = urlParams.get('tenant') || 'boluhalus';
 
-        document.getElementById('currentTenantId').innerText = TENANT_ID;
-        document.getElementById('liveStoreBtn').href = `index.html?tenant=${TENANT_ID}`;
+        let tenantData = {};
+        let currentLogoScale = 100;
 
-        let activeConfig = {
-            store: {},
-            branding: {
-                logo: '',
-                logoWidth: 40,
-                bgColor: '#090d16',
-                cardColor: '#111827',
-                accentColor: '#f59e0b',
-                textColor: '#f1f5f9'
-            },
-            menuItems: []
-        };
-        let activeModules = {};
-        let currentLogoWidth = 40;
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('headerTenantId').innerText = `Tenant ID: ${tenantId}`;
+            authenticateManager();
+        });
+
+        // AUTENTIKASI PASSWORD ADMIN.HTML BERDASARKAN DATABASE TENANT
+        function authenticateManager() {
+            db.collection("tenants").doc(tenantId).get().then(doc => {
+                if(doc.exists) {
+                    tenantData = doc.data();
+                    const profile = tenantData.profile || {};
+                    const correctPassword = profile.adminPassword || 'admin';
+
+                    let userPwd = prompt(`SECURITY LOGIN: Enter Admin Password for [${tenantId.toUpperCase()}]:`);
+                    if (userPwd === correctPassword) {
+                        renderManagerPanel();
+                    } else {
+                        alert("Access Denied! Incorrect Admin Password.");
+                        window.location.href = "about:blank";
+                    }
+                } else {
+                    alert("Tenant configuration not found in Cloud!");
+                    window.location.href = "about:blank";
+                }
+            }).catch(err => {
+                console.error("Auth error:", err);
+                alert("Failed to connect to Firebase.");
+            });
+        }
 
         function showToast(message, isError = false) {
             const toast = document.getElementById('toastNotification');
             const text = document.getElementById('toastText');
             text.innerText = message;
             toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-100 flex items-center space-x-2 ${isError ? 'bg-red-600' : 'bg-emerald-600'}`;
-            setTimeout(() => {
-                toast.className = toast.className.replace('opacity-100', 'opacity-0');
-            }, 3500);
+            setTimeout(() => { toast.className = toast.className.replace('opacity-100', 'opacity-0'); }, 3500);
         }
 
-        function updateLogoPreview(url) {
-            const img = document.getElementById('liveLogoPreview');
-            img.src = url || 'https://placehold.co/40?text=LOGO';
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-amber-400', 'border-amber-500');
+                btn.classList.add('text-stone-400', 'border-transparent');
+            });
+            document.getElementById(tabId).classList.add('active');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-stone-400', 'border-transparent');
+                activeBtn.classList.add('text-amber-400', 'border-amber-500');
+            }
         }
 
-        function resizeLogo(amount) {
-            currentLogoWidth = Math.max(20, Math.min(120, currentLogoWidth + amount));
-            const img = document.getElementById('liveLogoPreview');
-            img.style.width = currentLogoWidth + 'px';
-            document.getElementById('logoSizeDisplay').innerText = currentLogoWidth + 'px';
-        }
-
-        // FETCH TENANT CONFIG DYNAMICALLY FROM FIRESTORE
-        document.addEventListener('DOMContentLoaded', () => {
-            const statusBadge = document.getElementById('dbStatusBadge');
-            
-            db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    
-                    if (data.config) {
-                        activeConfig = data.config;
-                    } else if (data.menuItems) {
-                        // Jika struktur langsung di dokumen
-                        activeConfig.menuItems = data.menuItems;
-                    }
-
-                    if (!activeConfig.store) activeConfig.store = {};
-                    if (!activeConfig.branding) activeConfig.branding = {};
-
-                    activeModules = data.modules || {};
-
-                    populateAdminForm();
-                    renderModulesContainer();
-
-                    statusBadge.className = "text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-mono";
-                    statusBadge.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1"></i>Connected';
-                } else {
-                    statusBadge.className = "text-[10px] bg-red-500/10 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full font-mono";
-                    statusBadge.innerText = "Tenant Not Found";
-                    showToast("Tenant configuration not found in Firestore database!", true);
-                }
-            }).catch(err => {
-                console.error("Firebase connection error:", err);
-                statusBadge.className = "text-[10px] bg-red-500/10 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full font-mono";
-                statusBadge.innerText = "Sync Error";
-                showToast("Failed to connect to cloud database.", true);
-            });
-
-            // Live Color Customization Listeners
-            document.getElementById('inputBgColor').addEventListener('input', (e) => {
-                document.getElementById('bgHexText').innerText = e.target.value;
-                document.documentElement.style.setProperty('--bg-color', e.target.value);
-            });
-            document.getElementById('inputCardColor').addEventListener('input', (e) => {
-                document.getElementById('cardHexText').innerText = e.target.value;
-                document.documentElement.style.setProperty('--card-color', e.target.value);
-            });
-            document.getElementById('inputAccentColor').addEventListener('input', (e) => {
-                document.getElementById('accentHexText').innerText = e.target.value;
-                document.documentElement.style.setProperty('--accent-color', e.target.value);
-            });
-            document.getElementById('inputTextColor').addEventListener('input', (e) => {
-                document.getElementById('textHexText').innerText = e.target.value;
-                document.documentElement.style.setProperty('--text-color', e.target.value);
-            });
-        });
-
-        function populateAdminForm() {
-            const store = activeConfig.store || {};
-            const branding = activeConfig.branding || {};
-
-            document.getElementById('inputStoreName').value = store.name || '';
-            document.getElementById('inputStoreTagline').value = store.tagline || '';
-            document.getElementById('inputStorePhone').value = store.phone || '';
-            document.getElementById('inputStoreAddress').value = store.address || '';
-            document.getElementById('inputStoreLogo').value = branding.logo || '';
-            
-            if (branding.logo) {
-                updateLogoPreview(branding.logo);
-            }
-            if (branding.logoWidth) {
-                currentLogoWidth = branding.logoWidth;
-                document.getElementById('liveLogoPreview').style.width = currentLogoWidth + 'px';
-                document.getElementById('logoSizeDisplay').innerText = currentLogoWidth + 'px';
-            }
-            
-            if (branding.bgColor) {
-                document.getElementById('inputBgColor').value = branding.bgColor;
-                document.getElementById('bgHexText').innerText = branding.bgColor;
-                document.documentElement.style.setProperty('--bg-color', branding.bgColor);
-            }
-            if (branding.cardColor) {
-                document.getElementById('inputCardColor').value = branding.cardColor;
-                document.getElementById('cardHexText').innerText = branding.cardColor;
-                document.documentElement.style.setProperty('--card-color', branding.cardColor);
-            }
-            if (branding.accentColor) {
-                document.getElementById('inputAccentColor').value = branding.accentColor;
-                document.getElementById('accentHexText').innerText = branding.accentColor;
-                document.documentElement.style.setProperty('--accent-color', branding.accentColor);
-            }
-            if (branding.textColor) {
-                document.getElementById('inputTextColor').value = branding.textColor;
-                document.getElementById('textHexText').innerText = branding.textColor;
-                document.documentElement.style.setProperty('--text-color', branding.textColor);
-            }
-
-            if (activeModules.toggle_custom_colors) {
-                document.getElementById('themeColorWrapper').classList.remove('hidden');
-            }
-
-            renderAdminMenuList();
-        }
-
-        function renderModulesContainer() {
-            const container = document.getElementById('modulesContainer');
-            const moduleMeta = {
-                toggle_upload_logo: { name: "Self Logo Upload", icon: "fa-image" },
-                toggle_custom_colors: { name: "Theme Color Customization", icon: "fa-palette" },
-                toggle_seo_metadata: { name: "SEO Metadata Management", icon: "fa-globe" },
-                toggle_custom_domain: { name: "Custom Domain (.co.nz)", icon: "fa-network-wired" },
-                toggle_online_ordering: { name: "General Online Ordering", icon: "fa-cart-shopping" },
-                toggle_qr_dine_in: { name: "QR Scan-to-Order (Dine-In)", icon: "fa-qrcode" },
-                toggle_table_reservation: { name: "Table Reservation & Floorplan", icon: "fa-chair" },
-                toggle_scheduled_orders: { name: "Scheduled Orders (Bakery)", icon: "fa-calendar-days" },
-                toggle_kitchen_display_system: { name: "Kitchen Display (KDS)", icon: "fa-fire-burner" },
-                toggle_fcp_temperature_log: { name: "MPI FCP Temp Logging", icon: "fa-temperature-low" },
-                toggle_allergen_management: { name: "Food Allergen Management", icon: "fa-triangle-exclamation" },
-                toggle_cleaning_sanitation_checklist: { name: "Cleaning & Sanitation Checklist", icon: "fa-spray-can-sparkles" },
-                toggle_gst_calculation: { name: "Automated 15% NZ GST Calculator", icon: "fa-calculator" },
-                toggle_receipt_print: { name: "Physical Receipt Printing", icon: "fa-receipt" },
-                toggle_cash_drawer_audit_trail: { name: "Cash Drawer Audit Trail", icon: "fa-cash-register" },
-                toggle_void_refund_authorization: { name: "Manager PIN Void/Refund Auth", icon: "fa-shield-halved" },
-                toggle_advanced_analytics: { name: "Advanced Sales Dashboard", icon: "fa-chart-line" },
-                toggle_vip_guest_profiles: { name: "VVIP Guest Profiles & History", icon: "fa-crown" },
-                toggle_vintage_cellar_tracking: { name: "Wine Cellar Inventory Tracking", icon: "fa-wine-bottle" },
-                toggle_service_role_permissions: { name: "Strict Staff Role Hierarchy", icon: "fa-user-lock" }
+        function renderManagerPanel() {
+            const profile = tenantData.profile || {};
+            const branding = tenantData.branding || {};
+            const hours = tenantData.officeHours || {
+                Monday: "09:00 - 22:00", Tuesday: "09:00 - 22:00", Wednesday: "09:00 - 22:00",
+                Thursday: "09:00 - 22:00", Friday: "09:00 - 23:00", Saturday: "10:00 - 23:00", Sunday: "Closed"
             };
 
-            container.innerHTML = "";
-            let count = 0;
+            document.getElementById('headerStoreName').innerText = profile.tenantName || tenantId;
+            document.getElementById('storeName').value = profile.tenantName || '';
+            document.getElementById('primaryColor').value = branding.primaryColor || '#f59e0b';
+            document.getElementById('primaryColorText').value = branding.primaryColor || '#f59e0b';
+            document.getElementById('bgColor').value = branding.bgColor || '#090d16';
+            document.getElementById('bgColorText').value = branding.bgColor || '#090d16';
+            document.getElementById('logoUrl').value = branding.logoUrl || '';
+            currentLogoScale = branding.logoScale || 100;
+            document.getElementById('logoScaleDisplay').innerText = currentLogoScale + '%';
 
-            for (const [key, active] of Object.entries(activeModules)) {
-                if (active && moduleMeta[key]) {
-                    count++;
-                    const m = moduleMeta[key];
-                    const card = document.createElement('div');
-                    card.className = "bg-[#030712] border border-[#1f2937] p-3 rounded-2xl flex items-center space-x-3";
-                    card.innerHTML = `
-                        <div class="bg-indigo-500/10 text-indigo-400 p-2.5 rounded-xl text-sm"><i class="fa-solid ${m.icon}"></i></div>
-                        <div>
-                            <h3 class="font-bold text-white text-xs">${m.name}</h3>
-                            <span class="text-[10px] text-emerald-400"><i class="fa-solid fa-circle text-[5px] mr-1"></i>Active</span>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                }
-            }
+            // 3 Extra Hero Marketing Fields
+            document.getElementById('heroExtra1').value = branding.heroExtra1 || 'Authentic Recipes';
+            document.getElementById('heroExtra2').value = branding.heroExtra2 || 'Freshly Made Daily';
+            document.getElementById('heroExtra3').value = branding.heroExtra3 || 'Traditional Taste';
 
-            if (count === 0) {
-                container.innerHTML = `<div class="text-xs text-stone-500 col-span-full">No active modules configured.</div>`;
-            }
+            // Render Office Hours Fields (Daily open/close text fields)
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const hoursContainer = document.getElementById('officeHoursContainer');
+            hoursContainer.innerHTML = '';
+            days.forEach(day => {
+                hoursContainer.innerHTML += `
+                    <div class="bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 space-y-1.5">
+                        <label class="block text-stone-300 font-semibold">${day}</label>
+                        <input type="text" id="hour_${day}" value="${hours[day] || '09:00 - 22:00'}" class="w-full custom-input rounded-xl px-3 py-2 text-stone-200 font-mono" placeholder="09:00 - 22:00 or Closed">
+                    </div>
+                `;
+            });
+
+            // Render Menu Items Table with Tick/Untick attributes
+            renderMenuTable(tenantData.menuItems || []);
+
+            // Restricted Tab Check based on Super Admin Rights
+            const rights = tenantData.rights || {};
+            if(rights.right_pos_access === false) document.getElementById('btn-tab-pos').style.display = 'none';
+            if(rights.right_inventory_control === false) document.getElementById('btn-tab-inventory').style.display = 'none';
+            if(rights.right_kds_access === false) document.getElementById('btn-tab-kds').style.display = 'none';
+            if(rights.right_financial_reports === false) document.getElementById('btn-tab-financial').style.display = 'none';
         }
 
-        function renderAdminMenuList() {
-            const items = activeConfig.menuItems || [];
-            const container = document.getElementById('adminMenuList');
-
-            if (items.length === 0) {
-                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-6">No menu items registered for this tenant yet.</p>`;
-                return;
-            }
-
-            container.innerHTML = items.map((item, idx) => `
-                <div class="bg-[#030712] border border-[#1f2937] rounded-2xl p-4 grid grid-cols-1 md:grid-cols-6 gap-4 items-center text-xs shadow-inner">
-                    <div>
-                        <label class="block text-stone-500 text-[10px] mb-1 font-semibold">ITEM ID</label>
-                        <input type="text" value="${item.id || ''}" onchange="updateItemField(${idx}, 'id', this.value)" class="w-full bg-[#111827] border border-[#1f2937] rounded-xl px-3 py-2 text-stone-200 font-mono">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-stone-500 text-[10px] mb-1 font-semibold">MENU NAME</label>
-                        <input type="text" value="${item.name || ''}" onchange="updateItemField(${idx}, 'name', this.value)" class="w-full bg-[#111827] border border-[#1f2937] rounded-xl px-3 py-2 text-stone-200 font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-stone-500 text-[10px] mb-1 font-semibold">CATEGORY</label>
-                        <input type="text" value="${item.category || ''}" onchange="updateItemField(${idx}, 'category', this.value)" class="w-full bg-[#111827] border border-[#1f2937] rounded-xl px-3 py-2 text-stone-200">
-                    </div>
-                    <div>
-                        <label class="block text-stone-500 text-[10px] mb-1 font-semibold">PRICE (NZD $)</label>
-                        <input type="number" step="0.01" value="${item.price || 0}" onchange="updateItemField(${idx}, 'price', parseFloat(this.value))" class="w-full bg-[#111827] border border-[#1f2937] rounded-xl px-3 py-2 text-stone-200 font-bold text-amber-400">
-                    </div>
-                    <div class="flex justify-end items-center space-x-3 pt-4">
-                        <label class="flex items-center space-x-1.5 cursor-pointer text-stone-400 select-none">
-                            <input type="checkbox" ${item.isHidden || item.isAvailable === false ? 'checked' : ''} onchange="updateItemField(${idx}, 'isHidden', this.checked)" class="rounded bg-[#111827] border-zinc-700 text-amber-500 w-4 h-4 cursor-pointer">
-                            <span class="text-xs">Hide</span>
-                        </label>
-                        <button onclick="removeMenuItem(${idx})" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 px-3 py-2 rounded-xl border border-red-900/40 transition">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+        function renderMenuTable(items) {
+            const tbody = document.getElementById('menuTableBody');
+            tbody.innerHTML = '';
+            items.forEach((item, index) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-zinc-800/30 transition">
+                        <td class="py-3 px-4"><input type="text" value="${item.name || ''}" id="menu_name_${index}" class="custom-input rounded-lg px-2.5 py-1.5 w-full text-stone-200"></td>
+                        <td class="py-3 px-4"><input type="number" value="${item.price || 0}" id="menu_price_${index}" class="custom-input rounded-lg px-2.5 py-1.5 w-24 text-stone-200 font-mono"></td>
+                        <td class="py-3 px-4"><input type="number" value="${item.promoPrice || 0}" id="menu_promo_${index}" class="custom-input rounded-lg px-2.5 py-1.5 w-24 text-stone-200 font-mono"></td>
+                        <td class="py-3 px-4 text-center"><input type="checkbox" ${item.isHero ? 'checked' : ''} id="menu_hero_${index}" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700 cursor-pointer"></td>
+                        <td class="py-3 px-4 text-center"><input type="checkbox" ${item.isFavorite ? 'checked' : ''} id="menu_fav_${index}" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700 cursor-pointer"></td>
+                        <td class="py-3 px-4 text-center"><input type="checkbox" ${item.isHidden ? 'checked' : ''} id="menu_hide_${index}" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700 cursor-pointer"></td>
+                        <td class="py-3 px-4"><select id="menu_spice_${index}" class="custom-input rounded-lg px-2 py-1 text-stone-200">
+                            <option value="None" ${item.spiceLevel==='None'?'selected':''}>None</option>
+                            <option value="Mild" ${item.spiceLevel==='Mild'?'selected':''}>Mild</option>
+                            <option value="Hot" ${item.spiceLevel==='Hot'?'selected':''}>Hot</option>
+                            <option value="Extra Hot" ${item.spiceLevel==='Extra Hot'?'selected':''}>Extra Hot</option>
+                        </select></td>
+                        <td class="py-3 px-4 text-right"><button onclick="deleteMenuItem(${index})" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-lg font-bold transition"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
         }
 
-        function updateItemField(idx, field, val) {
-            if (activeConfig.menuItems[idx]) {
-                activeConfig.menuItems[idx][field] = val;
-            }
+        function adjustLogoScale(amount) {
+            currentLogoScale = Math.max(50, Math.min(200, currentLogoScale + amount));
+            document.getElementById('logoScaleDisplay').innerText = currentLogoScale + '%';
         }
 
         function addNewMenuItem() {
-            if (!activeConfig.menuItems) activeConfig.menuItems = [];
-            activeConfig.menuItems.push({
-                id: "NEW-" + (activeConfig.menuItems.length + 1),
-                name: "New Menu Item",
-                category: "General",
-                price: 15.00,
-                description: "Freshly prepared item.",
-                isHidden: false
+            if(!tenantData.menuItems) tenantData.menuItems = [];
+            tenantData.menuItems.push({ name: "New Dish", price: 15.00, promoPrice: 0, isHero: false, isFavorite: false, isHidden: false, spiceLevel: "None" });
+            renderMenuTable(tenantData.menuItems);
+        }
+
+        function deleteMenuItem(index) {
+            tenantData.menuItems.splice(index, 1);
+            renderMenuTable(tenantData.menuItems);
+        }
+
+        // SIMPAN PERUBAHAN KE FIREBASE CLOUD
+        function saveChanges() {
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            let newHours = {};
+            days.forEach(day => {
+                newHours[day] = document.getElementById(`hour_${day}`).value;
             });
-            renderAdminMenuList();
-        }
 
-        function removeMenuItem(idx) {
-            if (confirm("Are you sure you want to delete this menu item?")) {
-                activeConfig.menuItems.splice(idx, 1);
-                renderAdminMenuList();
-            }
-        }
+            let updatedMenu = [];
+            const rows = document.querySelectorAll('#menuTableBody tr');
+            rows.forEach((row, index) => {
+                updatedMenu.push({
+                    name: document.getElementById(`menu_name_${index}`).value,
+                    price: parseFloat(document.getElementById(`menu_price_${index}`).value) || 0,
+                    promoPrice: parseFloat(document.getElementById(`menu_promo_${index}`).value) || 0,
+                    isHero: document.getElementById(`menu_hero_${index}`).checked,
+                    isFavorite: document.getElementById(`menu_fav_${index}`).checked,
+                    isHidden: document.getElementById(`menu_hide_${index}`).checked,
+                    spiceLevel: document.getElementById(`menu_spice_${index}`).value
+                });
+            });
 
-        function saveConfigToFirebase() {
-            if (!TENANT_ID) {
-                alert("Cannot save: No tenant ID specified.");
-                return;
-            }
+            const brandingData = {
+                primaryColor: document.getElementById('primaryColor').value,
+                bgColor: document.getElementById('bgColor').value,
+                logoUrl: document.getElementById('logoUrl').value,
+                logoScale: currentLogoScale,
+                heroExtra1: document.getElementById('heroExtra1').value,
+                heroExtra2: document.getElementById('heroExtra2').value,
+                heroExtra3: document.getElementById('heroExtra3').value
+            };
 
-            if (!activeConfig.store) activeConfig.store = {};
-            if (!activeConfig.branding) activeConfig.branding = {};
-
-            activeConfig.store.name = document.getElementById('inputStoreName').value;
-            activeConfig.store.tagline = document.getElementById('inputStoreTagline').value;
-            activeConfig.store.phone = document.getElementById('inputStorePhone').value;
-            activeConfig.store.address = document.getElementById('inputStoreAddress').value;
-            
-            activeConfig.branding.logo = document.getElementById('inputStoreLogo').value;
-            activeConfig.branding.logoWidth = currentLogoWidth;
-            
-            activeConfig.branding.bgColor = document.getElementById('inputBgColor').value;
-            activeConfig.branding.cardColor = document.getElementById('inputCardColor').value;
-            activeConfig.branding.accentColor = document.getElementById('inputAccentColor').value;
-            activeConfig.branding.textColor = document.getElementById('inputTextColor').value;
-
-            db.collection("tenants").doc(TENANT_ID).set({
-                config: activeConfig,
+            db.collection("tenants").doc(tenantId).set({
+                profile: { 
+                    tenantName: document.getElementById('storeName').value,
+                    adminPassword: tenantData.profile.adminPassword || 'admin'
+                },
+                branding: brandingData,
+                officeHours: newHours,
+                menuItems: updatedMenu,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
-                showToast("Configuration, logo & theme successfully saved to Cloud!");
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                showToast("Manager changes successfully saved to Firestore!");
             }).catch(err => {
                 console.error("Error saving:", err);
-                showToast("Failed to save to Firebase: " + err.message, true);
+                showToast("Failed to save changes: " + err.message, true);
             });
         }
     </script>

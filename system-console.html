@@ -45,52 +45,57 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant / Client Name</label>
-                    <input type="text" id="tenantName" value="Bangkok Thai Takeaway" class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50" readonly>
+                    <input type="text" id="tenantName" class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50 font-semibold" readonly>
                 </div>
                 <div class="flex items-end">
                     <button onclick="saveTenantConfig()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200 shadow-sm">
-                        <i class="fa-solid fa-floppy-disk mr-2"></i>Save Configuration
+                        <i class="fa-solid fa-floppy-disk mr-2"></i>Save Feature Toggles
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Tenant Details Display Card (Displayed at the top) -->
+        <!-- Tenant Details Display Card (Editable) -->
         <div class="bg-indigo-50 rounded-xl p-5 mb-8 border border-indigo-100 shadow-sm">
-            <h3 class="text-sm font-bold text-indigo-900 uppercase tracking-wider mb-3"><i class="fa-solid fa-id-card mr-2"></i>Active Tenant Metadata & Contact Profile</h3>
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-sm font-bold text-indigo-900 uppercase tracking-wider"><i class="fa-solid fa-id-card mr-2"></i>Active Tenant Metadata & Company Profile</h3>
+                <button onclick="openEditTenantModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition shadow-sm flex items-center">
+                    <i class="fa-solid fa-pen-to-square mr-1.5"></i>Edit Company Info
+                </button>
+            </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                     <span class="text-gray-500 block text-xs">Contract Number:</span>
-                    <strong id="displayContract" class="text-gray-800">TS-CONT-2026-001</strong>
+                    <strong id="displayContract" class="text-gray-800">-</strong>
                 </div>
                 <div>
                     <span class="text-gray-500 block text-xs">Contact Person:</span>
-                    <strong id="displayContact" class="text-gray-800">Tedy Sutedja</strong>
+                    <strong id="displayContact" class="text-gray-800">-</strong>
                 </div>
                 <div>
                     <span class="text-gray-500 block text-xs">Phone Number:</span>
-                    <strong id="displayPhone" class="text-gray-800">+64 21 000 0000</strong>
+                    <strong id="displayPhone" class="text-gray-800">-</strong>
                 </div>
                 <div>
                     <span class="text-gray-500 block text-xs">Email Address:</span>
-                    <strong id="displayEmail" class="text-gray-800">admin@bangkokthai.co.nz</strong>
+                    <strong id="displayEmail" class="text-gray-800">-</strong>
                 </div>
                 <div class="col-span-2">
                     <span class="text-gray-500 block text-xs">Physical Address:</span>
-                    <strong id="displayAddress" class="text-gray-800">Palmerston North, New Zealand</strong>
+                    <strong id="displayAddress" class="text-gray-800">-</strong>
                 </div>
                 <div>
                     <span class="text-gray-500 block text-xs">Subscription Tier:</span>
-                    <span id="displayTier" class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded font-semibold">FREE SOCIAL TIER</span>
+                    <span id="displayTier" class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded font-semibold">-</span>
                 </div>
                 <div>
                     <span class="text-gray-500 block text-xs">Expiry Date:</span>
-                    <strong id="displayExpiry" class="text-red-600">2027-04-01</strong>
+                    <strong id="displayExpiry" class="text-red-600">-</strong>
                 </div>
             </div>
         </div>
 
-        <!-- Modal Add New Tenant (Expanded with Contract #) -->
+        <!-- Modal Add New Tenant -->
         <div id="newTenantModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
             <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
                 <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-circle-plus mr-2 text-green-600"></i>Register New Restaurant Tenant</h3>
@@ -131,9 +136,9 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Tier</label>
                             <select id="newTenantTier" class="w-full border border-gray-300 rounded-lg p-2.5">
-                                <option value="free">Free Social Tier</option>
-                                <option value="standard">Standard (NZD $250/mo)</option>
-                                <option value="enterprise">Enterprise Fine Dining</option>
+                                <option value="FREE SOCIAL TIER">Free Social Tier</option>
+                                <option value="STANDARD ($250/MO)">Standard (NZD $250/mo)</option>
+                                <option value="ENTERPRISE">Enterprise Fine Dining</option>
                             </select>
                         </div>
                         <div>
@@ -145,6 +150,55 @@
                 <div class="flex justify-end space-x-3 mt-6">
                     <button onclick="closeNewTenantModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition">Cancel</button>
                     <button onclick="createNewTenant()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition">Create Tenant</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Edit Tenant Company Info -->
+        <div id="editTenantModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+            <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
+                <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-pen-to-square mr-2 text-indigo-600"></i>Edit Company & Profile Info</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Contract Number (#)</label>
+                        <input type="text" id="editContractNo" class="w-full border border-gray-300 rounded-lg p-2.5">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant Business Name</label>
+                        <input type="text" id="editTenantBusinessName" class="w-full border border-gray-300 rounded-lg p-2.5">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
+                            <input type="text" id="editContactPerson" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <input type="text" id="editPhone" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="editEmail" class="w-full border border-gray-300 rounded-lg p-2.5">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Physical Address</label>
+                        <input type="text" id="editAddress" class="w-full border border-gray-300 rounded-lg p-2.5">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Tier</label>
+                            <input type="text" id="editTier" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                            <input type="date" id="editExpiryDate" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button onclick="closeEditTenantModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition">Cancel</button>
+                    <button onclick="updateTenantInfo()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -169,180 +223,119 @@
                 </button>
             </div>
 
-            <!-- TAB CONTENTS -->
+            <!-- TAB CONTENTS (Feature Flags) -->
             <div class="p-8">
-                
-                <!-- TAB 1: General Store & Branding -->
+                <!-- TAB 1 -->
                 <div id="tabContent1" class="tab-content space-y-6">
                     <h3 class="text-xl font-bold text-gray-800 border-b pb-3">Tab 1: Store Identity & Visual Customization</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_upload_logo" checked class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Self Logo Upload Permission</span>
-                                <span class="text-sm text-gray-500">Allow clients to upload and update their own store logo.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_upload_logo" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Self Logo Upload Permission</span><span class="text-sm text-gray-500">Allow clients to upload store logo.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_custom_colors" checked class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Theme Color Customization</span>
-                                <span class="text-sm text-gray-500">Allow modifying storefront accent color schemes.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_custom_colors" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Theme Color Customization</span><span class="text-sm text-gray-500">Allow modifying accent colors.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_seo_metadata" class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">SEO Metadata Settings</span>
-                                <span class="text-sm text-gray-500">Edit Meta Title & Google Search Description.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_seo_metadata" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">SEO Metadata Settings</span><span class="text-sm text-gray-500">Edit Meta Title & Google Search.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_custom_domain" class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Custom Domain White-Label</span>
-                                <span class="text-sm text-gray-500">Enable client's custom domain mapping (.co.nz).</span>
-                            </div>
+                            <input type="checkbox" id="toggle_custom_domain" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Custom Domain White-Label</span><span class="text-sm text-gray-500">Enable custom domain mapping (.co.nz).</span></div>
                         </label>
                     </div>
                 </div>
 
-                <!-- TAB 2: Catalogue, Menu & Operations -->
+                <!-- TAB 2 -->
                 <div id="tabContent2" class="tab-content space-y-6 hidden">
                     <h3 class="text-xl font-bold text-gray-800 border-b pb-3">Tab 2: Menu Catalogue & Daily Operations</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_online_ordering" checked class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">General Online Ordering</span>
-                                <span class="text-sm text-gray-500">Enable shopping cart and online checkout.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_online_ordering" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">General Online Ordering</span><span class="text-sm text-gray-500">Enable shopping cart & checkout.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_qr_dine_in" checked class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">QR Scan-to-Order (Dine-In)</span>
-                                <span class="text-sm text-gray-500">Self-ordering directly from table QR codes.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_qr_dine_in" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">QR Scan-to-Order (Dine-In)</span><span class="text-sm text-gray-500">Self-ordering from table QR.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_table_reservation" class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Table Reservation & Floorplan</span>
-                                <span class="text-sm text-gray-500">Manage table bookings and seating layouts.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_table_reservation" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Table Reservation & Floorplan</span><span class="text-sm text-gray-500">Manage table bookings.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_scheduled_orders" checked class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Scheduled Orders</span>
-                                <span class="text-sm text-gray-500">Essential for bakeries and cake shops.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_scheduled_orders" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Scheduled Orders</span><span class="text-sm text-gray-500">Essential for bakeries & cake shops.</span></div>
                         </label>
                     </div>
                 </div>
 
-                <!-- TAB 3: Kitchen & Compliance -->
+                <!-- TAB 3 -->
                 <div id="tabContent3" class="tab-content space-y-6 hidden">
                     <h3 class="text-xl font-bold text-gray-800 border-b pb-3">Tab 3: Kitchen Display & New Zealand MPI FCP Compliance</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_kitchen_display_system" checked class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Kitchen Display System (KDS)</span>
-                                <span class="text-sm text-gray-500">Digital order queue monitor replacing paper dockets.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_kitchen_display_system" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Kitchen Display System (KDS)</span><span class="text-sm text-gray-500">Digital order queue monitor.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_fcp_temperature_log" checked class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Digital Temperature Logging (MPI FCP)</span>
-                                <span class="text-sm text-gray-500">Daily chiller/freezer temperature logs for official MPI audits.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_fcp_temperature_log" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Digital Temperature Logging (MPI FCP)</span><span class="text-sm text-gray-500">Chiller/freezer temp logs.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_allergen_management" checked class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Food Allergen Management</span>
-                                <span class="text-sm text-gray-500">Mandatory New Zealand food safety allergen declarations.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_allergen_management" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Food Allergen Management</span><span class="text-sm text-gray-500">Mandatory NZ food safety declarations.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_cleaning_sanitation_checklist" class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Cleaning & Sanitation Checklist</span>
-                                <span class="text-sm text-gray-500">Daily kitchen hygiene and equipment checklist.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_cleaning_sanitation_checklist" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Cleaning & Sanitation Checklist</span><span class="text-sm text-gray-500">Daily kitchen hygiene logs.</span></div>
                         </label>
                     </div>
                 </div>
 
-                <!-- TAB 4: Finance, POS & Security -->
+                <!-- TAB 4 -->
                 <div id="tabContent4" class="tab-content space-y-6 hidden">
                     <h3 class="text-xl font-bold text-gray-800 border-b pb-3">Tab 4: Finance, POS & Loss Prevention</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_gst_calculation" checked class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Automated NZ GST 15% Calculation</span>
-                                <span class="text-sm text-gray-500">Standard New Zealand goods and services tax calculation.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_gst_calculation" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Automated NZ GST 15% Calculation</span><span class="text-sm text-gray-500">Standard NZ tax calculation.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_receipt_print" checked class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Physical Receipt Printing</span>
-                                <span class="text-sm text-gray-500">Control receipt printer hardware integration.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_receipt_print" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Physical Receipt Printing</span><span class="text-sm text-gray-500">Control receipt printer hardware.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_cash_drawer_audit_trail" class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Cash Drawer Audit Trail</span>
-                                <span class="text-sm text-gray-500">Record every instance of manual cash drawer openings.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_cash_drawer_audit_trail" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Cash Drawer Audit Trail</span><span class="text-sm text-gray-500">Record manual drawer openings.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_void_refund_authorization" class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Manager PIN Authorization (Void/Refund)</span>
-                                <span class="text-sm text-gray-500">Prevent staff from deleting orders without supervisor approval.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_void_refund_authorization" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Manager PIN Authorization (Void/Refund)</span><span class="text-sm text-gray-500">Prevent unapproved deletions.</span></div>
                         </label>
                     </div>
                 </div>
 
-                <!-- TAB 5: CRM, Analytics & Advanced Tier -->
+                <!-- TAB 5 -->
                 <div id="tabContent5" class="tab-content space-y-6 hidden">
                     <h3 class="text-xl font-bold text-gray-800 border-b pb-3">Tab 5: Business Analytics, CRM & VIP Services</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_advanced_analytics" checked class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Advanced Analytics & Sales Dashboard</span>
-                                <span class="text-sm text-gray-500">Daily/weekly comparative charts and top-selling items.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_advanced_analytics" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Advanced Analytics & Sales Dashboard</span><span class="text-sm text-gray-500">Sales comparative charts.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_vip_guest_profiles" class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">VVIP Guest Profiles & Preferences</span>
-                                <span class="text-sm text-gray-500">Store special guest history and notes (Fine Dining).</span>
-                            </div>
+                            <input type="checkbox" id="toggle_vip_guest_profiles" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">VVIP Guest Profiles & Preferences</span><span class="text-sm text-gray-500">Store special guest history.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_vintage_cellar_tracking" class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Wine Cellar Inventory Management</span>
-                                <span class="text-sm text-gray-500">Track wine bottles by vintage year.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_vintage_cellar_tracking" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Wine Cellar Inventory Management</span><span class="text-sm text-gray-500">Track wine by vintage year.</span></div>
                         </label>
                         <label class="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
-                            <input type="checkbox" id="toggle_service_role_permissions" class="h-5 w-5 text-indigo-600 rounded">
-                            <div>
-                                <span class="font-semibold text-gray-800 block">Strict Staff Role Hierarchy</span>
-                                <span class="text-sm text-gray-500">Separate permissions between Waiters, Sommelier, Maître d', and Chefs.</span>
-                            </div>
+                            <input type="checkbox" id="toggle_service_role_permissions" class="h-5 w-5 text-indigo-600 rounded feature-toggle">
+                            <div><span class="font-semibold text-gray-800 block">Strict Staff Role Hierarchy</span><span class="text-sm text-gray-500">Role-based POS permissions.</span></div>
                         </label>
                     </div>
                 </div>
@@ -352,29 +345,77 @@
 
     </main>
 
-    <!-- JavaScript Tab, Tenant Management & Config Save Logic -->
+    <!-- JavaScript Engine & Persistent LocalStorage State -->
     <script>
-        // Simulasi database lokal memori untuk menyimpan data tenant yang terdaftar
-        const tenantsDatabase = {
+        // Default Database Tenant (Disimpan di LocalStorage agar permanen tidak hilang saat refresh)
+        let systemData = JSON.parse(localStorage.getItem('restosync_system_data')) || {
             "bangkokthai": {
-                contractNo: "TS-CONT-2026-001",
-                tenantName: "Bangkok Thai Takeaway",
-                contactPerson: "Tedy Sutedja",
-                phone: "+64 21 000 0000",
-                email: "info@bangkokthaipalmy.co.nz",
-                address: "Palmerston North, New Zealand",
-                tier: "FREE SOCIAL TIER",
-                expiryDate: "2027-04-01"
+                profile: {
+                    contractNo: "TS-CONT-2026-001",
+                    tenantName: "Bangkok Thai Takeaway",
+                    contactPerson: "Tedy Sutedja",
+                    phone: "+64 6 356 0000",
+                    email: "info@bangkokthaipalmy.co.nz",
+                    address: "642 Pioneer Highway, Palmerston North",
+                    tier: "FREE SOCIAL TIER",
+                    expiryDate: "2027-04-01"
+                },
+                modules: {
+                    toggle_upload_logo: true,
+                    toggle_custom_colors: true,
+                    toggle_seo_metadata: false,
+                    toggle_custom_domain: true,
+                    toggle_online_ordering: true,
+                    toggle_qr_dine_in: true,
+                    toggle_table_reservation: false,
+                    toggle_scheduled_orders: true,
+                    toggle_kitchen_display_system: true,
+                    toggle_fcp_temperature_log: true,
+                    toggle_allergen_management: true,
+                    toggle_cleaning_sanitation_checklist: false,
+                    toggle_gst_calculation: true,
+                    toggle_receipt_print: true,
+                    toggle_cash_drawer_audit_trail: false,
+                    toggle_void_refund_authorization: false,
+                    toggle_advanced_analytics: true,
+                    toggle_vip_guest_profiles: false,
+                    toggle_vintage_cellar_tracking: false,
+                    toggle_service_role_permissions: false
+                }
             },
             "finedining_demo": {
-                contractNo: "TS-CONT-2026-050",
-                tenantName: "Auckland Fine Dining",
-                contactPerson: "Chef Marcus",
-                phone: "+64 9 555 1234",
-                email: "manager@aucklanddining.co.nz",
-                address: "Viaduct Harbour, Auckland",
-                tier: "ENTERPRISE",
-                expiryDate: "2027-12-31"
+                profile: {
+                    contractNo: "TS-CONT-2026-050",
+                    tenantName: "Auckland Fine Dining",
+                    contactPerson: "Chef Marcus",
+                    phone: "+64 9 555 1234",
+                    email: "manager@aucklanddining.co.nz",
+                    address: "Viaduct Harbour, Auckland",
+                    tier: "ENTERPRISE",
+                    expiryDate: "2027-12-31"
+                },
+                modules: {
+                    toggle_upload_logo: true,
+                    toggle_custom_colors: true,
+                    toggle_seo_metadata: true,
+                    toggle_custom_domain: true,
+                    toggle_online_ordering: true,
+                    toggle_qr_dine_in: true,
+                    toggle_table_reservation: true,
+                    toggle_scheduled_orders: true,
+                    toggle_kitchen_display_system: true,
+                    toggle_fcp_temperature_log: true,
+                    toggle_allergen_management: true,
+                    toggle_cleaning_sanitation_checklist: true,
+                    toggle_gst_calculation: true,
+                    toggle_receipt_print: true,
+                    toggle_cash_drawer_audit_trail: true,
+                    toggle_void_refund_authorization: true,
+                    toggle_advanced_analytics: true,
+                    toggle_vip_guest_profiles: true,
+                    toggle_vintage_cellar_tracking: true,
+                    toggle_service_role_permissions: true
+                }
             }
         };
 
@@ -387,13 +428,53 @@
             document.getElementById(`tabBtn${tabNumber}`).className = "tab-btn px-6 py-4 font-semibold text-indigo-600 border-b-2 border-indigo-600 flex items-center whitespace-nowrap focus:outline-none";
         }
 
-        function openNewTenantModal() {
-            document.getElementById('newTenantModal').classList.remove('hidden');
+        function loadTenantConfig() {
+            const tenantId = document.getElementById('tenantSelect').value;
+            const data = systemData[tenantId];
+
+            if (data) {
+                // Set Header Input Name
+                document.getElementById('tenantName').value = data.profile.tenantName;
+
+                // Set Profile Card Info
+                document.getElementById('displayContract').textContent = data.profile.contractNo || '-';
+                document.getElementById('displayContact').textContent = data.profile.contactPerson || '-';
+                document.getElementById('displayPhone').textContent = data.profile.phone || '-';
+                document.getElementById('displayEmail').textContent = data.profile.email || '-';
+                document.getElementById('displayAddress').textContent = data.profile.address || '-';
+                document.getElementById('displayTier').textContent = data.profile.tier || '-';
+                document.getElementById('displayExpiry').textContent = data.profile.expiryDate || '-';
+
+                // Set Checkbox Feature Toggles
+                const toggles = data.modules;
+                for (const [key, value] of Object.entries(toggles)) {
+                    const checkbox = document.getElementById(key);
+                    if (checkbox) {
+                        checkbox.checked = value;
+                    }
+                }
+            }
         }
 
-        function closeNewTenantModal() {
-            document.getElementById('newTenantModal').classList.add('hidden');
+        function saveTenantConfig() {
+            const tenantId = document.getElementById('tenantSelect').value;
+            
+            // Kumpulkan status seluruh checkbox feature toggles
+            const currentModules = {};
+            document.querySelectorAll('.feature-toggle').forEach(cb => {
+                currentModules[cb.id] = cb.checked;
+            });
+
+            // Update memori & simpan ke LocalStorage agar permanen tidak hilang saat refresh
+            systemData[tenantId].modules = currentModules;
+            localStorage.setItem('restosync_system_data', JSON.stringify(systemData));
+
+            alert(`Feature toggle configurations for "${systemData[tenantId].profile.tenantName}" successfully saved to persistent storage!`);
         }
+
+        // Modal Add New Tenant
+        function openNewTenantModal() { document.getElementById('newTenantModal').classList.remove('hidden'); }
+        function closeNewTenantModal() { document.getElementById('newTenantModal').classList.add('hidden'); }
 
         function createNewTenant() {
             const tenantId = document.getElementById('newTenantId').value.trim().toLowerCase().replace(/\s+/g, '_');
@@ -411,85 +492,67 @@
                 return;
             }
 
-            // Simpan ke database memori simulasi
-            tenantsDatabase[tenantId] = {
-                contractNo: contractNo,
-                tenantName: tenantName,
-                contactPerson: contactPerson,
-                phone: phone,
-                email: email,
-                address: address,
-                tier: tier.toUpperCase(),
-                expiryDate: expiryDate
+            systemData[tenantId] = {
+                profile: { contractNo, tenantName, contactPerson, phone, email, address, tier, expiryDate },
+                modules: { toggle_upload_logo: true, toggle_online_ordering: true, toggle_gst_calculation: true }
             };
 
-            // Tambahkan ke dropdown select
+            localStorage.setItem('restosync_system_data', JSON.stringify(systemData));
+
             const select = document.getElementById('tenantSelect');
             const option = document.createElement('option');
             option.value = tenantId;
-            option.textContent = `${tenantName} (${tier.toUpperCase()})`;
+            option.textContent = `${tenantName} (${tier})`;
             select.appendChild(option);
-            
             select.value = tenantId;
-            loadTenantConfig();
 
             closeNewTenantModal();
-            alert(`Tenant "${tenantName}" (Contract: ${contractNo}) successfully registered!`);
+            loadTenantConfig();
+            alert(`Tenant "${tenantName}" successfully registered!`);
         }
 
-        function loadTenantConfig() {
+        // Modal Edit Tenant Company Info
+        function openEditTenantModal() {
             const tenantId = document.getElementById('tenantSelect').value;
-            const tenantData = tenantsDatabase[tenantId];
+            const p = systemData[tenantId].profile;
 
-            if (tenantData) {
-                document.getElementById('tenantName').value = tenantData.tenantName;
-                document.getElementById('displayContract').textContent = tenantData.contractNo;
-                document.getElementById('displayContact').textContent = tenantData.contactPerson;
-                document.getElementById('displayPhone').textContent = tenantData.phone;
-                document.getElementById('displayEmail').textContent = tenantData.email;
-                document.getElementById('displayAddress').textContent = tenantData.address;
-                document.getElementById('displayTier').textContent = tenantData.tier;
-                document.getElementById('displayExpiry').textContent = tenantData.expiryDate;
-            }
+            document.getElementById('editContractNo').value = p.contractNo;
+            document.getElementById('editTenantBusinessName').value = p.tenantName;
+            document.getElementById('editContactPerson').value = p.contactPerson;
+            document.getElementById('editPhone').value = p.phone;
+            document.getElementById('editEmail').value = p.email;
+            document.getElementById('editAddress').value = p.address;
+            document.getElementById('editTier').value = p.tier;
+            document.getElementById('editExpiryDate').value = p.expiryDate;
+
+            document.getElementById('editTenantModal').classList.remove('hidden');
         }
 
-        function saveTenantConfig() {
+        function closeEditTenantModal() {
+            document.getElementById('editTenantModal').classList.add('hidden');
+        }
+
+        function updateTenantInfo() {
             const tenantId = document.getElementById('tenantSelect').value;
-            const tenantName = document.getElementById('tenantName').value;
-            
-            const configData = {
-                tenantId: tenantId,
-                tenantName: tenantName,
-                updatedAt: new Date().toISOString(),
-                modules: {
-                    toggle_upload_logo: document.getElementById('toggle_upload_logo').checked,
-                    toggle_custom_colors: document.getElementById('toggle_custom_colors').checked,
-                    toggle_seo_metadata: document.getElementById('toggle_seo_metadata').checked,
-                    toggle_custom_domain: document.getElementById('toggle_custom_domain').checked,
-                    toggle_online_ordering: document.getElementById('toggle_online_ordering').checked,
-                    toggle_qr_dine_in: document.getElementById('toggle_qr_dine_in').checked,
-                    toggle_table_reservation: document.getElementById('toggle_table_reservation').checked,
-                    toggle_scheduled_orders: document.getElementById('toggle_scheduled_orders').checked,
-                    toggle_kitchen_display_system: document.getElementById('toggle_kitchen_display_system').checked,
-                    toggle_fcp_temperature_log: document.getElementById('toggle_fcp_temperature_log').checked,
-                    toggle_allergen_management: document.getElementById('toggle_allergen_management').checked,
-                    toggle_cleaning_sanitation_checklist: document.getElementById('toggle_cleaning_sanitation_checklist').checked,
-                    toggle_gst_calculation: document.getElementById('toggle_gst_calculation').checked,
-                    toggle_receipt_print: document.getElementById('toggle_receipt_print').checked,
-                    toggle_cash_drawer_audit_trail: document.getElementById('toggle_cash_drawer_audit_trail').checked,
-                    toggle_void_refund_authorization: document.getElementById('toggle_void_refund_authorization').checked,
-                    toggle_advanced_analytics: document.getElementById('toggle_advanced_analytics').checked,
-                    toggle_vip_guest_profiles: document.getElementById('toggle_vip_guest_profiles').checked,
-                    toggle_vintage_cellar_tracking: document.getElementById('toggle_vintage_cellar_tracking').checked,
-                    toggle_service_role_permissions: document.getElementById('toggle_service_role_permissions').checked
-                }
+
+            systemData[tenantId].profile = {
+                contractNo: document.getElementById('editContractNo').value,
+                tenantName: document.getElementById('editTenantBusinessName').value,
+                contactPerson: document.getElementById('editContactPerson').value,
+                phone: document.getElementById('editPhone').value,
+                email: document.getElementById('editEmail').value,
+                address: document.getElementById('editAddress').value,
+                tier: document.getElementById('editTier').value,
+                expiryDate: document.getElementById('editExpiryDate').value
             };
 
-            console.log("Saving configuration for tenant:", tenantId, configData);
-            alert(`Configuration for "${tenantName}" successfully saved! (Ready for Firebase Firestore synchronization).`);
+            localStorage.setItem('restosync_system_data', JSON.stringify(systemData));
+            closeEditTenantModal();
+            loadTenantConfig();
+            alert("Company profile and tenant information successfully updated and saved!");
         }
 
-        // Jalankan saat pertama load untuk menampilkan data Bangkok Thai
+        // Jalankan saat pertama load halaman
         window.onload = function() {
             loadTenantConfig();
         };

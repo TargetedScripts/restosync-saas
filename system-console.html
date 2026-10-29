@@ -27,7 +27,7 @@
     <main class="container mx-auto px-6 py-8">
         
         <!-- Tenant Selector & Creator Panel -->
-        <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-200">
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-store mr-2 text-indigo-600"></i>Manage Restaurant Tenants</h2>
                 <button onclick="openNewTenantModal()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-200 shadow-sm flex items-center">
@@ -55,14 +55,55 @@
             </div>
         </div>
 
-        <!-- Modal Add New Tenant (Expanded with Contact & Expiry) -->
+        <!-- Tenant Details Display Card (Displayed at the top) -->
+        <div class="bg-indigo-50 rounded-xl p-5 mb-8 border border-indigo-100 shadow-sm">
+            <h3 class="text-sm font-bold text-indigo-900 uppercase tracking-wider mb-3"><i class="fa-solid fa-id-card mr-2"></i>Active Tenant Metadata & Contact Profile</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-500 block text-xs">Contract Number:</span>
+                    <strong id="displayContract" class="text-gray-800">TS-CONT-2026-001</strong>
+                </div>
+                <div>
+                    <span class="text-gray-500 block text-xs">Contact Person:</span>
+                    <strong id="displayContact" class="text-gray-800">Tedy Sutedja</strong>
+                </div>
+                <div>
+                    <span class="text-gray-500 block text-xs">Phone Number:</span>
+                    <strong id="displayPhone" class="text-gray-800">+64 21 000 0000</strong>
+                </div>
+                <div>
+                    <span class="text-gray-500 block text-xs">Email Address:</span>
+                    <strong id="displayEmail" class="text-gray-800">admin@bangkokthai.co.nz</strong>
+                </div>
+                <div class="col-span-2">
+                    <span class="text-gray-500 block text-xs">Physical Address:</span>
+                    <strong id="displayAddress" class="text-gray-800">Palmerston North, New Zealand</strong>
+                </div>
+                <div>
+                    <span class="text-gray-500 block text-xs">Subscription Tier:</span>
+                    <span id="displayTier" class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded font-semibold">FREE SOCIAL TIER</span>
+                </div>
+                <div>
+                    <span class="text-gray-500 block text-xs">Expiry Date:</span>
+                    <strong id="displayExpiry" class="text-red-600">2027-04-01</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Add New Tenant (Expanded with Contract #) -->
         <div id="newTenantModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
             <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
                 <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-circle-plus mr-2 text-green-600"></i>Register New Restaurant Tenant</h3>
                 <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tenant ID (Unique Slug, e.g. <i>pukekohe_cafe</i>)</label>
-                        <input type="text" id="newTenantId" placeholder="e.g. christchurch_bistro" class="w-full border border-gray-300 rounded-lg p-2.5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tenant ID (Unique Slug)</label>
+                            <input type="text" id="newTenantId" placeholder="e.g. pukekohe_cafe" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Contract Number (#)</label>
+                            <input type="text" id="newContractNo" placeholder="e.g. TS-CONT-2026-002" class="w-full border border-gray-300 rounded-lg p-2.5">
+                        </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant Business Name</label>
@@ -313,6 +354,30 @@
 
     <!-- JavaScript Tab, Tenant Management & Config Save Logic -->
     <script>
+        // Simulasi database lokal memori untuk menyimpan data tenant yang terdaftar
+        const tenantsDatabase = {
+            "bangkokthai": {
+                contractNo: "TS-CONT-2026-001",
+                tenantName: "Bangkok Thai Takeaway",
+                contactPerson: "Tedy Sutedja",
+                phone: "+64 21 000 0000",
+                email: "info@bangkokthaipalmy.co.nz",
+                address: "Palmerston North, New Zealand",
+                tier: "FREE SOCIAL TIER",
+                expiryDate: "2027-04-01"
+            },
+            "finedining_demo": {
+                contractNo: "TS-CONT-2026-050",
+                tenantName: "Auckland Fine Dining",
+                contactPerson: "Chef Marcus",
+                phone: "+64 9 555 1234",
+                email: "manager@aucklanddining.co.nz",
+                address: "Viaduct Harbour, Auckland",
+                tier: "ENTERPRISE",
+                expiryDate: "2027-12-31"
+            }
+        };
+
         function switchTab(tabNumber) {
             for (let i = 1; i <= 5; i++) {
                 document.getElementById(`tabContent${i}`).classList.add('hidden');
@@ -332,6 +397,7 @@
 
         function createNewTenant() {
             const tenantId = document.getElementById('newTenantId').value.trim().toLowerCase().replace(/\s+/g, '_');
+            const contractNo = document.getElementById('newContractNo').value.trim();
             const tenantName = document.getElementById('newTenantBusinessName').value.trim();
             const contactPerson = document.getElementById('newContactPerson').value.trim();
             const phone = document.getElementById('newPhone').value.trim();
@@ -340,25 +406,24 @@
             const tier = document.getElementById('newTenantTier').value;
             const expiryDate = document.getElementById('newExpiryDate').value;
 
-            if (!tenantId || !tenantName || !email) {
-                alert("Please fill in Tenant ID, Restaurant Name, and Email Address!");
+            if (!tenantId || !tenantName || !email || !contractNo) {
+                alert("Please fill in Tenant ID, Contract Number, Restaurant Name, and Email Address!");
                 return;
             }
 
-            const tenantPayload = {
-                tenantId: tenantId,
+            // Simpan ke database memori simulasi
+            tenantsDatabase[tenantId] = {
+                contractNo: contractNo,
                 tenantName: tenantName,
                 contactPerson: contactPerson,
                 phone: phone,
                 email: email,
                 address: address,
-                subscriptionTier: tier,
-                expiryDate: expiryDate,
-                createdAt: new Date().toISOString()
+                tier: tier.toUpperCase(),
+                expiryDate: expiryDate
             };
 
-            console.log("New Tenant Payload:", tenantPayload);
-
+            // Tambahkan ke dropdown select
             const select = document.getElementById('tenantSelect');
             const option = document.createElement('option');
             option.value = tenantId;
@@ -366,17 +431,26 @@
             select.appendChild(option);
             
             select.value = tenantId;
-            document.getElementById('tenantName').value = tenantName;
+            loadTenantConfig();
 
             closeNewTenantModal();
-            alert(`Tenant "${tenantName}" successfully registered with complete metadata!`);
+            alert(`Tenant "${tenantName}" (Contract: ${contractNo}) successfully registered!`);
         }
 
         function loadTenantConfig() {
-            const select = document.getElementById('tenantSelect');
-            const selectedText = select.options[select.selectedIndex].text;
-            const cleanName = selectedText.split(' (')[0];
-            document.getElementById('tenantName').value = cleanName;
+            const tenantId = document.getElementById('tenantSelect').value;
+            const tenantData = tenantsDatabase[tenantId];
+
+            if (tenantData) {
+                document.getElementById('tenantName').value = tenantData.tenantName;
+                document.getElementById('displayContract').textContent = tenantData.contractNo;
+                document.getElementById('displayContact').textContent = tenantData.contactPerson;
+                document.getElementById('displayPhone').textContent = tenantData.phone;
+                document.getElementById('displayEmail').textContent = tenantData.email;
+                document.getElementById('displayAddress').textContent = tenantData.address;
+                document.getElementById('displayTier').textContent = tenantData.tier;
+                document.getElementById('displayExpiry').textContent = tenantData.expiryDate;
+            }
         }
 
         function saveTenantConfig() {
@@ -384,6 +458,7 @@
             const tenantName = document.getElementById('tenantName').value;
             
             const configData = {
+                tenantId: tenantId,
                 tenantName: tenantName,
                 updatedAt: new Date().toISOString(),
                 modules: {
@@ -413,6 +488,11 @@
             console.log("Saving configuration for tenant:", tenantId, configData);
             alert(`Configuration for "${tenantName}" successfully saved! (Ready for Firebase Firestore synchronization).`);
         }
+
+        // Jalankan saat pertama load untuk menampilkan data Bangkok Thai
+        window.onload = function() {
+            loadTenantConfig();
+        };
     </script>
 </body>
 </html>

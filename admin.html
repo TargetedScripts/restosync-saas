@@ -3,99 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync | Client Dynamic Portal & Operations</title>
+    <title>RestoSync SaaS - Enterprise Manager Portal</title>
     <!-- Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDK Compat (App & Firestore) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
-        .custom-card { background-color: #1e293b; border: 1px solid #334155; }
+        body { background-color: #090d16; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+        .custom-card { background-color: #111827; border: 1px solid #1f2937; }
+        .custom-input { background-color: #030712; border: 1px solid #1f2937; color: #f1f5f9; }
+        .custom-input:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15); }
     </style>
 </head>
-<body class="font-sans antialiased min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
 
-    <!-- Header Portal Klien -->
-    <header style="background-color: #1e293b; border-bottom: 1px solid #334155;" class="px-6 py-4 flex justify-between items-center flex-wrap gap-4">
+    <!-- TOAST NOTIFICATION -->
+    <div id="toastNotification" class="fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center space-x-2 bg-emerald-600">
+        <i class="fa-solid fa-circle-check text-sm"></i>
+        <span id="toastText">Berhasil disimpan!</span>
+    </div>
+
+    <!-- TOP BAR -->
+    <header class="bg-[#111827] border-b border-[#1f2937] sticky top-0 z-40 px-6 py-4 flex justify-between items-center flex-wrap gap-4 shadow-md">
         <div class="flex items-center space-x-3">
-            <div class="bg-amber-500/10 border border-amber-500/30 text-amber-400 p-2.5 rounded-xl font-bold flex items-center justify-center">
-                <i class="fa-solid fa-store"></i>
+            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 rounded-xl flex items-center justify-center font-black shadow-lg shadow-amber-500/20">
+                <i class="fa-solid fa-utensils"></i>
             </div>
             <div>
-                <h1 id="clientBusinessName" class="text-base font-bold text-white">Loading Restaurant...</h1>
-                <span id="clientTierBadge" class="text-xs bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded border border-amber-500/30 font-semibold">-</span>
+                <div class="flex items-center space-x-2">
+                    <h1 class="font-bold text-white text-base">RestoSync Manager Portal</h1>
+                    <span id="dbStatusBadge" class="text-[10px] bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 px-2 py-0.5 rounded-full font-mono">Connecting...</span>
+                </div>
+                <p class="text-xs text-stone-400">Tenant ID: <span id="currentTenantId" class="text-amber-400 font-mono font-semibold">loading...</span></p>
             </div>
         </div>
         <div class="flex items-center space-x-3">
-            <span id="portalStatus" class="text-xs bg-yellow-600 text-white px-3 py-1 rounded-full"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i>Syncing Cloud...</span>
-            <a href="index.html" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold px-3.5 py-2 rounded-lg border border-gray-700 transition flex items-center space-x-1.5">
-                <i class="fa-solid fa-house text-amber-400"></i>
-                <span>Home</span>
+            <a id="liveStoreBtn" href="#" target="_blank" class="bg-[#1f2937] hover:bg-[#374151] text-stone-200 px-4 py-2.5 rounded-xl text-xs font-bold border border-zinc-700 transition flex items-center space-x-2 shadow-sm">
+                <i class="fa-solid fa-eye text-amber-400"></i><span>View Live Store</span>
             </a>
+            <button onclick="saveConfigToFirebase()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-amber-500/20 transition flex items-center space-x-2">
+                <i class="fa-solid fa-floppy-disk text-sm"></i><span>Save to Cloud</span>
+            </button>
         </div>
     </header>
 
-    <main class="container mx-auto px-6 py-8 flex-grow">
-        <!-- Informasi Metadata Klien -->
-        <div class="custom-card rounded-xl p-6 mb-8 shadow-lg">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-id-card mr-2"></i>Restaurant Profile & Metadata</h2>
-                <span id="contractDisplay" class="text-xs text-gray-400">Contract: <strong>-</strong></span>
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-6 py-8 w-full flex-grow space-y-8">
+        
+        <!-- STORE PROFILE & BRANDING SECTION -->
+        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
+            <div class="flex justify-between items-center border-b border-[#1f2937] pb-4">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
+                    <i class="fa-solid fa-store text-sm"></i><span>Store Information & Branding Metadata</span>
+                </h2>
+                <span class="text-[11px] text-stone-400">Dikendalikan langsung dari Cloud Firestore</span>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div><span class="text-gray-400 block text-xs">Contact Person:</span><strong id="pContact" class="text-white">-</strong></div>
-                <div><span class="text-gray-400 block text-xs">Phone Number:</span><strong id="pPhone" class="text-white">-</strong></div>
-                <div><span class="text-gray-400 block text-xs">Support Email:</span><strong id="pEmail" class="text-white">-</strong></div>
-                <div><span class="text-gray-400 block text-xs">Expiry Date:</span><strong id="pExpiry" class="text-red-400">-</strong></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Store / Business Name</label>
+                    <input type="text" id="inputStoreName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Tagline / Slogan</label>
+                    <input type="text" id="inputStoreTagline" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Phone Number</label>
+                    <input type="text" id="inputStorePhone" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Physical Address (New Zealand)</label>
+                    <input type="text" id="inputStoreAddress" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Logo Image URL</label>
+                    <input type="text" id="inputStoreLogo" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="./assets/images/logo.png">
+                </div>
             </div>
         </div>
 
-        <!-- Modul Aktif Berdasarkan Konfigurasi System Console (Feature Toggles) -->
-        <h2 class="text-base font-bold text-white mb-4"><i class="fa-solid fa-cubes mr-2 text-indigo-400"></i>Active Operational Modules (Cloud Controlled)</h2>
-        <div id="modulesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <!-- Dinamis dirender berdasarkan database Firestore -->
-        </div>
+        <!-- MENU MANAGEMENT SECTION -->
+        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
+            <div class="flex justify-between items-center border-b border-[#1f2937] pb-4 flex-wrap gap-3">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
+                    <i class="fa-solid fa-utensils text-sm"></i><span>Menu Catalogue & Pricing Management</span>
+                </h2>
+                <button onclick="addNewMenuItem()" class="bg-[#1f2937] hover:bg-[#374151] text-amber-400 px-4 py-2 rounded-xl text-xs font-bold border border-zinc-700 transition flex items-center space-x-2 shadow-sm">
+                    <i class="fa-solid fa-plus"></i><span>Add New Menu Item</span>
+                </button>
+            </div>
 
-        <!-- Quick Launch Module Buttons (POS, Menu, Staff) -->
-        <div class="custom-card rounded-xl p-6 shadow-lg">
-            <h2 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-4"><i class="fa-solid fa-rocket mr-2"></i>Quick Access Operational Modules</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <a href="cashier.html" class="bg-gray-900/60 border border-gray-700 hover:border-amber-500 p-4 rounded-xl text-white transition flex items-center space-x-3">
-                    <div class="text-amber-400 text-xl"><i class="fa-solid fa-cash-register"></i></div>
-                    <div>
-                        <strong class="block text-sm">POS Cashier</strong>
-                        <span class="text-xs text-gray-400">15% NZ GST & Orders</span>
-                    </div>
-                </a>
-                <a href="menu.html" class="bg-gray-900/60 border border-gray-700 hover:border-amber-500 p-4 rounded-xl text-white transition flex items-center space-x-3">
-                    <div class="text-indigo-400 text-xl"><i class="fa-solid fa-utensils"></i></div>
-                    <div>
-                        <strong class="block text-sm">Menu Catalog</strong>
-                        <span class="text-xs text-gray-400">Bilingual EN / 中文</span>
-                    </div>
-                </a>
-                <a href="staff.html" class="bg-gray-900/60 border border-gray-700 hover:border-amber-500 p-4 rounded-xl text-white transition flex items-center space-x-3">
-                    <div class="text-purple-400 text-xl"><i class="fa-solid fa-users"></i></div>
-                    <div>
-                        <strong class="block text-sm">Staff Roster</strong>
-                        <span class="text-xs text-gray-400">Shifts & NZ Standards</span>
-                    </div>
-                </a>
+            <div id="adminMenuList" class="space-y-4">
+                <!-- Dynamic Menu List Generated Here -->
+                <div class="text-center py-8 text-stone-500 text-xs">Memuat katalog menu dari database...</div>
             </div>
         </div>
+
     </main>
 
-    <!-- Footer -->
-    <footer style="background-color: #1e293b; border-top: 1px solid #334155;" class="py-6 text-center text-xs text-gray-400">
-        <p>&copy; 2026 RestoSync SaaS &bull; Powered & Developed by TargetedScripts.com</p>
+    <!-- FOOTER -->
+    <footer class="bg-[#030712] border-t border-[#1f2937] py-6 text-center text-xs text-stone-500">
+        RestoSync SaaS Enterprise Manager Portal &bull; Secured & Powered by Firebase Firestore & TargetedScripts.com
     </footer>
 
-    <!-- Script Dynamic Loader dari Firebase -->
+    <!-- FIREBASE & ADMIN LOGIC -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
@@ -106,107 +122,171 @@
             appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
         };
 
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Tangkap parameter tenant dari URL (misal: admin.html?tenant=bangkokthai)
         const urlParams = new URLSearchParams(window.location.search);
-        const tenantId = urlParams.get('tenant');
+        const TENANT_ID = urlParams.get('tenant') || 'bangkokthai';
+        document.getElementById('currentTenantId').innerText = TENANT_ID;
+        document.getElementById('liveStoreBtn.href', `index.html?tenant=${TENANT_ID}`);
 
-        async function loadTenantPortal() {
-            const statusBadge = document.getElementById('portalStatus');
+        let activeConfig = {
+            store: {},
+            branding: {},
+            menuItems: []
+        };
 
-            if (!tenantId) {
-                statusBadge.className = "text-xs bg-red-600 text-white px-3 py-1 rounded-full";
-                statusBadge.textContent = "Missing Tenant Parameter";
-                document.getElementById('clientBusinessName').textContent = "Error: No Tenant Specified";
-                alert("Please specify a tenant ID in the URL, e.g., admin.html?tenant=bangkokthai");
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toastNotification');
+            const text = document.getElementById('toastText');
+            text.innerText = message;
+            toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-100 flex items-center space-x-2 ${isError ? 'bg-red-600' : 'bg-emerald-600'}`;
+            setTimeout(() => {
+                toast.className = toast.className.replace('opacity-100', 'opacity-0');
+            }, 3500);
+        }
+
+        // FETCH DATA DARI FIRESTORE DENGAN FALLBACK AMAN
+        document.addEventListener('DOMContentLoaded', () => {
+            const statusBadge = document.getElementById('dbStatusBadge');
+            
+            db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    
+                    // Mendukung struktur 'config' atau 'profile'
+                    if (data.config) {
+                        activeConfig = data.config;
+                    } else if (data.profile) {
+                        activeConfig.store = {
+                            name: data.profile.tenantName || 'Bangkok Thai Takeaway',
+                            tagline: 'Authentic Thai Cuisine in Palmerston North',
+                            phone: data.profile.phone || '+64 6 356 0000',
+                            address: data.profile.address || '642 Pioneer Highway, Palmerston North'
+                        };
+                        activeConfig.branding = { logo: './assets/images/RS Logo.png' };
+                        activeConfig.menuItems = [
+                            { id: "M1", name: "Pad Thai Chicken", category: "Noodles", price: 18.50, description: "Classic Thai stir-fried rice noodles.", isHidden: false },
+                            { id: "M2", name: "Green Curry Beef", category: "Curry", price: 19.50, description: "Traditional green curry with tender beef.", isHidden: false }
+                        ];
+                    }
+
+                    populateAdminForm();
+                    statusBadge.className = "text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-mono";
+                    statusBadge.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1"></i>Connected';
+                } else {
+                    statusBadge.className = "text-[10px] bg-red-500/10 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full font-mono";
+                    statusBadge.innerText = "Tenant Not Found";
+                    showToast("Tenant tidak ditemukan di database Firestore!", true);
+                }
+            }).catch(err => {
+                console.error("Firebase connection error:", err);
+                statusBadge.className = "text-[10px] bg-red-500/10 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full font-mono";
+                statusBadge.innerText = "Sync Error";
+                showToast("Gagal terhubung ke database cloud.", true);
+            });
+        });
+
+        function populateAdminForm() {
+            const store = activeConfig.store || {};
+            const branding = activeConfig.branding || {};
+
+            document.getElementById('inputStoreName').value = store.name || '';
+            document.getElementById('inputStoreTagline').value = store.tagline || '';
+            document.getElementById('inputStorePhone').value = store.phone || '';
+            document.getElementById('inputStoreAddress').value = store.address || '';
+            document.getElementById('inputStoreLogo').value = branding.logo || '';
+
+            renderAdminMenuList();
+        }
+
+        function renderAdminMenuList() {
+            const items = activeConfig.menuItems || [];
+            const container = document.getElementById('adminMenuList');
+
+            if (items.length === 0) {
+                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-6">Belum ada menu item yang terdaftar.</p>`;
                 return;
             }
 
-            try {
-                const docRef = await db.collection("tenants").doc(tenantId).get();
-                if (!docRef.exists) {
-                    statusBadge.className = "text-xs bg-red-600 text-white px-3 py-1 rounded-full";
-                    statusBadge.textContent = "Tenant Not Found";
-                    document.getElementById('clientBusinessName').textContent = `Tenant "${tenantId}" Not Found`;
-                    alert(`Tenant configuration for ID "${tenantId}" was not found in Firebase Cloud!`);
-                    return;
-                }
+            container.innerHTML = items.map((item, idx) => `
+                <div class="bg-[#030712] border border-[#1f2937] rounded-2xl p-4 grid grid-cols-1 md:grid-cols-6 gap-4 items-center text-xs shadow-inner">
+                    <div>
+                        <label class="block text-stone-500 text-[10px] mb-1 font-semibold">ITEM ID</label>
+                        <input type="text" value="${item.id || ''}" onchange="updateItemField(${idx}, 'id', this.value)" class="w-full bg-[#111827] border border-[#1f2937] rounded-xl px-3 py-2 text-stone-200 font-mono">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-stone-500 text-[10px] mb-1 font-semibold">MENU NAME</label>
+                        <input type="text" value="${item.name || ''}" onchange="updateItemField(${idx}, 'name', this.value)" class="w-full bg-[#111827] border border-[#1f2937] rounded-xl px-3 py-2 text-stone-200 font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-stone-500 text-[10px] mb-1 font-semibold">CATEGORY</label>
+                        <input type="text" value="${item.category || ''}" onchange="updateItemField(${idx}, 'category', this.value)" class="w-full bg-[#111827] border border-[#1f2937] rounded-xl px-3 py-2 text-stone-200">
+                    </div>
+                    <div>
+                        <label class="block text-stone-500 text-[10px] mb-1 font-semibold">PRICE (NZD $)</label>
+                        <input type="number" step="0.01" value="${item.price || 0}" onchange="updateItemField(${idx}, 'price', parseFloat(this.value))" class="w-full bg-[#111827] border border-[#1f2937] rounded-xl px-3 py-2 text-stone-200 font-bold text-amber-400">
+                    </div>
+                    <div class="flex justify-end items-center space-x-3 pt-4">
+                        <label class="flex items-center space-x-1.5 cursor-pointer text-stone-400 select-none">
+                            <input type="checkbox" ${item.isHidden ? 'checked' : ''} onchange="updateItemField(${idx}, 'isHidden', this.checked)" class="rounded bg-[#111827] border-zinc-700 text-amber-500 w-4 h-4 cursor-pointer">
+                            <span class="text-xs">Hide</span>
+                        </label>
+                        <button onclick="removeMenuItem(${idx})" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 px-3 py-2 rounded-xl border border-red-900/40 transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-                const data = docRef.data();
-                const profile = data.profile || {};
-                const modules = data.modules || {};
-
-                // Render Profil Klien
-                document.getElementById('clientBusinessName').textContent = profile.tenantName || 'RestoSync Client';
-                document.getElementById('clientTierBadge').textContent = profile.tier || 'STANDARD';
-                document.getElementById('contractDisplay').innerHTML = `Contract: <strong>${profile.contractNo || '-'}</strong>`;
-                document.getElementById('pContact').textContent = profile.contactPerson || '-';
-                document.getElementById('pPhone').textContent = profile.phone || '-';
-                document.getElementById('pEmail').textContent = profile.email || '-';
-                document.getElementById('pExpiry').textContent = profile.expiryDate || '-';
-
-                statusBadge.className = "text-xs bg-green-600 text-white px-3 py-1 rounded-full";
-                statusBadge.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i>Synced with Cloud';
-
-                // Pemetaan modul berdasarkan feature toggles
-                const moduleMeta = {
-                    toggle_upload_logo: { name: "Self Logo Upload", icon: "fa-image" },
-                    toggle_custom_colors: { name: "Theme Color Customization", icon: "fa-palette" },
-                    toggle_seo_metadata: { name: "SEO Metadata Management", icon: "fa-globe" },
-                    toggle_custom_domain: { name: "Custom Domain (.co.nz)", icon: "fa-network-wired" },
-                    toggle_online_ordering: { name: "General Online Ordering", icon: "fa-cart-shopping" },
-                    toggle_qr_dine_in: { name: "QR Scan-to-Order (Dine-In)", icon: "fa-qrcode" },
-                    toggle_table_reservation: { name: "Table Reservation & Floorplan", icon: "fa-chair" },
-                    toggle_scheduled_orders: { name: "Scheduled Orders (Bakery)", icon: "fa-calendar-days" },
-                    toggle_kitchen_display_system: { name: "Kitchen Display System (KDS)", icon: "fa-fire-burner" },
-                    toggle_fcp_temperature_log: { name: "MPI FCP Temp Logging", icon: "fa-temperature-low" },
-                    toggle_allergen_management: { name: "Food Allergen Management", icon: "fa-triangle-exclamation" },
-                    toggle_cleaning_sanitation_checklist: { name: "Cleaning & Sanitation Checklist", icon: "fa-spray-can-sparkles" },
-                    toggle_gst_calculation: { name: "Automated 15% NZ GST Calculator", icon: "fa-calculator" },
-                    toggle_receipt_print: { name: "Physical Receipt Printing", icon: "fa-receipt" },
-                    toggle_cash_drawer_audit_trail: { name: "Cash Drawer Audit Trail", icon: "fa-cash-register" },
-                    toggle_void_refund_authorization: { name: "Manager PIN Void/Refund Auth", icon: "fa-shield-halved" },
-                    toggle_advanced_analytics: { name: "Advanced Sales Dashboard", icon: "fa-chart-line" },
-                    toggle_vip_guest_profiles: { name: "VVIP Guest Profiles & History", icon: "fa-crown" },
-                    toggle_vintage_cellar_tracking: { name: "Wine Cellar Inventory Tracking", icon: "fa-wine-bottle" },
-                    toggle_service_role_permissions: { name: "Strict Staff Role Hierarchy", icon: "fa-user-lock" }
-                };
-
-                const container = document.getElementById('modulesContainer');
-                container.innerHTML = "";
-
-                let activeCount = 0;
-                for (const [key, active] of Object.entries(modules)) {
-                    if (active && moduleMeta[key]) {
-                        activeCount++;
-                        const m = moduleMeta[key];
-                        const card = document.createElement('div');
-                        card.className = "custom-card p-4 rounded-xl border border-gray-700 hover:border-amber-500 transition flex items-center space-x-3 shadow-sm";
-                        card.innerHTML = `
-                            <div class="bg-amber-500/10 text-amber-400 p-3 rounded-lg text-base flex-shrink-0"><i class="fa-solid ${m.icon}"></i></div>
-                            <div>
-                                <h3 class="font-bold text-white text-xs mb-0.5">${m.name}</h3>
-                                <span class="text-[10px] text-green-400"><i class="fa-solid fa-circle text-[5px] mr-1"></i>Active Module</span>
-                            </div>
-                        `;
-                        container.appendChild(card);
-                    }
-                }
-
-                if (activeCount === 0) {
-                    container.innerHTML = `<div class="col-span-full text-center text-gray-500 text-sm py-4">No active modules configured for this tenant.</div>`;
-                }
-
-            } catch (error) {
-                console.error("Error loading tenant portal:", error);
-                statusBadge.className = "text-xs bg-red-600 text-white px-3 py-1 rounded-full";
-                statusBadge.textContent = "Cloud Sync Error";
+        function updateItemField(idx, field, val) {
+            if (activeConfig.menuItems[idx]) {
+                activeConfig.menuItems[idx][field] = val;
             }
         }
 
-        window.onload = loadTenantPortal;
+        function addNewMenuItem() {
+            if (!activeConfig.menuItems) activeConfig.menuItems = [];
+            activeConfig.menuItems.push({
+                id: "M" + (activeConfig.menuItems.length + 1),
+                name: "New Gourmet Dish",
+                category: "Specials",
+                price: 15.00,
+                description: "Freshly prepared house specialty.",
+                isHidden: false
+            });
+            renderAdminMenuList();
+        }
+
+        function removeMenuItem(idx) {
+            if (confirm("Apakah Anda yakin ingin menghapus menu item ini?")) {
+                activeConfig.menuItems.splice(idx, 1);
+                renderAdminMenuList();
+            }
+        }
+
+        function saveConfigToFirebase() {
+            if (!activeConfig.store) activeConfig.store = {};
+            if (!activeConfig.branding) activeConfig.branding = {};
+
+            activeConfig.store.name = document.getElementById('inputStoreName').value;
+            activeConfig.store.tagline = document.getElementById('inputStoreTagline').value;
+            activeConfig.store.phone = document.getElementById('inputStorePhone').value;
+            activeConfig.store.address = document.getElementById('inputStoreAddress').value;
+            activeConfig.branding.logo = document.getElementById('inputStoreLogo').value;
+
+            db.collection("tenants").doc(TENANT_ID).set({
+                config: activeConfig,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).then(() => {
+                showToast("Konfigurasi & menu berhasil disimpan ke Cloud Firestore!");
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }).catch(err => {
+                console.error("Error saving:", err);
+                showToast("Gagal menyimpan ke Firebase: " + err.message, true);
+            });
+        }
     </script>
 </body>
 </html>

@@ -12,6 +12,7 @@
         body { background-color: #090d16; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
         .custom-card { background-color: #111827; border: 1px solid #1f2937; }
         .custom-input { background-color: #030712; border: 1px solid #1f2937; color: #f1f5f9; }
+        .custom-input:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
@@ -19,7 +20,7 @@
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center space-x-2 bg-emerald-600">
         <i class="fa-solid fa-circle-check text-sm"></i>
-        <span>Settings saved successfully!</span>
+        <span>Settings successfully saved to Firebase Cloud!</span>
     </div>
 
     <!-- HEADER -->
@@ -30,7 +31,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-white text-base">RestoSync SaaS &bull; Super Admin Console</h1>
-                <p class="text-xs text-stone-400">Global Tenant & Feature Management Hub</p>
+                <p class="text-xs text-stone-400">Global Tenant, Contract & Feature Management Hub</p>
             </div>
         </div>
         <div>
@@ -53,6 +54,36 @@
             </div>
             <div class="text-right">
                 <span id="systemStatusBadge" class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full font-mono">System Operational</span>
+            </div>
+        </div>
+
+        <!-- CONTRACT & SUBSCRIPTION DETAILS SECTION -->
+        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                <i class="fa-solid fa-file-contract text-sm"></i><span>Contract Metadata & Subscription Rights</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Contract Number (#)</label>
+                    <input type="text" id="inputContractNo" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="RS-2026-000X">
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Subscription Tier</label>
+                    <select id="inputSubTier" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                        <option value="Free Social Tier">Free Social Tier</option>
+                        <option value="Standard Enterprise">Standard Enterprise</option>
+                        <option value="Premium Multi-Location">Premium Multi-Location</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Expiry Date</label>
+                    <input type="date" id="inputExpiryDate" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                </div>
+                <div class="md:col-span-3">
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Assigned User Rights & Access Permissions</label>
+                    <input type="text" id="inputUserRights" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Manager Portal, POS Access, Inventory Control, KDS">
+                </div>
             </div>
         </div>
 
@@ -134,7 +165,6 @@
 
         let currentActiveTenant = '';
         
-        // Mapping kunci modul agar fleksibel mendeteksi berbagai variasi penamaan data di database
         const moduleMapping = {
             toggle_upload_logo: ['toggle_upload_logo', 'selfLogoUpload', 'logoUpload'],
             toggle_custom_colors: ['toggle_custom_colors', 'themeColorCustomization', 'customColors'],
@@ -172,7 +202,6 @@
                     select.appendChild(opt);
                 });
 
-                // Prioritaskan bangkokthaipalmy jika ada di dalam Firestore
                 select.value = 'bangkokthaipalmy';
                 if (!select.value && firstTenant) select.value = firstTenant;
                 
@@ -188,16 +217,27 @@
         function switchTenant(tenantId) {
             currentActiveTenant = tenantId;
             db.collection("tenants").doc(tenantId).get().then((doc) => {
-                // Reset semua checkbox ke false terlebih dahulu
+                // Reset form
                 Object.keys(moduleMapping).forEach(uiKey => {
                     const cb = document.getElementById(uiKey);
                     if (cb) cb.checked = false;
                 });
+                document.getElementById('inputContractNo').value = '';
+                document.getElementById('inputSubTier').value = 'Free Social Tier';
+                document.getElementById('inputExpiryDate').value = '';
+                document.getElementById('inputUserRights').value = '';
 
                 if (doc.exists) {
                     const data = doc.data();
                     
-                    // Gabungkan semua data dari berbagai lapis dokumen (modules, config, atau root)
+                    // Populate Contract & Rights info if present
+                    const contract = data.contract || data.profile || {};
+                    document.getElementById('inputContractNo').value = contract.contractNo || contract.contractNumber || '';
+                    document.getElementById('inputSubTier').value = contract.subTier || contract.tier || 'Free Social Tier';
+                    document.getElementById('inputExpiryDate').value = contract.expiryDate || '';
+                    document.getElementById('inputUserRights').value = contract.userRights || contract.rights || '';
+
+                    // Populate Modules
                     const rawData = { 
                         ...(data.modules || {}), 
                         ...(data.config?.modules || {}), 
@@ -216,7 +256,7 @@
                     });
                 }
             }).catch(err => {
-                console.error("Error loading tenant modules:", err);
+                console.error("Error loading tenant details:", err);
             });
         }
 
@@ -234,13 +274,21 @@
                 }
             });
 
+            const contractData = {
+                contractNo: document.getElementById('inputContractNo').value,
+                subTier: document.getElementById('inputSubTier').value,
+                expiryDate: document.getElementById('inputExpiryDate').value,
+                userRights: document.getElementById('inputUserRights').value
+            };
+
             db.collection("tenants").doc(currentActiveTenant).set({
                 modules: updatedModules,
+                contract: contractData,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
-                showToast(`Modules for [${currentActiveTenant}] successfully updated!`);
+                showToast(`Settings for [${currentActiveTenant}] successfully saved to cloud!`);
             }).catch(err => {
-                console.error("Error saving modules:", err);
+                console.error("Error saving settings:", err);
                 showToast("Failed to save to Firebase: " + err.message, true);
             });
         }

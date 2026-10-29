@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync SaaS - Restaurant Manager & Owner Control Panel</title>
+    <title>RestoSync SaaS - Restaurant Manager Control Panel</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -19,19 +19,13 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
 
-    <!-- PASSWORD AUTH GUARD (LOGIN PROMPT MENGGUNAKAN ADMIN PASSWORD DARI TENANT DATABASE) -->
-    <script>
-        // Catatan: Autentikasi akan divalidasi setelah data tenant ditarik dari Firestore.
-        // Script ini bertindak sebagai gerbang pengaman awal agar tidak ada backdoor.
-    </script>
-
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center space-x-2 bg-emerald-600">
         <i class="fa-solid fa-circle-check text-sm"></i>
         <span id="toastText">Changes successfully saved!</span>
     </div>
 
-    <!-- HEADER & TENANT INFO -->
+    <!-- HEADER -->
     <header class="bg-[#111827] border-b border-[#1f2937] px-8 py-4 flex justify-between items-center shadow-md">
         <div class="flex items-center space-x-3">
             <div id="tenantLogoHeader" class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 rounded-xl flex items-center justify-center font-black shadow-lg shadow-amber-500/20 overflow-hidden">
@@ -54,7 +48,7 @@
         </div>
     </header>
 
-    <!-- NAVIGATION TABS (DYNAMICALLY RESTRICTED BY PERMISSIONS) -->
+    <!-- NAVIGATION TABS -->
     <nav class="bg-[#030712] border-b border-[#1f2937] px-8 flex space-x-2 overflow-x-auto">
         <button onclick="switchTab('tab-branding')" id="btn-tab-branding" class="tab-btn px-5 py-3.5 text-xs font-bold text-amber-400 border-b-2 border-amber-500 flex items-center space-x-2 transition">
             <i class="fa-solid fa-paintbrush"></i><span>Branding & Hours</span>
@@ -79,6 +73,17 @@
     <!-- MAIN CONTENT CONTAINER -->
     <main class="max-w-7xl mx-auto px-8 py-8 w-full flex-grow space-y-6">
 
+        <!-- TRACING DEBUG CONSOLE PANEL -->
+        <div class="custom-card rounded-3xl p-4 space-y-2 border border-amber-500/30">
+            <div class="flex justify-between items-center text-xs font-bold text-amber-400">
+                <span><i class="fa-solid fa-terminal mr-2"></i>Live Data Tracing Log (Buka F12 Console untuk detail lengkap)</span>
+                <span id="traceStatus" class="text-[10px] text-stone-400 font-mono">Initializing...</span>
+            </div>
+            <div id="traceLogBox" class="bg-[#030712] p-3 rounded-xl text-[11px] font-mono text-cyan-400 max-h-28 overflow-y-auto space-y-1">
+                [TRACING] Starting initialization sequence...
+            </div>
+        </div>
+
         <!-- TAB 1: BRANDING, THEMES, OFFICE HOURS & HERO EXTRAS -->
         <div id="tab-branding" class="tab-content active space-y-6">
             
@@ -100,19 +105,15 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-stone-400 mb-1.5 font-semibold">Background Theme Color</label>
-                        <div class="flex items-center space-x-3">
-                            <input type="color" id="bgColor" value="#090d16" class="w-10 h-10 rounded-xl bg-transparent cursor-pointer">
-                            <input type="text" id="bgColorText" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" value="#090d16">
-                        </div>
+                        <label class="block text-stone-400 mb-1.5 font-semibold text-cyan-300">Client .JS Asset Path (Linked to Repo)</label>
+                        <input type="text" id="jsAssetUrlDisplay" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-cyan-300 font-mono" readonly>
                     </div>
                 </div>
 
-                <!-- LOGO COMPRESSION & ZOOM CONTROLS (+ / -) -->
                 <div class="pt-4 border-t border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-6 items-center text-xs">
                     <div>
                         <label class="block text-stone-400 mb-1.5 font-semibold">Company Logo URL / Asset</label>
-                        <input type="text" id="logoUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="https://...">
+                        <input type="text" id="logoUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/BangkokThaiLogo.png">
                     </div>
                     <div>
                         <label class="block text-stone-400 mb-1.5 font-semibold">Logo Display Scale (Zoom In / Out)</label>
@@ -125,35 +126,33 @@
                 </div>
             </div>
 
-            <!-- HERO SECTION & 3 EXTRA MARKETING FIELDS -->
+            <!-- HERO SECTION & 3 HERO IMAGES -->
             <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                    <i class="fa-solid fa-bullhorn text-sm"></i><span>Hero Section & 3 Extra Marketing Texts</span>
+                    <i class="fa-solid fa-bullhorn text-sm"></i><span>Default Hero Images (Up to 3 Slots)</span>
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
                     <div>
-                        <label class="block text-stone-400 mb-1.5 font-semibold">Hero Extra Field 1 (e.g. Authentic)</label>
-                        <input type="text" id="heroExtra1" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Authentic Recipes">
+                        <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400">Hero Image 1 URL</label>
+                        <input type="text" id="heroImage1" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/Hero01.jpg">
                     </div>
                     <div>
-                        <label class="block text-stone-400 mb-1.5 font-semibold">Hero Extra Field 2 (e.g. Freshly Made)</label>
-                        <input type="text" id="heroExtra2" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Freshly Made Daily">
+                        <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400">Hero Image 2 URL</label>
+                        <input type="text" id="heroImage2" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/Hero02.jpg">
                     </div>
                     <div>
-                        <label class="block text-stone-400 mb-1.5 font-semibold">Hero Extra Field 3 (e.g. Traditional Taste)</label>
-                        <input type="text" id="heroExtra3" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Traditional Taste">
+                        <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400">Hero Image 3 URL</label>
+                        <input type="text" id="heroImage3" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/Hero03.jpg">
                     </div>
                 </div>
             </div>
 
-            <!-- OFFICE HOURS (DAILY OPEN/CLOSE TEXT FIELDS) -->
+            <!-- OFFICE HOURS -->
             <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
                     <i class="fa-solid fa-clock text-sm"></i><span>Office Hours (Daily Opening & Closing Schedule)</span>
                 </h2>
-                <div id="officeHoursContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-                    <!-- Dynamic daily slots injected via JS -->
-                </div>
+                <div id="officeHoursContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs"></div>
             </div>
 
         </div>
@@ -170,7 +169,6 @@
                     </button>
                 </div>
                 
-                <!-- MENU ITEMS TABLE / LIST VIEW -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>
@@ -185,9 +183,7 @@
                                 <th class="py-3 px-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="menuTableBody" class="divide-y divide-zinc-800/50">
-                            <!-- Injected dynamically -->
-                        </tbody>
+                        <tbody id="menuTableBody" class="divide-y divide-zinc-800/50"></tbody>
                     </table>
                 </div>
             </div>
@@ -250,45 +246,91 @@
         const db = firebase.firestore();
 
         const urlParams = new URLSearchParams(window.location.search);
-        const tenantId = urlParams.get('tenant') || 'boluhalus';
+        const tenantId = urlParams.get('tenant') || 'bangkokthai';
 
         let tenantData = {};
         let currentLogoScale = 100;
 
+        function addTrace(msg, isError = false) {
+            const time = new Date().toLocaleTimeString();
+            console.log(`[TRACING ${time}] ${msg}`);
+            const box = document.getElementById('traceLogBox');
+            if(box) {
+                box.innerHTML += `<div class="${isError ? 'text-red-400 font-bold' : 'text-cyan-400'}">[${time}] ${msg}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('headerTenantId').innerText = `Tenant ID: ${tenantId}`;
+            addTrace(`Initializing panel for tenant: [${tenantId}]`);
             authenticateManager();
         });
 
-        // AUTENTIKASI PASSWORD ADMIN.HTML BERDASARKAN DATABASE TENANT
         function authenticateManager() {
+            addTrace(`Fetching credentials from Firestore for tenant: ${tenantId}...`, false);
             db.collection("tenants").doc(tenantId).get().then(doc => {
                 if(doc.exists) {
                     tenantData = doc.data();
+                    addTrace(`Tenant document successfully retrieved from Firestore.`, false);
+                    
                     const profile = tenantData.profile || {};
                     const correctPassword = profile.adminPassword || 'admin';
 
                     let userPwd = prompt(`SECURITY LOGIN: Enter Admin Password for [${tenantId.toUpperCase()}]:`);
                     if (userPwd === correctPassword) {
-                        renderManagerPanel();
+                        addTrace(`Authentication PASSED. Loading client assets...`, false);
+                        loadClientJsAsset(profile.jsAssetUrl);
                     } else {
-                        alert("Access Denied! Incorrect Admin Password.");
+                        addTrace(`Authentication FAILED. Incorrect password entered.`, true);
+                        alert("Access Denied! Incorrect Password.");
                         window.location.href = "about:blank";
                     }
                 } else {
-                    alert("Tenant configuration not found in Cloud!");
+                    addTrace(`FATAL: Tenant [${tenantId}] not found in Firestore database!`, true);
+                    alert("Tenant not found in Cloud database!");
                     window.location.href = "about:blank";
                 }
             }).catch(err => {
-                console.error("Auth error:", err);
-                alert("Failed to connect to Firebase.");
+                addTrace(`Firestore connection error: ${err.message}`, true);
             });
+        }
+
+        function loadClientJsAsset(jsPath) {
+            const path = jsPath || `assets/js/${tenantId}.js`;
+            document.getElementById('jsAssetUrlDisplay').value = path;
+            addTrace(`Target JS Asset Path resolved to: ${path}`, false);
+
+            if(!jsPath) {
+                addTrace(`No jsAssetUrl defined in Firestore. Relying 100% on Firestore fallback data.`, false);
+                renderManagerPanel();
+                return;
+            }
+
+            addTrace(`Attempting to fetch/inject external script from: ${path}`, false);
+            const scriptTag = document.createElement('script');
+            scriptTag.src = path;
+            scriptTag.onload = function() {
+                addTrace(`SUCCESS: External .js asset loaded successfully!`, false);
+                if(window.clientMenuData) {
+                    addTrace(`Found window.clientMenuData global object inside script. Merging menu & hours.`, false);
+                    tenantData.menuItems = window.clientMenuData.menuItems || tenantData.menuItems;
+                    tenantData.officeHours = window.clientMenuData.officeHours || tenantData.officeHours;
+                } else {
+                    addTrace(`Warning: window.clientMenuData not found in .js file, using Firestore data.`, true);
+                }
+                renderManagerPanel();
+            };
+            scriptTag.onerror = function() {
+                addTrace(`ERROR: Failed to load script from ${path}. CORS or 404 Not Found issue. Falling back to Firestore data.`, true);
+                renderManagerPanel();
+            };
+            document.head.appendChild(scriptTag);
         }
 
         function showToast(message, isError = false) {
             const toast = document.getElementById('toastNotification');
-            const text = document.getElementById('toastText');
-            text.innerText = message;
+            toast.querySelector('span').innerText = message;
             toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-100 flex items-center space-x-2 ${isError ? 'bg-red-600' : 'bg-emerald-600'}`;
             setTimeout(() => { toast.className = toast.className.replace('opacity-100', 'opacity-0'); }, 3500);
         }
@@ -308,6 +350,7 @@
         }
 
         function renderManagerPanel() {
+            addTrace(`Rendering manager panel UI components...`, false);
             const profile = tenantData.profile || {};
             const branding = tenantData.branding || {};
             const hours = tenantData.officeHours || {
@@ -318,19 +361,11 @@
             document.getElementById('headerStoreName').innerText = profile.tenantName || tenantId;
             document.getElementById('storeName').value = profile.tenantName || '';
             document.getElementById('primaryColor').value = branding.primaryColor || '#f59e0b';
-            document.getElementById('primaryColorText').value = branding.primaryColor || '#f59e0b';
-            document.getElementById('bgColor').value = branding.bgColor || '#090d16';
-            document.getElementById('bgColorText').value = branding.bgColor || '#090d16';
-            document.getElementById('logoUrl').value = branding.logoUrl || '';
-            currentLogoScale = branding.logoScale || 100;
-            document.getElementById('logoScaleDisplay').innerText = currentLogoScale + '%';
+            document.getElementById('logoUrl').value = profile.logoUrl || '';
+            document.getElementById('heroImage1').value = profile.heroImage1 || '';
+            document.getElementById('heroImage2').value = profile.heroImage2 || '';
+            document.getElementById('heroImage3').value = profile.heroImage3 || '';
 
-            // 3 Extra Hero Marketing Fields
-            document.getElementById('heroExtra1').value = branding.heroExtra1 || 'Authentic Recipes';
-            document.getElementById('heroExtra2').value = branding.heroExtra2 || 'Freshly Made Daily';
-            document.getElementById('heroExtra3').value = branding.heroExtra3 || 'Traditional Taste';
-
-            // Render Office Hours Fields (Daily open/close text fields)
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const hoursContainer = document.getElementById('officeHoursContainer');
             hoursContainer.innerHTML = '';
@@ -338,15 +373,14 @@
                 hoursContainer.innerHTML += `
                     <div class="bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 space-y-1.5">
                         <label class="block text-stone-300 font-semibold">${day}</label>
-                        <input type="text" id="hour_${day}" value="${hours[day] || '09:00 - 22:00'}" class="w-full custom-input rounded-xl px-3 py-2 text-stone-200 font-mono" placeholder="09:00 - 22:00 or Closed">
+                        <input type="text" id="hour_${day}" value="${hours[day] || '09:00 - 22:00'}" class="w-full custom-input rounded-xl px-3 py-2 text-stone-200 font-mono">
                     </div>
                 `;
             });
 
-            // Render Menu Items Table with Tick/Untick attributes
             renderMenuTable(tenantData.menuItems || []);
+            document.getElementById('traceStatus').innerText = "Ready & Synced";
 
-            // Restricted Tab Check based on Super Admin Rights
             const rights = tenantData.rights || {};
             if(rights.right_pos_access === false) document.getElementById('btn-tab-pos').style.display = 'none';
             if(rights.right_inventory_control === false) document.getElementById('btn-tab-inventory').style.display = 'none';
@@ -355,6 +389,7 @@
         }
 
         function renderMenuTable(items) {
+            addTrace(`Rendering ${items.length} menu items into the table catalog.`, false);
             const tbody = document.getElementById('menuTableBody');
             tbody.innerHTML = '';
             items.forEach((item, index) => {
@@ -370,9 +405,8 @@
                             <option value="None" ${item.spiceLevel==='None'?'selected':''}>None</option>
                             <option value="Mild" ${item.spiceLevel==='Mild'?'selected':''}>Mild</option>
                             <option value="Hot" ${item.spiceLevel==='Hot'?'selected':''}>Hot</option>
-                            <option value="Extra Hot" ${item.spiceLevel==='Extra Hot'?'selected':''}>Extra Hot</option>
                         </select></td>
-                        <td class="py-3 px-4 text-right"><button onclick="deleteMenuItem(${index})" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-lg font-bold transition"><i class="fa-solid fa-trash"></i></button></td>
+                        <td class="py-3 px-4 text-right"><button onclick="deleteMenuItem(${index})" class="bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg font-bold"><i class="fa-solid fa-trash"></i></button></td>
                     </tr>
                 `;
             });
@@ -394,17 +428,14 @@
             renderMenuTable(tenantData.menuItems);
         }
 
-        // SIMPAN PERUBAHAN KE FIREBASE CLOUD
         function saveChanges() {
+            addTrace(`Saving changes to Firebase Cloud...`, false);
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             let newHours = {};
-            days.forEach(day => {
-                newHours[day] = document.getElementById(`hour_${day}`).value;
-            });
+            days.forEach(day => { newHours[day] = document.getElementById(`hour_${day}`).value; });
 
             let updatedMenu = [];
-            const rows = document.querySelectorAll('#menuTableBody tr');
-            rows.forEach((row, index) => {
+            document.querySelectorAll('#menuTableBody tr').forEach((row, index) => {
                 updatedMenu.push({
                     name: document.getElementById(`menu_name_${index}`).value,
                     price: parseFloat(document.getElementById(`menu_price_${index}`).value) || 0,
@@ -416,30 +447,24 @@
                 });
             });
 
-            const brandingData = {
-                primaryColor: document.getElementById('primaryColor').value,
-                bgColor: document.getElementById('bgColor').value,
-                logoUrl: document.getElementById('logoUrl').value,
-                logoScale: currentLogoScale,
-                heroExtra1: document.getElementById('heroExtra1').value,
-                heroExtra2: document.getElementById('heroExtra2').value,
-                heroExtra3: document.getElementById('heroExtra3').value
-            };
+            const updatedProfile = tenantData.profile || {};
+            updatedProfile.tenantName = document.getElementById('storeName').value;
+            updatedProfile.logoUrl = document.getElementById('logoUrl').value;
+            updatedProfile.heroImage1 = document.getElementById('heroImage1').value;
+            updatedProfile.heroImage2 = document.getElementById('heroImage2').value;
+            updatedProfile.heroImage3 = document.getElementById('heroImage3').value;
 
             db.collection("tenants").doc(tenantId).set({
-                profile: { 
-                    tenantName: document.getElementById('storeName').value,
-                    adminPassword: tenantData.profile.adminPassword || 'admin'
-                },
-                branding: brandingData,
+                profile: updatedProfile,
                 officeHours: newHours,
                 menuItems: updatedMenu,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
-                showToast("Manager changes successfully saved to Firestore!");
+                addTrace(`SUCCESS: Changes successfully synchronized and saved to Firestore!`, false);
+                showToast("Changes successfully saved to Firebase!");
             }).catch(err => {
-                console.error("Error saving:", err);
-                showToast("Failed to save changes: " + err.message, true);
+                addTrace(`ERROR saving to Firestore: ${err.message}`, true);
+                showToast("Failed to save: " + err.message, true);
             });
         }
     </script>

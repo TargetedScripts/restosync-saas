@@ -21,7 +21,7 @@
     <script>
         (function() {
             const AUTH_KEY = "restosync_super_admin_auth";
-            const SUPER_PASSWORD = "admin"; // Password Super Admin
+            const SUPER_PASSWORD = "admin";
             
             if (sessionStorage.getItem(AUTH_KEY) !== "true") {
                 let pwd = prompt("SECURITY CHECK: Enter Super Admin Password for System Console:");
@@ -83,7 +83,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">Tenant ID / Slug (Unique)</label>
-                    <input type="text" id="inputTenantId" class="custom-input rounded-xl px-4 py-2 text-xs font-mono w-56 text-amber-300 font-bold" placeholder="e.g. boluhalus">
+                    <input type="text" id="inputTenantId" class="custom-input rounded-xl px-4 py-2 text-xs font-mono w-56 text-amber-300 font-bold" placeholder="e.g. bangkokthai">
                 </div>
             </div>
             <div class="text-right">
@@ -105,24 +105,24 @@
         <!-- CLIENT PROFILE & STORE INFORMATION -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                <i class="fa-solid fa-store text-sm"></i><span>Client Profile, Store Information & Admin Password Reset</span>
+                <i class="fa-solid fa-store text-sm"></i><span>Client Profile, Store Information, Passwords & Repository Links</span>
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Store / Restaurant Name (tenantName)</label>
-                    <input type="text" id="inputStoreName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Bolu Halus">
+                    <input type="text" id="inputStoreName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Bangkok Thai Takeaway">
                 </div>
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Contact Person (contactPerson)</label>
-                    <input type="text" id="inputClientName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="denisa">
+                    <input type="text" id="inputClientName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Tedy Sutedja">
                 </div>
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Phone Number (phone)</label>
                     <input type="text" id="inputClientPhone" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="+64...">
                 </div>
                 <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold">Email Address <span class="text-amber-400 text-[10px]">(For Contract Renewal)</span></label>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Email Address <span class="text-amber-400 text-[10px]">(For Renewal)</span></label>
                     <input type="email" id="inputClientEmail" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="client@domain.co.nz">
                 </div>
                 <div>
@@ -130,8 +130,20 @@
                     <input type="text" id="inputAdminPassword" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-amber-300 font-mono font-bold" placeholder="admin">
                 </div>
                 <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold text-cyan-300">Raw JS Asset URL (GitHub Raw Link)</label>
+                    <input type="text" id="inputJsAssetUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-cyan-300 font-mono" placeholder="https://raw.githubusercontent.com/.../bangkokthaipalmy.js">
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Logo Image URL</label>
+                    <input type="text" id="inputLogoUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="https://.../logo.png">
+                </div>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold">Default Hero Image URL</label>
+                    <input type="text" id="inputHeroImageUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="https://.../hero.jpg">
+                </div>
+                <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Physical Address (address)</label>
-                    <input type="text" id="inputStoreAddress" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Johnsonville">
+                    <input type="text" id="inputStoreAddress" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200" placeholder="Palmerston North">
                 </div>
             </div>
         </div>
@@ -145,7 +157,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Contract Number (contractNo)</label>
-                    <input type="text" id="inputContractNo" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="TSBH.2029.0099">
+                    <input type="text" id="inputContractNo" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="TSBT.2026.01">
                 </div>
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Subscription Tier (tier)</label>
@@ -162,7 +174,7 @@
             </div>
         </div>
 
-        <!-- USER RIGHTS & ACCESS PERMISSIONS (TABS & ROLES) -->
+        <!-- USER RIGHTS & ACCESS PERMISSIONS (TABS - PARENT CONTROLS) -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
                 <i class="fa-solid fa-shield-halved text-sm"></i><span>Assigned User Rights & Tab Permissions (Master Tabs)</span>
@@ -209,10 +221,10 @@
             </div>
         </div>
 
-        <!-- MASTER FEATURE TOGGLES (DIKELOMPOKKAN KE DALAM KATEGORI) -->
+        <!-- MASTER FEATURE TOGGLES (CHILD MODULES) -->
         <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
             <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                <i class="fa-solid fa-layer-group text-sm"></i><span>Master Feature Toggles & Module Access (Categorized by Function)</span>
+                <i class="fa-solid fa-layer-group text-sm"></i><span>Master Feature Toggles & Module Access (Categorized Sub-Modules)</span>
             </h2>
 
             <!-- KELOMPOK 1: POS, TRANSAKSI & PEMBAYARAN -->
@@ -395,7 +407,6 @@
             }, 3500);
         }
 
-        // LOGIKA INTERAKTIF: Jika Tab Master dicentang, semua modul anak ikut tercakup.
         function toggleTabGroup(tabId, moduleIds) {
             const tabCheckbox = document.getElementById(tabId);
             const isChecked = tabCheckbox.checked;
@@ -407,7 +418,6 @@
             });
         }
 
-        // LOGIKA INTERAKTIF: Jika salah satu modul anak dicentang, Tab Induk otomatis ikut aktif.
         function checkModuleParent(tabId) {
             const tabCheckbox = document.getElementById(tabId);
             if (tabCheckbox) {
@@ -415,11 +425,9 @@
             }
         }
 
-        // PEMANTAU STATUS KONEKSI FIREBASE SECARA REAL-TIME
         function updateConnectionStatus(status, message) {
             const dot = document.getElementById('dbIndicatorDot');
             const text = document.getElementById('dbIndicatorText');
-            
             if (status === 'connected') {
                 dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50";
                 text.innerText = message || "Firebase Connected";
@@ -432,40 +440,33 @@
             }
         }
 
-        // LOAD TENANTS AUTOMATICALLY INTO DROPDOWN
         document.addEventListener('DOMContentLoaded', () => {
             updateConnectionStatus('loading', 'Connecting to Firestore...');
-            loadTenantList('boluhalus');
+            loadTenantList('bangkokthai');
         });
 
         function loadTenantList(defaultSelect) {
             updateConnectionStatus('loading', 'Fetching tenants...');
             const select = document.getElementById('tenantSelect');
-            
             db.collection("tenants").get().then((querySnapshot) => {
                 select.innerHTML = "";
                 let firstTenant = '';
-
                 querySnapshot.forEach((doc) => {
                     const tid = doc.id;
                     if (!firstTenant) firstTenant = tid;
-
                     const opt = document.createElement('option');
                     opt.value = tid;
                     opt.innerText = tid.toUpperCase();
                     select.appendChild(opt);
                 });
-
                 if (defaultSelect && document.querySelector(`#tenantSelect option[value="${defaultSelect}"]`)) {
                     select.value = defaultSelect;
                 } else if (firstTenant) {
                     select.value = firstTenant;
                 }
-
                 if (select.value) {
                     switchTenant(select.value);
                 }
-                
                 updateConnectionStatus('connected', 'Firebase Cloud Connected');
             }).catch(err => {
                 console.error("Error loading tenants:", err);
@@ -474,27 +475,27 @@
             });
         }
 
-        // MODE SWITCH: EXISTING TENANT
         function switchTenant(tenantId) {
             isNewTenantMode = false;
             document.getElementById('modeIndicator').innerText = "Mode: Editing Existing Tenant";
             document.getElementById('inputTenantId').value = tenantId;
-            document.getElementById('inputTenantId').disabled = true; // ID terkunci saat mode edit
+            document.getElementById('inputTenantId').disabled = true;
 
             db.collection("tenants").doc(tenantId).get().then((doc) => {
-                // Reset form fields
                 document.getElementById('inputStoreName').value = '';
                 document.getElementById('inputClientName').value = '';
                 document.getElementById('inputClientPhone').value = '';
                 document.getElementById('inputClientEmail').value = '';
                 document.getElementById('inputAdminPassword').value = 'admin';
+                document.getElementById('inputJsAssetUrl').value = '';
+                document.getElementById('inputLogoUrl').value = '';
+                document.getElementById('inputHeroImageUrl').value = '';
                 document.getElementById('inputStoreAddress').value = '';
                 document.getElementById('inputContractNo').value = '';
                 document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
                 document.getElementById('inputExpiryDate').value = '';
                 document.getElementById('rawFirestoreViewer').innerText = "Loading raw snapshot...";
 
-                // Reset checkboxes
                 document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
                 if (doc.exists) {
@@ -507,12 +508,14 @@
                     document.getElementById('inputClientPhone').value = profile.phone || '';
                     document.getElementById('inputClientEmail').value = profile.email || '';
                     document.getElementById('inputAdminPassword').value = profile.adminPassword || 'admin';
+                    document.getElementById('inputJsAssetUrl').value = profile.jsAssetUrl || '';
+                    document.getElementById('inputLogoUrl').value = profile.logoUrl || '';
+                    document.getElementById('inputHeroImageUrl').value = profile.heroImageUrl || '';
                     document.getElementById('inputStoreAddress').value = profile.address || '';
                     document.getElementById('inputContractNo').value = profile.contractNo || '';
                     document.getElementById('inputSubTier').value = profile.tier || 'FREE SOCIAL TIER';
                     document.getElementById('inputExpiryDate').value = profile.expiryDate || '';
 
-                    // Load modules & rights toggles if saved
                     const savedModules = data.modules || {};
                     Object.keys(savedModules).forEach(modKey => {
                         const cb = document.getElementById(modKey);
@@ -532,30 +535,30 @@
             });
         }
 
-        // MODE SWITCH: PREPARE ADD NEW TENANT
         function prepareNewTenant() {
             isNewTenantMode = true;
             document.getElementById('modeIndicator').innerText = "Mode: Creating New Tenant Entry";
             document.getElementById('inputTenantId').value = "";
-            document.getElementById('inputTenantId').disabled = false; // Buka input agar admin bisa ketik ID unik baru
+            document.getElementById('inputTenantId').disabled = false;
             
-            // Clear fields
             document.getElementById('inputStoreName').value = '';
             document.getElementById('inputClientName').value = '';
             document.getElementById('inputClientPhone').value = '';
             document.getElementById('inputClientEmail').value = '';
             document.getElementById('inputAdminPassword').value = 'admin';
+            document.getElementById('inputJsAssetUrl').value = '';
+            document.getElementById('inputLogoUrl').value = '';
+            document.getElementById('inputHeroImageUrl').value = '';
             document.getElementById('inputStoreAddress').value = '';
             document.getElementById('inputContractNo').value = '';
             document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
             document.getElementById('inputExpiryDate').value = '';
             document.getElementById('rawFirestoreViewer').innerText = "New Tenant Draft Mode (Ready for entry)";
             
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true); // Default all checked for new
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
             showToast("Ready to add new tenant. Fill in Tenant ID and details.");
         }
 
-        // SAVE / UPSERT TO FIREBASE CLOUD
         function saveTenantSettings() {
             const tenantId = document.getElementById('inputTenantId').value.trim().toLowerCase();
             if (!tenantId) {
@@ -569,6 +572,9 @@
                 phone: document.getElementById('inputClientPhone').value,
                 email: document.getElementById('inputClientEmail').value,
                 adminPassword: document.getElementById('inputAdminPassword').value || 'admin',
+                jsAssetUrl: document.getElementById('inputJsAssetUrl').value,
+                logoUrl: document.getElementById('inputLogoUrl').value,
+                heroImageUrl: document.getElementById('inputHeroImageUrl').value,
                 address: document.getElementById('inputStoreAddress').value,
                 contractNo: document.getElementById('inputContractNo').value,
                 tier: document.getElementById('inputSubTier').value,

@@ -175,10 +175,8 @@
                             <tr class="border-b border-zinc-800 text-stone-400">
                                 <th class="py-3 px-4">Item Name</th>
                                 <th class="py-3 px-4">Price ($)</th>
-                                <th class="py-3 px-4">Promo ($)</th>
-                                <th class="py-3 px-4 text-center">Hero</th>
+                                <th class="py-3 px-4">Category</th>
                                 <th class="py-3 px-4 text-center">Favorite</th>
-                                <th class="py-3 px-4 text-center">Hide</th>
                                 <th class="py-3 px-4">Spice Level</th>
                                 <th class="py-3 px-4 text-right">Actions</th>
                             </tr>
@@ -246,7 +244,7 @@
         const db = firebase.firestore();
 
         const urlParams = new URLSearchParams(window.location.search);
-        const tenantId = urlParams.get('tenant') || 'bangkokthai';
+        const tenantId = urlParams.get('tenant') || 'bangkokthaipalmy';
 
         let tenantData = {};
         let currentLogoScale = 100;
@@ -297,12 +295,12 @@
         }
 
         function loadClientJsAsset(jsPath) {
-            const path = jsPath || `assets/js/${tenantId}.js`;
+            const path = jsPath || `assets/js/bangkokthaipalmy.js`;
             document.getElementById('jsAssetUrlDisplay').value = path;
             addTrace(`Target JS Asset Path resolved to: ${path}`, false);
 
             if(!jsPath) {
-                addTrace(`No jsAssetUrl defined in Firestore. Relying 100% on Firestore fallback data.`, false);
+                addTrace(`No jsAssetUrl defined in Firestore. Relying on Firestore fallback data.`, false);
                 renderManagerPanel();
                 return;
             }
@@ -312,17 +310,38 @@
             scriptTag.src = path;
             scriptTag.onload = function() {
                 addTrace(`SUCCESS: External .js asset loaded successfully!`, false);
-                if(window.clientMenuData) {
-                    addTrace(`Found window.clientMenuData global object inside script. Merging menu & hours.`, false);
-                    tenantData.menuItems = window.clientMenuData.menuItems || tenantData.menuItems;
-                    tenantData.officeHours = window.clientMenuData.officeHours || tenantData.officeHours;
+                
+                // Mendeteksi RESTOSYNC_CONFIG sesuai file .js klien Anda
+                if(typeof RESTOSYNC_CONFIG !== 'undefined') {
+                    addTrace(`Found RESTOSYNC_CONFIG global object. Merging store data, menu & hours.`, false);
+                    
+                    tenantData.profile = tenantData.profile || {};
+                    tenantData.profile.tenantName = RESTOSYNC_CONFIG.store.name;
+                    tenantData.profile.logoUrl = RESTOSYNC_CONFIG.branding.logo;
+                    tenantData.profile.heroImage1 = RESTOSYNC_CONFIG.branding.heroImages[0] || '';
+                    tenantData.profile.heroImage2 = RESTOSYNC_CONFIG.branding.heroImages[1] || '';
+                    tenantData.profile.heroImage3 = RESTOSYNC_CONFIG.branding.heroImages[2] || '';
+                    
+                    // Mapping operatingHours dari format .js
+                    tenantData.officeHours = {
+                        Monday: RESTOSYNC_CONFIG.operatingHours.mon,
+                        Tuesday: RESTOSYNC_CONFIG.operatingHours.tue,
+                        Wednesday: RESTOSYNC_CONFIG.operatingHours.wed,
+                        Thursday: RESTOSYNC_CONFIG.operatingHours.thu,
+                        Friday: RESTOSYNC_CONFIG.operatingHours.fri,
+                        Saturday: RESTOSYNC_CONFIG.operatingHours.sat,
+                        Sunday: RESTOSYNC_CONFIG.operatingHours.sun
+                    };
+
+                    // Mapping menuItems dari RESTOSYNC_CONFIG
+                    tenantData.menuItems = RESTOSYNC_CONFIG.menuItems || [];
                 } else {
-                    addTrace(`Warning: window.clientMenuData not found in .js file, using Firestore data.`, true);
+                    addTrace(`Warning: RESTOSYNC_CONFIG not found in .js file, using Firestore data.`, true);
                 }
                 renderManagerPanel();
             };
             scriptTag.onerror = function() {
-                addTrace(`ERROR: Failed to load script from ${path}. CORS or 404 Not Found issue. Falling back to Firestore data.`, true);
+                addTrace(`ERROR: Failed to load script from ${path}. Falling back to Firestore data.`, true);
                 renderManagerPanel();
             };
             document.head.appendChild(scriptTag);
@@ -352,15 +371,13 @@
         function renderManagerPanel() {
             addTrace(`Rendering manager panel UI components...`, false);
             const profile = tenantData.profile || {};
-            const branding = tenantData.branding || {};
             const hours = tenantData.officeHours || {
-                Monday: "09:00 - 22:00", Tuesday: "09:00 - 22:00", Wednesday: "09:00 - 22:00",
-                Thursday: "09:00 - 22:00", Friday: "09:00 - 23:00", Saturday: "10:00 - 23:00", Sunday: "Closed"
+                Monday: "Closed", Tuesday: "Closed", Wednesday: "5:26 PM - 9:00 PM",
+                Thursday: "4:30 PM - 9:00 PM", Friday: "4:30 PM - 9:30 PM", Saturday: "Closed", Sunday: "Closed"
             };
 
             document.getElementById('headerStoreName').innerText = profile.tenantName || tenantId;
             document.getElementById('storeName').value = profile.tenantName || '';
-            document.getElementById('primaryColor').value = branding.primaryColor || '#f59e0b';
             document.getElementById('logoUrl').value = profile.logoUrl || '';
             document.getElementById('heroImage1').value = profile.heroImage1 || '';
             document.getElementById('heroImage2').value = profile.heroImage2 || '';
@@ -373,7 +390,7 @@
                 hoursContainer.innerHTML += `
                     <div class="bg-[#030712] p-3.5 rounded-2xl border border-zinc-800 space-y-1.5">
                         <label class="block text-stone-300 font-semibold">${day}</label>
-                        <input type="text" id="hour_${day}" value="${hours[day] || '09:00 - 22:00'}" class="w-full custom-input rounded-xl px-3 py-2 text-stone-200 font-mono">
+                        <input type="text" id="hour_${day}" value="${hours[day] || 'Closed'}" class="w-full custom-input rounded-xl px-3 py-2 text-stone-200 font-mono">
                     </div>
                 `;
             });
@@ -397,14 +414,13 @@
                     <tr class="hover:bg-zinc-800/30 transition">
                         <td class="py-3 px-4"><input type="text" value="${item.name || ''}" id="menu_name_${index}" class="custom-input rounded-lg px-2.5 py-1.5 w-full text-stone-200"></td>
                         <td class="py-3 px-4"><input type="number" value="${item.price || 0}" id="menu_price_${index}" class="custom-input rounded-lg px-2.5 py-1.5 w-24 text-stone-200 font-mono"></td>
-                        <td class="py-3 px-4"><input type="number" value="${item.promoPrice || 0}" id="menu_promo_${index}" class="custom-input rounded-lg px-2.5 py-1.5 w-24 text-stone-200 font-mono"></td>
-                        <td class="py-3 px-4 text-center"><input type="checkbox" ${item.isHero ? 'checked' : ''} id="menu_hero_${index}" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700 cursor-pointer"></td>
-                        <td class="py-3 px-4 text-center"><input type="checkbox" ${item.isFavorite ? 'checked' : ''} id="menu_fav_${index}" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700 cursor-pointer"></td>
-                        <td class="py-3 px-4 text-center"><input type="checkbox" ${item.isHidden ? 'checked' : ''} id="menu_hide_${index}" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700 cursor-pointer"></td>
+                        <td class="py-3 px-4"><input type="text" value="${item.category || ''}" id="menu_cat_${index}" class="custom-input rounded-lg px-2.5 py-1.5 w-32 text-stone-200"></td>
+                        <td class="py-3 px-4 text-center"><input type="checkbox" ${(item.isFav || item.isFavorite) ? 'checked' : ''} id="menu_fav_${index}" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700 cursor-pointer"></td>
                         <td class="py-3 px-4"><select id="menu_spice_${index}" class="custom-input rounded-lg px-2 py-1 text-stone-200">
-                            <option value="None" ${item.spiceLevel==='None'?'selected':''}>None</option>
-                            <option value="Mild" ${item.spiceLevel==='Mild'?'selected':''}>Mild</option>
-                            <option value="Hot" ${item.spiceLevel==='Hot'?'selected':''}>Hot</option>
+                            <option value="0" ${item.spiceLevel===0?'selected':''}>0 - None</option>
+                            <option value="1" ${item.spiceLevel===1?'selected':''}>1 - Mild</option>
+                            <option value="2" ${item.spiceLevel===2?'selected':''}>2 - Hot</option>
+                            <option value="3" ${item.spiceLevel===3?'selected':''}>3 - Extra Hot</option>
                         </select></td>
                         <td class="py-3 px-4 text-right"><button onclick="deleteMenuItem(${index})" class="bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg font-bold"><i class="fa-solid fa-trash"></i></button></td>
                     </tr>
@@ -419,7 +435,7 @@
 
         function addNewMenuItem() {
             if(!tenantData.menuItems) tenantData.menuItems = [];
-            tenantData.menuItems.push({ name: "New Dish", price: 15.00, promoPrice: 0, isHero: false, isFavorite: false, isHidden: false, spiceLevel: "None" });
+            tenantData.menuItems.push({ id: "NEW" + Date.now(), name: "New Dish", category: "Appetisers", price: 15.00, spiceLevel: 0, isFav: true, stock: 20 });
             renderMenuTable(tenantData.menuItems);
         }
 
@@ -439,11 +455,9 @@
                 updatedMenu.push({
                     name: document.getElementById(`menu_name_${index}`).value,
                     price: parseFloat(document.getElementById(`menu_price_${index}`).value) || 0,
-                    promoPrice: parseFloat(document.getElementById(`menu_promo_${index}`).value) || 0,
-                    isHero: document.getElementById(`menu_hero_${index}`).checked,
-                    isFavorite: document.getElementById(`menu_fav_${index}`).checked,
-                    isHidden: document.getElementById(`menu_hide_${index}`).checked,
-                    spiceLevel: document.getElementById(`menu_spice_${index}`).value
+                    category: document.getElementById(`menu_cat_${index}`).value,
+                    isFav: document.getElementById(`menu_fav_${index}`).checked,
+                    spiceLevel: parseInt(document.getElementById(`menu_spice_${index}`).value) || 0
                 });
             });
 

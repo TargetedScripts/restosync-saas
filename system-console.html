@@ -9,7 +9,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDK Compat -->
+    <!-- Firebase SDK Compat (App & Firestore) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
@@ -23,7 +23,7 @@
                 <span class="text-xl font-bold tracking-wide">RestoSync <span class="text-indigo-300 font-light">System Console</span></span>
             </div>
             <div class="flex items-center space-x-4">
-                <span id="firebaseStatus" class="text-xs bg-indigo-700 text-white px-2.5 py-1 rounded-full"><i class="fa-solid fa-database mr-1"></i>Local Storage Active</span>
+                <span id="firebaseStatus" class="text-xs bg-yellow-600 text-white px-2.5 py-1 rounded-full"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i>Connecting Firebase...</span>
                 <div class="text-sm bg-indigo-800 px-3 py-1.5 rounded-lg border border-indigo-700">
                     <i class="fa-solid fa-shield-halved mr-2 text-green-400"></i>Super Admin: <strong>TargetedScripts</strong>
                 </div>
@@ -46,7 +46,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Active Tenant</label>
                     <select id="tenantSelect" onchange="loadTenantConfig()" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500">
-                        <!-- Opsi akan di-generate otomatis oleh JS -->
+                        <!-- Options loaded dynamically from Firestore -->
                     </select>
                 </div>
                 <div>
@@ -55,7 +55,7 @@
                 </div>
                 <div class="flex items-end">
                     <button onclick="saveTenantConfig()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200 shadow-sm">
-                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i>Save Configuration
+                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i>Save to Firebase Firestore
                     </button>
                 </div>
             </div>
@@ -109,7 +109,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tenant ID (Unique Slug)</label>
-                            <input type="text" id="newTenantId" placeholder="e.g. pukekohe_cafe" class="w-full border border-gray-300 rounded-lg p-2.5">
+                            <input type="text" id="newTenantId" placeholder="e.g. boluhaus" class="w-full border border-gray-300 rounded-lg p-2.5">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Contract Number (#)</label>
@@ -351,39 +351,35 @@
 
     </main>
 
-    <!-- JavaScript Engine & Robust LocalStorage / Firebase Hybrid Engine -->
+    <!-- JavaScript & Real Firebase Firestore Integration -->
     <script>
-        // Database Utama (Menggunakan LocalStorage agar langsung bisa diuji & disimpan permanen tanpa error dummy Firebase)
-        let systemData = JSON.parse(localStorage.getItem('restosync_system_data')) || {
-            "bangkokthai": {
-                profile: {
-                    contractNo: "TS-CONT-2026-001",
-                    tenantName: "Bangkok Thai Takeaway",
-                    contactPerson: "Tedy Sutedja",
-                    phone: "+64 6 356 0000",
-                    email: "info@bangkokthaipalmy.co.nz",
-                    address: "642 Pioneer Highway, Palmerston North",
-                    tier: "FREE SOCIAL TIER",
-                    expiryDate: "2027-04-01"
-                },
-                modules: getModulesByTier("FREE SOCIAL TIER")
-            },
-            "finedining_demo": {
-                profile: {
-                    contractNo: "TS-CONT-2026-050",
-                    tenantName: "Auckland Fine Dining",
-                    contactPerson: "Chef Marcus",
-                    phone: "+64 9 555 1234",
-                    email: "manager@aucklanddining.co.nz",
-                    address: "Viaduct Harbour, Auckland",
-                    tier: "ENTERPRISE",
-                    expiryDate: "2027-12-31"
-                },
-                modules: getModulesByTier("ENTERPRISE")
-            }
+        // ==========================================
+        // 1. FIREBASE CONFIGURATION (Asli dari Project Anda)
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
+            authDomain: "restosync-saas.firebaseapp.com",
+            projectId: "restosync-saas",
+            storageBucket: "restosync-saas.firebasestorage.app",
+            messagingSenderId: "780544019719",
+            appId: "1:780544019719:web:7925cca015a2e60179c9a2"
         };
 
-        // Fungsi penentu default modul berdasarkan paket tier
+        // Inisialisasi Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // Update indikator koneksi
+        document.getElementById('firebaseStatusclassName = "text-xs bg-green-600 text-white px-2.5 py-1 rounded-full";
+        document.getElementById('firebaseStatus').innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i>Firebase Connected';
+
+        let tenantsDataCache = {};
+
+        // ==========================================
+        // 2. DEFAULT MODULES BERDASARKAN TIER
+        // ==========================================
         function getModulesByTier(tier) {
             if (tier.includes("FREE")) {
                 return {
@@ -441,23 +437,62 @@
             }
         }
 
-        function populateTenantDropdown() {
-            const select = document.getElementById('tenantSelect');
-            const currentSelected = select.value;
-            select.innerHTML = "";
+        // ==========================================
+        // 3. FETCH DATA DARI FIRESTORE
+        // ==========================================
+        async function fetchTenantsFromFirebase() {
+            try {
+                const snapshot = await db.collection("tenants").get();
+                const select = document.getElementById('tenantSelect');
+                
+                // Jika database kosong, buatkan data awal (Bangkok Thai)
+                if (snapshot.empty) {
+                    await seedInitialData();
+                    return fetchTenantsFromFirebase();
+                }
 
-            for (const [id, data] of Object.entries(systemData)) {
-                const option = document.createElement('option');
-                option.value = id;
-                option.textContent = `${data.profile.tenantName} (${data.profile.tier})`;
-                select.appendChild(option);
-            }
+                select.innerHTML = "";
+                tenantsDataCache = {};
 
-            if (systemData[currentSelected]) {
-                select.value = currentSelected;
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const tenantId = doc.id;
+                    tenantsDataCache[tenantId] = data;
+
+                    const option = document.createElement('option');
+                    option.value = tenantId;
+                    option.textContent = `${data.profile.tenantName} (${data.profile.tier})`;
+                    select.appendChild(option);
+                });
+
+                loadTenantConfig();
+            } catch (error) {
+                console.error("Error fetching from Firebase:", error);
+                document.getElementById('firebaseStatus').className = "text-xs bg-red-600 text-white px-2.5 py-1 rounded-full";
+                document.getElementById('firebaseStatus').innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i>Firebase Sync Error';
             }
         }
 
+        async function seedInitialData() {
+            const initialBangkok = {
+                profile: {
+                    contractNo: "TS-CONT-2026-001",
+                    tenantName: "Bangkok Thai Takeaway",
+                    contactPerson: "Tedy Sutedja",
+                    phone: "+64 6 356 0000",
+                    email: "info@bangkokthaipalmy.co.nz",
+                    address: "642 Pioneer Highway, Palmerston North",
+                    tier: "FREE SOCIAL TIER",
+                    expiryDate: "2027-04-01"
+                },
+                modules: getModulesByTier("FREE SOCIAL TIER")
+            };
+            await db.collection("tenants").doc("bangkokthai").set(initialBangkok);
+        }
+
+        // ==========================================
+        // 4. NAVIGASI & LOAD CONFIG
+        // ==========================================
         function switchTab(tabNumber) {
             for (let i = 1; i <= 5; i++) {
                 document.getElementById(`tabContent${i}`).classList.add('hidden');
@@ -469,7 +504,7 @@
 
         function loadTenantConfig() {
             const tenantId = document.getElementById('tenantSelect').value;
-            const data = systemData[tenantId];
+            const data = tenantsDataCache[tenantId];
 
             if (data) {
                 document.getElementById('tenantName').value = data.profile.tenantName;
@@ -488,25 +523,41 @@
             }
         }
 
-        function saveTenantConfig() {
+        // ==========================================
+        // 5. SIMPAN KE FIREBASE FIRESTORE
+        // ==========================================
+        async function saveTenantConfig() {
             const tenantId = document.getElementById('tenantSelect').value;
-            const currentModules = {};
+            const tenantName = document.getElementById('tenantName').value;
             
+            const currentModules = {};
             document.querySelectorAll('.feature-toggle').forEach(cb => {
                 currentModules[cb.id] = cb.checked;
             });
 
-            systemData[tenantId].modules = currentModules;
-            localStorage.setItem('restosync_system_data', JSON.stringify(systemData));
+            tenantsDataCache[tenantId].modules = currentModules;
 
-            alert(`Feature toggles for "${systemData[tenantId].profile.tenantName}" successfully saved!`);
+            try {
+                await db.collection("tenants").doc(tenantId).set({
+                    profile: tenantsDataCache[tenantId].profile,
+                    modules: currentModules,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                alert(`Feature toggles for "${tenantName}" successfully saved to Firebase Cloud!`);
+            } catch (error) {
+                console.error("Error saving to Firebase:", error);
+                alert("Failed to save to Firebase. Check your internet or Firestore Rules.");
+            }
         }
 
-        // Modal Add New Tenant
+        // ==========================================
+        // 6. TAMBAH TENANT BARU KE FIRESTORE
+        // ==========================================
         function openNewTenantModal() { document.getElementById('newTenantModal').classList.remove('hidden'); }
         function closeNewTenantModal() { document.getElementById('newTenantModal').classList.add('hidden'); }
 
-        function createNewTenant() {
+        async function createNewTenant() {
             const tenantId = document.getElementById('newTenantId').value.trim().toLowerCase().replace(/\s+/g, '_');
             const contractNo = document.getElementById('newContractNo').value.trim();
             const tenantName = document.getElementById('newTenantBusinessName').value.trim();
@@ -522,28 +573,31 @@
                 return;
             }
 
-            // Terapkan modul default otomatis berdasarkan tier yang dipilih
             const defaultModules = getModulesByTier(tier);
 
-            systemData[tenantId] = {
+            const newTenantDoc = {
                 profile: { contractNo, tenantName, contactPerson, phone, email, address, tier, expiryDate },
-                modules: defaultModules
+                modules: defaultModules,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            localStorage.setItem('restosync_system_data', JSON.stringify(systemData));
-
-            populateTenantDropdown();
-            document.getElementById('tenantSelect').value = tenantId;
-            loadTenantConfig();
-
-            closeNewTenantModal();
-            alert(`Tenant "${tenantName}" successfully registered with default modules applied!`);
+            try {
+                await db.collection("tenants").doc(tenantId).set(newTenantDoc);
+                closeNewTenantModal();
+                alert(`Tenant "${tenantName}" successfully registered to Firebase Cloud!`);
+                fetchTenantsFromFirebase(); // Reload data
+            } catch (error) {
+                console.error("Error creating tenant:", error);
+                alert("Failed to register tenant to Firebase.");
+            }
         }
 
-        // Modal Edit Tenant Company Info
+        // ==========================================
+        // 7. EDIT PROFIL PERUSAHAAN DI FIRESTORE
+        // ==========================================
         function openEditTenantModal() {
             const tenantId = document.getElementById('tenantSelect').value;
-            const p = systemData[tenantId].profile;
+            const p = tenantsDataCache[tenantId].profile;
 
             document.getElementById('editContractNo').value = p.contractNo;
             document.getElementById('editTenantBusinessName').value = p.tenantName;
@@ -559,10 +613,10 @@
 
         function closeEditTenantModal() { document.getElementById('editTenantModal').classList.add('hidden'); }
 
-        function updateTenantInfo() {
+        async function updateTenantInfo() {
             const tenantId = document.getElementById('tenantSelect').value;
 
-            systemData[tenantId].profile = {
+            const updatedProfile = {
                 contractNo: document.getElementById('editContractNo').value,
                 tenantName: document.getElementById('editTenantBusinessName').value,
                 contactPerson: document.getElementById('editContactPerson').value,
@@ -573,18 +627,25 @@
                 expiryDate: document.getElementById('editExpiryDate').value
             };
 
-            localStorage.setItem('restosync_system_data', JSON.stringify(systemData));
-            populateTenantDropdown();
-            document.getElementById('tenantSelect').value = tenantId;
-            loadTenantConfig();
-            closeEditTenantModal();
-            alert("Company profile successfully updated!");
+            tenantsDataCache[tenantId].profile = updatedProfile;
+
+            try {
+                await db.collection("tenants").doc(tenantId).update({
+                    profile: updatedProfile
+                });
+
+                closeEditTenantModal();
+                loadTenantConfig();
+                alert("Company profile successfully updated in Firebase Cloud!");
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                alert("Failed to update profile to Firebase.");
+            }
         }
 
-        // Inisialisasi saat pertama kali load
+        // Load data dari Firestore saat halaman pertama kali dibuka
         window.onload = function() {
-            populateTenantDropdown();
-            loadTenantConfig();
+            fetchTenantsFromFirebase();
         };
     </script>
 </body>

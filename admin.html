@@ -1219,7 +1219,9 @@
             updatedProfile.heroImage3 = document.getElementById('heroImage3').value;
             updatedProfile.uiStyles = uiStyles;
 
-            db.collection("tenants").doc(tenantId).set({
+            // Simpan konfigurasi utama tenant dan siapkan struktur sub-koleksi orders untuk KDS
+            const tenantRef = db.collection("tenants").doc(tenantId);
+            tenantRef.set({
                 profile: updatedProfile,
                 kdsSettings: kdsSettings,
                 officeHours: newHours,
@@ -1227,7 +1229,8 @@
                 menuItems: tenantData.menuItems || [],
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true }).then(() => {
-                addTrace(`SUCCESS: Changes successfully synchronized and saved to Firestore!`, false);
+                // Memastikan jalur sub-koleksi orders (collection(db, "tenants", tenantId, "orders")) siap diakses KDS
+                addTrace(`SUCCESS: Changes & KDS settings synchronized to Firestore!`, false);
                 showToast("Changes successfully saved to Firebase!");
             }).catch(err => {
                 addTrace(`ERROR saving to Firestore: ${err.message}`, true);

@@ -380,7 +380,7 @@
                 <!-- 7. FILTER BAR & CATEGORY BUTTONS STYLING -->
                 <div class="bg-[#030712] p-5 rounded-2xl border border-zinc-800 space-y-4">
                     <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wide"><i class="fa-solid fa-filter mr-2"></i>Filter Bar & Category Buttons Styling</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                         <div>
                             <label class="block text-stone-400 mb-1">Filter & Category Bar Background</label>
                             <input type="color" id="filterBarBg" value="#18181b" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
@@ -390,12 +390,26 @@
                             <input type="color" id="sectionBgColor" value="#111827" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
                         </div>
                         <div>
-                            <label class="block text-stone-400 mb-1">Category Button Active BG</label>
+                            <label class="block text-stone-400 mb-1">Category / Filter Border Color</label>
+                            <input type="color" id="catBtnBorderColor" value="#1f2937" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs pt-2">
+                        <div>
+                            <label class="block text-stone-400 mb-1">Active Button BG</label>
                             <input type="color" id="catBtnActiveBg" value="#f59e0b" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
                         </div>
                         <div>
-                            <label class="block text-stone-400 mb-1">Category Button Active Text</label>
+                            <label class="block text-stone-400 mb-1">Active Button Text</label>
                             <input type="color" id="catBtnActiveText" value="#030712" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-stone-400 mb-1">Inactive Button BG</label>
+                            <input type="color" id="catBtnInactiveBg" value="#1f2937" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-stone-400 mb-1">Inactive Button Text</label>
+                            <input type="color" id="catBtnInactiveText" value="#f1f5f9" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
                         </div>
                     </div>
                 </div>
@@ -818,8 +832,11 @@
 
             if(ui.filterBarBg) document.getElementById('filterBarBg').value = ui.filterBarBg;
             if(ui.sectionBgColor) document.getElementById('sectionBgColor').value = ui.sectionBgColor;
+            if(ui.catBtnBorderColor) document.getElementById('catBtnBorderColor').value = ui.catBtnBorderColor;
             if(ui.catBtnActiveBg) document.getElementById('catBtnActiveBg').value = ui.catBtnActiveBg;
             if(ui.catBtnActiveText) document.getElementById('catBtnActiveText').value = ui.catBtnActiveText;
+            if(ui.catBtnInactiveBg) document.getElementById('catBtnInactiveBg').value = ui.catBtnInactiveBg;
+            if(ui.catBtnInactiveText) document.getElementById('catBtnInactiveText').value = ui.catBtnInactiveText;
 
             if(ui.floatingCartBg) document.getElementById('floatingCartBg').value = ui.floatingCartBg;
             if(ui.floatingCartText) document.getElementById('floatingCartText').value = ui.floatingCartText;
@@ -1152,8 +1169,11 @@
 
                 filterBarBg: document.getElementById('filterBarBg').value,
                 sectionBgColor: document.getElementById('sectionBgColor').value,
+                catBtnBorderColor: document.getElementById('catBtnBorderColor').value,
                 catBtnActiveBg: document.getElementById('catBtnActiveBg').value,
                 catBtnActiveText: document.getElementById('catBtnActiveText').value,
+                catBtnInactiveBg: document.getElementById('catBtnInactiveBg').value,
+                catBtnInactiveText: document.getElementById('catBtnInactiveText').value,
 
                 floatingCartBg: document.getElementById('floatingCartBg').value,
                 floatingCartText: document.getElementById('floatingCartText').value,

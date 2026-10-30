@@ -909,6 +909,10 @@
         function toggleItemField(index, field, val) {
             if(tenantData.menuItems[index]) {
                 tenantData.menuItems[index][field] = val;
+                // Jika yang di-toggle adalah isFav, pastikan isFavorite juga ikut di-update agar sinkron
+                if (field === 'isFav') {
+                    tenantData.menuItems[index]['isFavorite'] = val;
+                }
                 showToast("Item status updated!");
             }
         }

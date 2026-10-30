@@ -414,7 +414,7 @@
             <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl">
                 <div class="flex justify-between items-center border-b border-[#1f2937] pb-3">
                     <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
-                        <i class="fa-solid fa-utensils text-sm"></i><span>Menu Items, Attributes, Promo & Hide/Unhide Control</span>
+                        <i class="fa-solid fa-utensils text-sm"></i><span>Menu Items, Attributes, Promo, Hero & Hide/Unhide Control</span>
                     </h2>
                     <button onclick="openMenuItemModal()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2 rounded-xl text-xs font-black shadow-lg transition">
                         + Add Menu Item
@@ -429,6 +429,7 @@
                                 <th class="py-3 px-4">Price ($ / Promo)</th>
                                 <th class="py-3 px-4">Category</th>
                                 <th class="py-3 px-4 text-center">Favorite</th>
+                                <th class="py-3 px-4 text-center">Hero</th>
                                 <th class="py-3 px-4 text-center">Hide / Unhide</th>
                                 <th class="py-3 px-4">Spice</th>
                                 <th class="py-3 px-4 text-right">Actions</th>
@@ -528,14 +529,18 @@
                         <input type="text" id="modalImage" class="w-full custom-input rounded-xl px-3.5 py-2 text-amber-300 font-mono text-[11px]" placeholder="https://firebasestorage.googleapis.com/...">
                     </div>
                 </div>
-                <div class="flex items-center space-x-6 pt-2 md:col-span-2">
+                <div class="flex flex-wrap items-center gap-4 pt-2 md:col-span-2">
                     <label class="flex items-center space-x-2 cursor-pointer">
                         <input type="checkbox" id="modalIsFav" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
-                        <span class="text-stone-300 font-semibold">Mark as Favorite (Fav)</span>
+                        <span class="text-stone-300 font-semibold">Favorite (Fav)</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="modalIsHero" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700">
+                        <span class="text-stone-300 font-semibold">Show in Hero Section (isHero)</span>
                     </label>
                     <label class="flex items-center space-x-2 cursor-pointer">
                         <input type="checkbox" id="modalIsHidden" class="w-4 h-4 rounded text-red-500 bg-zinc-900 border-zinc-700">
-                        <span class="text-stone-300 font-semibold">Hide Menu Item (Unhide/Hide)</span>
+                        <span class="text-stone-300 font-semibold">Hide Menu Item</span>
                     </label>
                 </div>
             </div>
@@ -889,6 +894,7 @@
                         </td>
                         <td class="py-3 px-4"><span class="bg-zinc-800 text-stone-300 px-2.5 py-1 rounded-lg text-[11px]">${item.category || 'General'}</span></td>
                         <td class="py-3 px-4 text-center"><input type="checkbox" ${(item.isFav || item.isFavorite) ? 'checked' : ''} onchange="toggleItemField(${index}, 'isFav', this.checked)" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700 cursor-pointer"></td>
+                        <td class="py-3 px-4 text-center"><input type="checkbox" ${item.isHero ? 'checked' : ''} onchange="toggleItemField(${index}, 'isHero', this.checked)" class="w-4 h-4 rounded text-amber-500 bg-zinc-900 border-zinc-700 cursor-pointer"></td>
                         <td class="py-3 px-4 text-center"><input type="checkbox" ${item.isHidden ? 'checked' : ''} onchange="toggleItemField(${index}, 'isHidden', this.checked)" class="w-4 h-4 rounded text-red-500 bg-zinc-900 border-zinc-700 cursor-pointer"></td>
                         <td class="py-3 px-4 font-mono">${item.spiceLevel || 0}</td>
                         <td class="py-3 px-4 text-right space-x-1">
@@ -925,6 +931,7 @@
                 document.getElementById('modalStock').value = item.stock || 20;
                 document.getElementById('modalImage').value = item.image || '';
                 document.getElementById('modalIsFav').checked = item.isFav || item.isFavorite || false;
+                document.getElementById('modalIsHero').checked = item.isHero || false;
                 document.getElementById('modalIsHidden').checked = item.isHidden || false;
             } else {
                 document.getElementById('editItemIndex').value = -1;
@@ -939,6 +946,7 @@
                 document.getElementById('modalStock').value = 20;
                 document.getElementById('modalImage').value = '';
                 document.getElementById('modalIsFav').checked = false;
+                document.getElementById('modalIsHero').checked = false;
                 document.getElementById('modalIsHidden').checked = false;
             }
             modal.classList.remove('hidden');
@@ -964,6 +972,7 @@
                 image: document.getElementById('modalImage').value,
                 isFav: document.getElementById('modalIsFav').checked,
                 isFavorite: document.getElementById('modalIsFav').checked,
+                isHero: document.getElementById('modalIsHero').checked,
                 isHidden: document.getElementById('modalIsHidden').checked
             };
 

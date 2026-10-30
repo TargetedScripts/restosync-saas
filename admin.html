@@ -156,7 +156,7 @@
                 <div id="storageUploadStatus" class="text-[11px] font-mono text-cyan-400 hidden">Status: Waiting for upload...</div>
             </div>
 
-            <!-- COMPREHENSIVE COLOR PALETTE & UI CUSTOMIZATION (HEADER, HERO, BODY, CARD MENU, FLOATING CART, MODALS, FOOTER) -->
+            <!-- COMPREHENSIVE COLOR PALETTE & UI CUSTOMIZATION -->
             <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl border border-amber-500/30">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
                     <i class="fa-solid fa-layer-group text-sm"></i><span>Comprehensive UI Palette & Component Customization</span>
@@ -625,7 +625,10 @@
                         Sunday: RESTOSYNC_CONFIG.operatingHours.sun
                     };
 
-                    tenantData.menuItems = RESTOSYNC_CONFIG.menuItems || [];
+                    // PERBAIKAN UTAMA: Ambil menu dari RESTOSYNC_CONFIG jika Firestore kosong
+                    if (!tenantData.menuItems || tenantData.menuItems.length === 0) {
+                        tenantData.menuItems = RESTOSYNC_CONFIG.menuItems || [];
+                    }
                 } else {
                     addTrace(`Warning: RESTOSYNC_CONFIG not found in .js file, using Firestore data.`, true);
                 }
@@ -729,7 +732,18 @@
                 `;
             });
 
-            renderMenuTable(tenantData.menuItems || []);
+            // PERBAIKAN KONSISTENSI PENGAMBILAN MENU
+            let finalMenuItems = [];
+            if (tenantData.menuItems && tenantData.menuItems.length > 0) {
+                finalMenuItems = tenantData.menuItems;
+            } else if (tenantData.config?.menuItems && tenantData.config.menuItems.length > 0) {
+                finalMenuItems = tenantData.config.menuItems;
+            } else if (typeof RESTOSYNC_CONFIG !== 'undefined' && RESTOSYNC_CONFIG.menuItems) {
+                finalMenuItems = RESTOSYNC_CONFIG.menuItems;
+            }
+            tenantData.menuItems = finalMenuItems;
+
+            renderMenuTable(tenantData.menuItems);
             document.getElementById('traceStatus').innerText = "Ready & Synced";
 
             const rights = tenantData.rights || {};

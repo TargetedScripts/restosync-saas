@@ -186,6 +186,12 @@
       if (ui.headerBorderColor && ui.headerBorderSize && ui.headerBorderSize !== '0px') {
         headerEl.style.borderBottom = `${ui.headerBorderSize} solid ${ui.headerBorderColor}`;
       }
+      
+    // TERAPKAN WARNA BODY / LATAR BELAKANG KOSONG UTAMA DARI ADMIN
+      const mainBodyEl = document.getElementById('mainBody');
+      if (ui.bodyBgColor && mainBodyEl) {
+        mainBodyEl.style.backgroundColor = ui.bodyBgColor;
+      }
 
       // TERAPKAN WARNA FILTER BAR DINAMIS DARI ADMIN
       const filterBar = document.getElementById('filterBarContainer');

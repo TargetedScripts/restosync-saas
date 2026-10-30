@@ -26,7 +26,6 @@
       <div class="flex items-center space-x-3 shrink-0">
         <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
         <div>
-          <!-- Hanya menampilkan Additional Header Text saja sesuai kesepakatan -->
           <span id="headerExtraText" class="font-bold text-xs uppercase tracking-wider block" style="display: none;"></span>
         </div>
       </div>
@@ -40,8 +39,6 @@
   <section id="heroSection" class="relative w-full h-[360px] md:h-[460px] bg-zinc-950 overflow-hidden flex items-center justify-center">
     <div id="heroSlidesContainer" class="absolute inset-0 w-full h-full"></div>
     <div id="heroOverlay" class="absolute inset-0 bg-black/40 z-10"></div>
-    
-    <!-- Content: Flying Logo & Text Below Flying Logo -->
     <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6 z-20 max-w-2xl mx-auto">
       <img id="heroFlyingLogo" src="" alt="Flying Logo" class="h-16 md:h-20 w-auto object-contain mb-3 flying-logo drop-shadow-2xl" style="display: none;" onerror="this.style.display='none'">
       <p id="heroTextBelowLogo" class="text-xs md:text-sm font-semibold tracking-wide drop-shadow-md uppercase"></p>
@@ -189,7 +186,6 @@
         headerEl.style.borderBottom = `${ui.headerBorderSize} solid ${ui.headerBorderColor}`;
       }
 
-      // Additional Header Text (Tanpa nama tenant)
       const extraTextEl = document.getElementById('headerExtraText');
       if (ui.headerExtraText) {
         extraTextEl.innerText = ui.headerExtraText;
@@ -247,7 +243,6 @@
         </div>
       `).join('');
 
-      // Menyesuaikan warna teks/logo di hero berdasarkan field Layer Tint / Overlay dari admin
       const tintColor = ui.heroOverlayColor || '#ffffff';
       const textBelowEl = document.getElementById('heroTextBelowLogo');
       textBelowEl.style.color = tintColor;
@@ -290,7 +285,8 @@
       } else if (typeof menuItems !== 'undefined') {
         items = menuItems;
       }
-      return items.filter(i => i.isAvailable !== false && i.isHidden !== true);
+      // Filter out hidden items (isवुid / isHidden / hide)
+      return items.filter(i => i.isAvailable !== false && i.isHidden !== true && i.hide !== true && i.isHidden !== 'true');
     }
 
     function renderCategoryPills() {
@@ -300,6 +296,10 @@
       
       let html = `<button onclick="filterCategory('ALL')" class="px-4 py-2 rounded-full text-xs font-bold transition ${currentFilter === 'ALL' ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-stone-300 hover:bg-zinc-700'}">ALL</button>`;
       
+      // Tambahkan tombol filter khusus FAVOURITE dan PROMO
+      html += `<button onclick="filterCategory('FAVOURITE')" class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === 'FAVOURITE' ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-amber-400 hover:bg-zinc-700'}"><i class="fa-solid fa-star mr-1"></i> Favourite</button>`;
+      html += `<button onclick="filterCategory('PROMO')" class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === 'PROMO' ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-orange-400 hover:bg-zinc-700'}"><i class="fa-solid fa-fire mr-1"></i> Promo</button>`;
+
       html += categories.map(c => `
         <button onclick="filterCategory('${c}')" class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === c ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-stone-300 hover:bg-zinc-700'}">${c}</button>
       `).join('');
@@ -321,10 +321,19 @@
     }
 
     function renderMenuContentBox() {
-      const items = getActiveMenuItems().filter(i => currentFilter === 'ALL' || (i.category || 'General') === currentFilter);
+      let items = getActiveMenuItems();
+      
+      // Logika Filter berdasarkan kategori, FAVOURITE, atau PROMO
+      if (currentFilter === 'FAVOURITE') {
+        items = items.filter(i => i.isFav === true || i.isFavorite === true || i.isFav === 'true');
+      } else if (currentFilter === 'PROMO') {
+        items = items.filter(i => (i.promoPrice && Number(i.promoPrice) < Number(i.price)) || i.isPromo === true);
+      } else if (currentFilter !== 'ALL') {
+        items = items.filter(i => (i.category || 'General') === currentFilter);
+      }
       
       if (items.length === 0) {
-        document.getElementById('menuContentBox').innerHTML = `<div class="text-center py-16 text-stone-500 text-xs font-mono">No active menu items found. (Pastikan data menu sudah diinput di Admin Panel).</div>`;
+        document.getElementById('menuContentBox').innerHTML = `<div class="text-center py-16 text-stone-500 text-xs font-mono">No active menu items found for [${currentFilter}].</div>`;
         return;
       }
 

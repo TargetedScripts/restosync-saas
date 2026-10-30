@@ -66,12 +66,30 @@
         <h3 class="font-bold text-base text-white flex items-center space-x-2"><i class="fa-solid fa-basket-shopping text-amber-400"></i><span>Your Order Cart</span></h3>
         <button onclick="toggleCartModal()" class="text-stone-400 hover:text-white text-xl font-bold">&times;</button>
       </div>
+
+      <!-- Customer Contact Details Form -->
+      <div class="space-y-3 bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs">
+        <p class="font-bold text-amber-400"><i class="fa-solid fa-user mr-1"></i> Customer Information</p>
+        <div>
+          <label class="block text-stone-400 mb-1">Your Name *</label>
+          <input type="text" id="customerName" placeholder="e.g. John Doe" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-stone-400 mb-1">Phone Number *</label>
+          <input type="tel" id="customerPhone" placeholder="e.g. 021 123 4567" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+        </div>
+      </div>
+
       <div id="cartItemsList" class="flex-grow overflow-y-auto space-y-2 text-xs divide-y divide-zinc-800/50"></div>
+      
       <div class="pt-4 border-t border-zinc-800 space-y-2 text-xs bg-zinc-950 p-4 rounded-2xl">
         <div class="flex justify-between text-stone-400"><span>Subtotal (Excl. GST)</span><span id="cartSubtotal" class="font-mono text-stone-200">$0.00</span></div>
         <div class="flex justify-between text-stone-400"><span>NZ 15% GST (Included)</span><span id="cartGST" class="font-mono text-stone-200">$0.00</span></div>
         <div class="flex justify-between font-bold text-base text-amber-400 pt-2 border-t border-zinc-800"><span>Total (NZD)</span><span id="cartTotal" class="font-mono">$0.00</span></div>
-        <button onclick="alert('Order submitted to POS Terminal!')" class="w-full mt-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-3 rounded-xl text-xs shadow-lg transition">Checkout & Send to Kitchen</button>
+        
+        <button onclick="processCheckout()" class="w-full mt-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-3 rounded-xl text-xs shadow-lg transition">
+          Checkout & Confirm Order
+        </button>
       </div>
     </div>
   </div>
@@ -250,7 +268,6 @@
       
       let slidesData = [];
 
-      // 1. Ambil hero image default (heroImage1, heroImage2, heroImage3) dari profil toko
       const defaultHeroImages = [
         profile.heroImage1,
         profile.heroImage2,
@@ -263,11 +280,10 @@
           title: '',
           description: '',
           price: null,
-          isMenuHero: false // Menandakan ini adalah slide default
+          isMenuHero: false
         });
       });
 
-      // 2. Tambahkan item menu yang dicentang isHero === true ke dalam antrean slider
       const menuItems = tenantData.menuItems || [];
       const heroMenuItems = menuItems.filter(i => i.isHero === true || i.isHero === 'true');
 
@@ -279,12 +295,11 @@
             title: item.name,
             description: item.description,
             price: item.promoPrice && Number(item.promoPrice) < Number(item.price) ? item.promoPrice : item.price,
-            isMenuHero: true // Menandakan ini adalah slide menu hero
+            isMenuHero: true
           });
         }
       });
 
-      // 3. Fallback jika tidak ada sama sekali gambar default maupun menu hero
       if (slidesData.length === 0) {
         slidesData.push({
           image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
@@ -320,26 +335,22 @@
       const textBelow = ui.heroFlyingLogoText || profile.heroFlyingLogoText || '';
       textBelowEl.innerText = textBelow;
 
-      // Fungsi pembantu untuk mengatur visibilitas flying logo & teks berdasarkan slide aktif
       function updateFlyingLogoVisibility() {
         const activeSlide = document.querySelector('.hero-slide.active');
         if (!activeSlide) return;
 
         const isMenuHero = activeSlide.getAttribute('data-is-menu-hero') === 'true';
 
-        // Jika opsi admin ENABLE YES, TAPI sedang di slide menu hero -> SEMBUNYIKAN logo & teks
         if (flyingEnabled && logoUrl && !isMenuHero) {
           flyingLogoEl.src = logoUrl;
           flyingLogoEl.style.display = 'block';
           textBelowEl.style.display = 'block';
         } else {
-          // Sembunyikan jika diatur NO atau sedang berada di slide menu hero
           flyingLogoEl.style.display = 'none';
           textBelowEl.style.display = 'none';
         }
       }
 
-      // Jalankan pengecekan awal untuk slide pertama
       updateFlyingLogoVisibility();
 
       if (heroTimer) clearInterval(heroTimer);
@@ -352,12 +363,11 @@
           heroSlideIndex = (heroSlideIndex + 1) % slides.length;
           slides[heroSlideIndex].classList.add('active');
 
-          // Perbarui visibilitas logo setiap kali slide bergeser
           updateFlyingLogoVisibility();
         }, 4500);
       }
     }
-    
+
     function getActiveMenuItems() {
       let items = [];
       if (tenantData.menuItems && tenantData.menuItems.length > 0) {
@@ -590,6 +600,40 @@
 
     function toggleCartModal() {
       document.getElementById('cartModal').classList.toggle('hidden');
+    }
+
+    // New Checkout function with Phone Confirmation & Order ID (English)
+    function processCheckout() {
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('customerPhone').value.trim();
+
+      if (!name || !phone) {
+        alert('Please enter your Name and Phone Number before checkout.');
+        return;
+      }
+
+      if (cart.length === 0) {
+        alert('Your cart is empty.');
+        return;
+      }
+
+      const orderId = 'RS-' + Math.floor(1000 + Math.random() * 9000);
+      const storePhone = tenantData.profile?.phone || 'our store phone';
+
+      const confirmationMsg = `Order Placed Successfully!\n\n` +
+        `Order ID: ${orderId}\n` +
+        `Customer Name: ${name}\n` +
+        `Phone Number: ${phone}\n\n` +
+        `IMPORTANT: Please call us now at [ ${storePhone} ] and mention your Order ID (${orderId}) to confirm your order and start kitchen processing!`;
+
+      alert(confirmationMsg);
+
+      cart = [];
+      document.getElementById('cartCount').innerText = '0';
+      document.getElementById('customerName').value = '';
+      document.getElementById('customerPhone').value = '';
+      updateCartUI();
+      toggleCartModal();
     }
   </script>
 </body>

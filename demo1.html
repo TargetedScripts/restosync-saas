@@ -222,57 +222,65 @@
     }
 
     function initHeroSlider() {
-      const profile = tenantData.profile || {};
-      const ui = profile.uiStyles || {};
-      const config = tenantData.config || {};
-      
-      const images = [
-        profile.heroImage1 || config.branding?.heroImages?.[0] || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.heroImages?.[0] : null),
-        profile.heroImage2 || config.branding?.heroImages?.[1] || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.heroImages?.[1] : null),
-        profile.heroImage3 || config.branding?.heroImages?.[2] || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.heroImages?.[2] : null)
-      ].filter(img => img && img.trim() !== '' && !img.includes('undefined') && !img.includes('null'));
+  const profile = tenantData.profile || {};
+  const ui = profile.uiStyles || {};
+  
+  // Cek apakah ada menu items yang diset sebagai hero (isHero === true)
+  const menuItems = tenantData.menuItems || [];
+  const heroMenuItems = menuItems.filter(i => i.isHero === true || i.isHero === 'true');
 
-      if (images.length === 0) {
-        images.push('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');
-      }
+  let slidesData = [];
 
-      const container = document.getElementById('heroSlidesContainer');
-      container.innerHTML = images.map((img, idx) => `
-        <div class="hero-slide ${idx === 0 ? 'active' : ''}">
-          <img src="${img}" class="w-full h-full object-cover">
-        </div>
-      `).join('');
+  if (heroMenuItems.length > 0) {
+    // Ambil gambar dan detail dari menu item yang berstatus isHero
+    slidesData = heroMenuItems.map(item => ({
+      image: item.image || item.imageUrl || '',
+      title: item.name,
+      description: item.description,
+      price: item.promoPrice && Number(item.promoPrice) < Number(item.price) ? item.promoPrice : item.price
+    }));
+  } else {
+    // Fallback ke banner standar dari profil jika tidak ada menu yang diset isHero
+    const fallbackImages = [
+      profile.heroImage1,
+      profile.heroImage2,
+      profile.heroImage3
+    ].filter(img => img && img.trim() !== '' && !img.includes('undefined') && !img.includes('null'));
 
-      const tintColor = ui.heroOverlayColor || '#ffffff';
-      const textBelowEl = document.getElementById('heroTextBelowLogo');
-      textBelowEl.style.color = tintColor;
-
-      const flyingEnabled = ui.heroFlyingLogoEnabled === 'yes' || profile.heroFlyingLogoEnabled === 'yes';
-      const logoUrl = profile.logoUrl || config.branding?.logo || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.logo : '');
-      const flyingLogoEl = document.getElementById('heroFlyingLogo');
-      
-      if (flyingEnabled && logoUrl) {
-        flyingLogoEl.src = logoUrl;
-        flyingLogoEl.style.display = 'block';
-      } else {
-        flyingLogoEl.style.display = 'none';
-      }
-
-      const textBelow = ui.heroFlyingLogoText || profile.heroFlyingLogoText || '';
-      textBelowEl.innerText = textBelow;
-
-      if (heroTimer) clearInterval(heroTimer);
-      if (images.length > 1) {
-        heroSlideIndex = 0;
-        heroTimer = setInterval(() => {
-          const slides = document.querySelectorAll('.hero-slide');
-          if (slides.length === 0) return;
-          slides[heroSlideIndex].classList.remove('active');
-          heroSlideIndex = (heroSlideIndex + 1) % slides.length;
-          slides[heroSlideIndex].classList.add('active');
-        }, 4500);
-      }
+    if (fallbackImages.length === 0) {
+      fallbackImages.push('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');
     }
+    slidesData = fallbackImages.map(img => ({ image: img, title: '', description: '', price: null }));
+  }
+
+  const container = document.getElementById('heroSlidesContainer');
+  container.innerHTML = slidesData.map((slide, idx) => `
+    <div class="hero-slide ${idx === 0 ? 'active' : ''} relative">
+      <img src="${slide.image}" class="w-full h-full object-cover">
+      ${slide.title ? `
+        <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-6 md:p-12 z-20">
+          <span class="bg-amber-500 text-zinc-950 text-xs font-bold px-2.5 py-1 rounded-md w-max mb-2"><i class="fa-solid fa-fire mr-1"></i> Featured Hero Menu</span>
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white">${slide.title}</h2>
+          <p class="text-stone-300 text-xs md:text-sm mt-1 max-w-xl line-clamp-2">${slide.description || ''}</p>
+          <span class="text-amber-400 font-mono font-black text-lg mt-2">$${Number(slide.price).toFixed(2)}</span>
+        </div>
+      ` : ''}
+    </div>
+  `).join('');
+
+  // Bagian timer slider selanjutnya tetap berjalan seperti biasa...
+  if (heroTimer) clearInterval(heroTimer);
+  if (slidesData.length > 1) {
+    heroSlideIndex = 0;
+    heroTimer = setInterval(() => {
+      const slides = document.querySelectorAll('.hero-slide');
+      if (slides.length === 0) return;
+      slides[heroSlideIndex].classList.remove('active');
+      heroSlideIndex = (heroSlideIndex + 1) % slides.length;
+      slides[heroSlideIndex].classList.add('active');
+    }, 4500);
+  }
+}
 
     function getActiveMenuItems() {
       let items = [];

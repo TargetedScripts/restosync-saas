@@ -15,11 +15,14 @@
 <body id="mainBody" class="bg-zinc-900 text-stone-200 flex flex-col min-h-screen pb-16">
 
   <!-- HEADER -->
-  <header id="mainHeader" class="sticky top-0 z-50 border-b border-zinc-800/60 w-full bg-black"> 
+  <header id="mainHeader" class="sticky top-0 z-50 border-b border-zinc-800/60 w-full bg-black transition-colors duration-200"> 
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
       <div class="flex items-center space-x-3 shrink-0">
-        <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain" style="height: 38px;" onerror="this.style.display='none'">
-        <span id="headerStoreName" class="font-bold text-sm uppercase tracking-wider text-amber-300">Loading Store...</span>
+        <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
+        <div>
+          <span id="headerStoreName" class="font-bold text-sm uppercase tracking-wider text-amber-300 block">Loading Store...</span>
+          <span id="headerExtraText" class="text-[10px] text-stone-400 block" style="display: none;"></span>
+        </div>
       </div>
       <button onclick="toggleCartModal()" id="cartBtn" class="font-bold px-3.5 py-2 rounded-xl text-xs flex items-center space-x-2 bg-amber-500 text-zinc-950 shadow-lg transition hover:bg-amber-400">
         <i class="fa-solid fa-basket-shopping"></i><span>Cart</span><span id="cartCount" class="bg-zinc-950 text-amber-400 text-xs px-2 py-0.5 rounded-full font-mono">0</span>
@@ -112,7 +115,7 @@
     let cart = [];
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Update link admin portal agar membawa parameter tenant yang sama
+      // Hubungkan link manager portal dengan tenant aktif
       document.getElementById('adminPortalLink').href = `admin.html?tenant=${TENANT_ID}`;
 
       // Ambil data secara online & real-time dari Firestore dokumen tenants/{TENANT_ID}
@@ -132,8 +135,8 @@
     });
 
     function initStoreBranding() {
-      // Mendukung struktur profil dari system-console.html / admin.html & config standar
       const profile = tenantData.profile || {};
+      const ui = profile.uiStyles || {};
       const config = tenantData.config || {};
       
       const storeName = profile.tenantName || config.store?.name || TENANT_ID;
@@ -143,7 +146,44 @@
       const logoUrl = profile.logoUrl || config.branding?.logo || '';
       const heroImg = profile.heroImage1 || config.branding?.heroImages?.[0] || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80';
 
-      document.getElementById('headerStoreName').innerText = storeName;
+      // 1. Terapkan Warna & Gaya Header dari Admin Panel (Firestore uiStyles)
+      const headerEl = document.getElementById('mainHeader');
+      if (ui.headerBgColor) {
+        headerEl.style.backgroundColor = ui.headerBgColor;
+      }
+      if (ui.headerBorderColor && ui.headerBorderSize && ui.headerBorderSize !== '0px') {
+        headerEl.style.borderBottom = `${ui.headerBorderSize} solid ${ui.headerBorderColor}`;
+      }
+
+      // 2. Terapkan Teks Nama Toko & Warna Teks Header
+      const headerStoreNameEl = document.getElementById('headerStoreName');
+      headerStoreNameEl.innerText = storeName;
+      if (ui.headerTextColor) {
+        headerStoreNameEl.style.color = ui.headerTextColor;
+      }
+
+      // Tampilkan Teks Tambahan Header (headerExtraText) jika ada di Admin Panel
+      const extraTextEl = document.getElementById('headerExtraText');
+      if (ui.headerExtraText) {
+        extraTextEl.innerText = ui.headerExtraText;
+        extraTextEl.style.display = 'block';
+        if (ui.headerTextColor) extraTextEl.style.color = ui.headerTextColor;
+      } else {
+        extraTextEl.style.display = 'none';
+      }
+
+      // 3. Terapkan Logo & Skala Zoom Logo (logoScale)
+      const logoEl = document.getElementById('storeLogo');
+      if (logoUrl) {
+        logoEl.src = logoUrl;
+        logoEl.style.display = 'block';
+        const scale = profile.logoScale ? profile.logoScale / 100 : 1;
+        logoEl.style.transform = `scale(${scale})`;
+      } else {
+        logoEl.style.display = 'none';
+      }
+
+      // 4. Hero & Footer Info
       document.getElementById('heroTaglineTitle').innerText = storeName;
       document.getElementById('bannerTagline').innerText = tagline;
       document.getElementById('footerStoreName').innerText = storeName;
@@ -152,11 +192,7 @@
       document.getElementById('footerPhone').href = `tel:${phone}`;
       document.getElementById('heroImgMain').src = heroImg;
 
-      if (logoUrl) {
-        document.getElementById('storeLogo').src = logoUrl;
-      }
-
-      // Jam Operasional (Mendukung officeHours atau operatingHours)
+      // 5. Jam Operasional dari Firestore (officeHours / operatingHours)
       const op = tenantData.officeHours || config.operatingHours || {};
       const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       const hoursHtml = days.map(day => {
@@ -167,7 +203,6 @@
     }
 
     function getActiveMenuItems() {
-      // Mendukung menuItems di root dokumen (dari admin.html) maupun di dalam config
       const items = tenantData.menuItems || tenantData.config?.menuItems || [];
       return items.filter(i => i.isAvailable !== false && i.isHidden !== true);
     }

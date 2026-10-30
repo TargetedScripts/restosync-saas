@@ -320,14 +320,14 @@
 
     function getActiveMenuItems() {
       let items = [];
+      // Prioritaskan sepenuhnya data dari database Firestore yang sedang aktif
       if (tenantData.menuItems && tenantData.menuItems.length > 0) {
         items = tenantData.menuItems;
       } else if (tenantData.config?.menuItems && tenantData.config.menuItems.length > 0) {
         items = tenantData.config.menuItems;
-      } else if (typeof RESTOSYNC_CONFIG !== 'undefined' && RESTOSYNC_CONFIG.menuItems) {
-        items = RESTOSYNC_CONFIG.menuItems;
-      } else if (typeof menuItems !== 'undefined') {
-        items = menuItems;
+      } else {
+        // Jika Firestore kosong, baru gunakan cadangan
+        items = (typeof RESTOSYNC_CONFIG !== 'undefined' && RESTOSYNC_CONFIG.menuItems) ? RESTOSYNC_CONFIG.menuItems : [];
       }
       return items.filter(i => i.isAvailable !== false && i.isHidden !== true && i.hide !== true && i.isHidden !== 'true');
     }

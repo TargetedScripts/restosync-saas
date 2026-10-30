@@ -343,13 +343,25 @@
       const categories = [...new Set(items.map(i => i.category || 'General'))];
       const pills = document.getElementById('categoryPills');
       
-      let html = `<button onclick="filterCategory('ALL')" class="px-4 py-2 rounded-full text-xs font-bold transition ${currentFilter === 'ALL' ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-stone-300 hover:bg-zinc-700'}">ALL</button>`;
+      const profile = tenantData.profile || {};
+      const ui = profile.uiStyles || {};
+      const customActiveBg = ui.catBtnActiveBg || '#f59e0b';
+      const customActiveText = ui.catBtnActiveText || '#030712';
+
+      const getBtnStyle = (isActive) => {
+        if (isActive) {
+          return `style="background-color: ${customActiveBg}; color: ${customActiveText};"`;
+        }
+        return '';
+      };
+
+      let html = `<button onclick="filterCategory('ALL')" ${getBtnStyle(currentFilter === 'ALL')} class="px-4 py-2 rounded-full text-xs font-bold transition ${currentFilter === 'ALL' ? 'shadow-md' : 'bg-zinc-800 text-stone-300 hover:bg-zinc-700'}">ALL</button>`;
       
-      html += `<button onclick="filterCategory('FAVOURITE')" class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === 'FAVOURITE' ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-amber-400 hover:bg-zinc-700'}"><i class="fa-solid fa-star mr-1"></i> Favourite</button>`;
-      html += `<button onclick="filterCategory('PROMO')" class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === 'PROMO' ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-orange-400 hover:bg-zinc-700'}"><i class="fa-solid fa-fire mr-1"></i> Promo</button>`;
+      html += `<button onclick="filterCategory('FAVOURITE')" ${getBtnStyle(currentFilter === 'FAVOURITE')} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === 'FAVOURITE' ? 'shadow-md' : 'bg-zinc-800 text-amber-400 hover:bg-zinc-700'}"><i class="fa-solid fa-star mr-1"></i> Favourite</button>`;
+      html += `<button onclick="filterCategory('PROMO')" ${getBtnStyle(currentFilter === 'PROMO')} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === 'PROMO' ? 'shadow-md' : 'bg-zinc-800 text-orange-400 hover:bg-zinc-700'}"><i class="fa-solid fa-fire mr-1"></i> Promo</button>`;
 
       html += categories.map(c => `
-        <button onclick="filterCategory('${c}')" class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === c ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-stone-300 hover:bg-zinc-700'}">${c}</button>
+        <button onclick="filterCategory('${c}')" ${getBtnStyle(currentFilter === c)} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === c ? 'shadow-md' : 'bg-zinc-800 text-stone-300 hover:bg-zinc-700'}">${c}</button>
       `).join('');
       
       pills.innerHTML = html;
@@ -363,8 +375,32 @@
 
     function switchLayout(layout) {
       currentLayout = layout;
-      document.getElementById('btnLayoutGrid').className = layout === 'grid' ? 'px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-zinc-950 transition' : 'px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition';
-      document.getElementById('btnLayoutList').className = layout === 'list' ? 'px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-zinc-950 transition' : 'px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition';
+      const profile = tenantData.profile || {};
+      const ui = profile.uiStyles || {};
+      const customActiveBg = ui.catBtnActiveBg || '#f59e0b';
+      const customActiveText = ui.catBtnActiveText || '#030712';
+
+      const gridBtn = document.getElementById('btnLayoutGrid');
+      const listBtn = document.getElementById('btnLayoutList');
+
+      if (layout === 'grid') {
+        gridBtn.style.backgroundColor = customActiveBg;
+        gridBtn.style.color = customActiveText;
+        gridBtn.className = 'px-3 py-1.5 rounded-lg font-bold transition';
+        
+        listBtn.style.backgroundColor = '';
+        listBtn.style.color = '';
+        listBtn.className = 'px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition';
+      } else {
+        listBtn.style.backgroundColor = customActiveBg;
+        listBtn.style.color = customActiveText;
+        listBtn.className = 'px-3 py-1.5 rounded-lg font-bold transition';
+
+        gridBtn.style.backgroundColor = '';
+        gridBtn.style.color = '';
+        gridBtn.className = 'px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition';
+      }
+
       renderMenuContentBox();
     }
 

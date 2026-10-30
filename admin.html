@@ -778,29 +778,27 @@
                 if (storeNameInput) storeNameInput.value = profile.tenantName;
             }
 
-            // 2. ISI URL LOGO & TAMPILKAN PREVIEW-NYA
+            // 2. ISI URL LOGO & TAMPILKAN PREVIEW-NYA (ID DIPERBAIKI: logoPreviewImage)
             if (profile.logoUrl) {
                 const logoInput = document.getElementById('logoUrl');
                 if (logoInput) logoInput.value = profile.logoUrl;
                 
-                const logoPreview = document.getElementById('logoPreviewImg');
+                const logoPreview = document.getElementById('logoPreviewImage');
                 if (logoPreview) {
                     logoPreview.src = profile.logoUrl;
-                    logoPreview.style.display = 'block';
                 }
             }
 
-            // 3. ISI HERO IMAGE 1, 2, 3 & TAMPILKAN PREVIEW-NYA
+            // 3. ISI HERO IMAGE 1, 2, 3 & TAMPILKAN PREVIEW-NYA (ID DIPERBAIKI: hero1Preview, dst)
             ['1', '2', '3'].forEach(num => {
                 const heroVal = profile[`heroImage${num}`];
                 if (heroVal) {
                     const heroInput = document.getElementById(`heroImage${num}`);
                     if (heroInput) heroInput.value = heroVal;
 
-                    const heroPreview = document.getElementById(`heroPreviewImg${num}`);
+                    const heroPreview = document.getElementById(`hero${num}Preview`);
                     if (heroPreview) {
                         heroPreview.src = heroVal;
-                        heroPreview.style.display = 'block';
                     }
                 }
             });

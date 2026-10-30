@@ -603,7 +603,7 @@
     }
 
     // New Checkout function with Phone Confirmation & Order ID (English)
-    function processCheckout() {
+    async function processCheckout() {
       const name = document.getElementById('customerName').value.trim();
       const phone = document.getElementById('customerPhone').value.trim();
 
@@ -617,24 +617,22 @@
         return;
       }
 
-      const orderId = 'RS-' + Math.floor(1000 + Math.random() * 9000);
-      const storePhone = tenantData.profile?.phone || 'our store phone';
+      // Format data cart agar sesuai dengan parameter function (pastikan properti quantity ada)
+      const formattedCartItems = cart.map(i => ({
+        id: i.cartId,
+        name: i.name,
+        price: i.price,
+        quantity: i.qty,
+        notes: ''
+      }));
 
-      const confirmationMsg = `Order Placed Successfully!\n\n` +
-        `Order ID: ${orderId}\n` +
-        `Customer Name: ${name}\n` +
-        `Phone Number: ${phone}\n\n` +
-        `IMPORTANT: Please call us now at [ ${storePhone} ] and mention your Order ID (${orderId}) to confirm your order and start kitchen processing!`;
+      // Panggil fungsi Firestore yang sudah Anda buat
+      await placeOrderToFirestore(formattedCartItems, { name, phone }, TENANT_ID);
 
-      alert(confirmationMsg);
-
-      cart = [];
-      document.getElementById('cartCount').innerText = '0';
-      document.getElementById('customerName').value = '';
-      document.getElementById('customerPhone').value = '';
-      updateCartUI();
+      // Tutup modal keranjang setelah selesai
       toggleCartModal();
     }
-  </script>
+
+</script>
 </body>
 </html>

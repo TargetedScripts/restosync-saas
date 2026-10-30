@@ -18,7 +18,6 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
-
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 px-5 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center space-x-2 bg-emerald-600">
         <i class="fa-solid fa-circle-check text-sm"></i>
@@ -238,18 +237,61 @@
                             <input type="text" id="heroFlyingLogoText" class="w-full custom-input rounded-xl px-3.5 py-2 text-stone-200" placeholder="e.g. Welcome to Our Family Restaurant">
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs pt-2">
-                        <div>
-                            <label class="block text-stone-400 mb-1 font-semibold text-amber-400">Hero Image 1 URL</label>
-                            <input type="text" id="heroImage1" class="w-full custom-input rounded-xl px-3.5 py-2 text-stone-200 font-mono" placeholder="assets/images/Hero01.jpg">
+
+                    <!-- HERO IMAGE 1, 2, 3 SELECTOR, STORAGE DROPDOWN & UPLOADER -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-3 text-xs">
+                        <!-- Hero 1 -->
+                        <div class="bg-[#111827] p-4 rounded-xl border border-zinc-800 space-y-2">
+                            <label class="block font-semibold text-amber-400">Hero Image 1</label>
+                            <div class="flex space-x-2">
+                                <select id="hero1Dropdown" onchange="selectHeroFromDropdown(1, this.value)" class="custom-input rounded-lg px-2 py-1 text-stone-200 font-mono w-1/3 text-[11px]">
+                                    <option value="">Storage...</option>
+                                </select>
+                                <input type="text" id="heroImage1" oninput="updateHeroPreview(1, this.value)" class="w-2/3 custom-input rounded-lg px-2.5 py-1.5 text-stone-200 font-mono" placeholder="assets/images/Hero01.jpg">
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <input type="file" id="hero1File" accept="image/*" class="w-full text-[10px] text-stone-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer">
+                                <button onclick="uploadHeroToStorage(1)" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-3 py-1 rounded-lg font-bold text-[11px]">Upload</button>
+                            </div>
+                            <div class="h-16 bg-black/40 rounded-lg flex items-center justify-center overflow-hidden border border-zinc-800">
+                                <img id="hero1Preview" src="" alt="Hero 1 Preview" class="max-h-full object-cover" onerror="this.src='https://placehold.co/120x40?text=No+Hero+1'">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-stone-400 mb-1 font-semibold text-amber-400">Hero Image 2 URL</label>
-                            <input type="text" id="heroImage2" class="w-full custom-input rounded-xl px-3.5 py-2 text-stone-200 font-mono" placeholder="assets/images/Hero02.jpg">
+
+                        <!-- Hero 2 -->
+                        <div class="bg-[#111827] p-4 rounded-xl border border-zinc-800 space-y-2">
+                            <label class="block font-semibold text-amber-400">Hero Image 2</label>
+                            <div class="flex space-x-2">
+                                <select id="hero2Dropdown" onchange="selectHeroFromDropdown(2, this.value)" class="custom-input rounded-lg px-2 py-1 text-stone-200 font-mono w-1/3 text-[11px]">
+                                    <option value="">Storage...</option>
+                                </select>
+                                <input type="text" id="heroImage2" oninput="updateHeroPreview(2, this.value)" class="w-2/3 custom-input rounded-lg px-2.5 py-1.5 text-stone-200 font-mono" placeholder="assets/images/Hero02.jpg">
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <input type="file" id="hero2File" accept="image/*" class="w-full text-[10px] text-stone-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer">
+                                <button onclick="uploadHeroToStorage(2)" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-3 py-1 rounded-lg font-bold text-[11px]">Upload</button>
+                            </div>
+                            <div class="h-16 bg-black/40 rounded-lg flex items-center justify-center overflow-hidden border border-zinc-800">
+                                <img id="hero2Preview" src="" alt="Hero 2 Preview" class="max-h-full object-cover" onerror="this.src='https://placehold.co/120x40?text=No+Hero+2'">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-stone-400 mb-1 font-semibold text-amber-400">Hero Image 3 URL</label>
-                            <input type="text" id="heroImage3" class="w-full custom-input rounded-xl px-3.5 py-2 text-stone-200 font-mono" placeholder="assets/images/Hero03.jpg">
+
+                        <!-- Hero 3 -->
+                        <div class="bg-[#111827] p-4 rounded-xl border border-zinc-800 space-y-2">
+                            <label class="block font-semibold text-amber-400">Hero Image 3</label>
+                            <div class="flex space-x-2">
+                                <select id="hero3Dropdown" onchange="selectHeroFromDropdown(3, this.value)" class="custom-input rounded-lg px-2 py-1 text-stone-200 font-mono w-1/3 text-[11px]">
+                                    <option value="">Storage...</option>
+                                </select>
+                                <input type="text" id="heroImage3" oninput="updateHeroPreview(3, this.value)" class="w-2/3 custom-input rounded-lg px-2.5 py-1.5 text-stone-200 font-mono" placeholder="assets/images/Hero03.jpg">
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <input type="file" id="hero3File" accept="image/*" class="w-full text-[10px] text-stone-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer">
+                                <button onclick="uploadHeroToStorage(3)" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-3 py-1 rounded-lg font-bold text-[11px]">Upload</button>
+                            </div>
+                            <div class="h-16 bg-black/40 rounded-lg flex items-center justify-center overflow-hidden border border-zinc-800">
+                                <img id="hero3Preview" src="" alt="Hero 3 Preview" class="max-h-full object-cover" onerror="this.src='https://placehold.co/120x40?text=No+Hero+3'">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -462,23 +504,31 @@
             document.getElementById('headerTenantId').innerText = `Tenant ID: ${tenantId}`;
             addTrace(`Initializing panel for tenant: [${tenantId}]`);
             authenticateManager();
-            fetchStorageLogoList();
+            fetchStorageAssetLists();
         });
 
-        function fetchStorageLogoList() {
+        function fetchStorageAssetLists() {
             const listRef = storage.ref().child(`tenants/${tenantId}/images`);
             listRef.listAll().then((res) => {
-                const dropdown = document.getElementById('storageLogoDropdown');
-                dropdown.innerHTML = '<option value="">Select from Storage...</option>';
+                const logoDropdown = document.getElementById('storageLogoDropdown');
+                const hero1Dropdown = document.getElementById('hero1Dropdown');
+                const hero2Dropdown = document.getElementById('hero2Dropdown');
+                const hero3Dropdown = document.getElementById('hero3Dropdown');
+
+                logoDropdown.innerHTML = '<option value="">Select from Storage...</option>';
+                hero1Dropdown.innerHTML = '<option value="">Storage...</option>';
+                hero2Dropdown.innerHTML = '<option value="">Storage...</option>';
+                hero3Dropdown.innerHTML = '<option value="">Storage...</option>';
+
                 res.items.forEach((itemRef) => {
                     itemRef.getDownloadURL().then((url) => {
-                        const option = document.createElement('option');
-                        option.value = url;
-                        option.textContent = itemRef.name;
-                        dropdown.appendChild(option);
+                        logoDropdown.appendChild(new Option(itemRef.name, url));
+                        hero1Dropdown.appendChild(new Option(itemRef.name, url));
+                        hero2Dropdown.appendChild(new Option(itemRef.name, url));
+                        hero3Dropdown.appendChild(new Option(itemRef.name, url));
                     });
                 });
-                addTrace(`Fetched logo files list from Firebase Storage.`);
+                addTrace(`Fetched storage asset files list.`);
             }).catch((err) => {
                 addTrace(`Note: Could not list storage files yet: ${err.message}`);
             });
@@ -491,10 +541,22 @@
             showToast("Logo selected from Storage!");
         }
 
+        function selectHeroFromDropdown(heroNum, url) {
+            if(!url) return;
+            document.getElementById(`heroImage${heroNum}`).value = url;
+            updateHeroPreview(heroNum, url);
+            showToast(`Hero Image ${heroNum} selected from Storage!`);
+        }
+
         function updateLogoPreview(url) {
             const img = document.getElementById('logoPreviewImage');
             img.src = url || 'https://placehold.co/120x60?text=No+Logo';
             img.style.transform = `scale(${currentLogoScale / 100})`;
+        }
+
+        function updateHeroPreview(heroNum, url) {
+            const img = document.getElementById(`hero${heroNum}Preview`);
+            img.src = url || `https://placehold.co/120x40?text=No+Hero+${heroNum}`;
         }
 
         function authenticateManager() {
@@ -615,6 +677,10 @@
             currentLogoScale = profile.logoScale || 100;
             document.getElementById('logoScaleDisplay').innerText = currentLogoScale + '%';
             updateLogoPreview(profile.logoUrl || '');
+
+            updateHeroPreview(1, profile.heroImage1 || '');
+            updateHeroPreview(2, profile.heroImage2 || '');
+            updateHeroPreview(3, profile.heroImage3 || '');
 
             if(profile.uiStyles) {
                 const s = profile.uiStyles;
@@ -746,8 +812,37 @@
                         statusBox.className = "text-[11px] font-mono text-emerald-400";
                         document.getElementById('logoUrl').value = downloadURL;
                         updateLogoPreview(downloadURL);
-                        fetchStorageLogoList();
+                        fetchStorageAssetLists();
                         showToast("Logo successfully uploaded to Firebase Storage!");
+                    });
+                }
+            );
+        }
+
+        function uploadHeroToStorage(heroNum) {
+            const fileInput = document.getElementById(`hero${heroNum}File`);
+            if (fileInput.files.length === 0) {
+                alert(`Please select an image file for Hero ${heroNum} first!`);
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const storagePath = `tenants/${tenantId}/images/hero${heroNum}_${Date.now()}_${file.name}`;
+            const storageRef = storage.ref().child(storagePath);
+
+            addTrace(`Uploading Hero ${heroNum} image [${file.name}] to Firebase Storage...`);
+
+            const uploadTask = storageRef.put(file);
+            uploadTask.on('state_changed', null, 
+                (error) => {
+                    alert(`Failed to upload Hero ${heroNum}: ${error.message}`);
+                }, 
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        document.getElementById(`heroImage${heroNum}`).value = downloadURL;
+                        updateHeroPreview(heroNum, downloadURL);
+                        fetchStorageAssetLists();
+                        showToast(`Hero ${heroNum} uploaded and set successfully!`);
                     });
                 }
             );

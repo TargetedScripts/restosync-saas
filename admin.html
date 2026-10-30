@@ -770,22 +770,81 @@
         function renderManagerPanel() {
             addTrace(`Rendering manager panel UI components...`, false);
             const profile = tenantData.profile || {};
-            // ... (kode pemuatan data lainnya) ...
+            const ui = profile.uiStyles || {};
 
-            if(profile.uiStyles) {
-                const s = profile.uiStyles;
-                if(s.primaryColor) { document.getElementById('primaryColor').value = s.primaryColor; document.getElementById('primaryColorText').value = s.primaryColor; }
-                if(s.headerBgColor) document.getElementById('headerBgColor').value = s.headerBgColor;
-                // ... (pengaturan warna lain yang sudah ada) ...
-
-                // Pengaturan warna baru untuk Filter Bar & Section Background
-                if(s.filterBarBg) document.getElementById('filterBarBg').value = s.filterBarBg;
-                if(s.sectionBgColor) document.getElementById('sectionBgColor').value = s.sectionBgColor;
+            // 1. ISI NAMA TOKO & SETTING UTAMA
+            if (profile.tenantName) {
+                const storeNameInput = document.getElementById('storeName');
+                if (storeNameInput) storeNameInput.value = profile.tenantName;
             }
 
-            // ... (lanjutan render jam dan tabel menu) ...
+            // 2. ISI URL LOGO & TAMPILKAN PREVIEW-NYA
+            if (profile.logoUrl) {
+                const logoInput = document.getElementById('logoUrl');
+                if (logoInput) logoInput.value = profile.logoUrl;
+                
+                const logoPreview = document.getElementById('logoPreviewImg');
+                if (logoPreview) {
+                    logoPreview.src = profile.logoUrl;
+                    logoPreview.style.display = 'block';
+                }
+            }
+
+            // 3. ISI HERO IMAGE 1, 2, 3 & TAMPILKAN PREVIEW-NYA
+            ['1', '2', '3'].forEach(num => {
+                const heroVal = profile[`heroImage${num}`];
+                if (heroVal) {
+                    const heroInput = document.getElementById(`heroImage${num}`);
+                    if (heroInput) heroInput.value = heroVal;
+
+                    const heroPreview = document.getElementById(`heroPreviewImg${num}`);
+                    if (heroPreview) {
+                        heroPreview.src = heroVal;
+                        heroPreview.style.display = 'block';
+                    }
+                }
+            });
+
+            // 4. PEMUATAN GAYA WARNA (UI STYLES)
+            if(ui.primaryColor) { document.getElementById('primaryColor').value = ui.primaryColor; document.getElementById('primaryColorText').value = ui.primaryColor; }
+            if(ui.headerBgColor) document.getElementById('headerBgColor').value = ui.headerBgColor;
+            if(ui.headerBorderColor) document.getElementById('headerBorderColor').value = ui.headerBorderColor;
+            if(ui.headerBorderSize) document.getElementById('headerBorderSize').value = ui.headerBorderSize;
+            if(ui.headerLogoPos) document.getElementById('headerLogoPos').value = ui.headerLogoPos;
+            if(ui.headerExtraText) document.getElementById('headerExtraText').value = ui.headerExtraText;
+            if(ui.headerTextColor) document.getElementById('headerTextColor').value = ui.headerTextColor;
+
+            if(ui.heroDisplayMode) document.getElementById('heroDisplayMode').value = ui.heroDisplayMode;
+            if(ui.heroBoxBgColor) document.getElementById('heroBoxBgColor').value = ui.heroBoxBgColor;
+            if(ui.heroOverlayColor) document.getElementById('heroOverlayColor').value = ui.heroOverlayColor;
+            if(ui.heroFlyingLogoEnabled) document.getElementById('heroFlyingLogoEnabled').value = ui.heroFlyingLogoEnabled;
+            if(ui.heroFlyingLogoText) document.getElementById('heroFlyingLogoText').value = ui.heroFlyingLogoText;
+
+            if(ui.bodyBgColor) document.getElementById('bodyBgColor').value = ui.bodyBgColor;
+            if(ui.bodyTextColor) document.getElementById('bodyTextColor').value = ui.bodyTextColor;
+            if(ui.buttonBgColor) document.getElementById('buttonBgColor').value = ui.buttonBgColor;
+            if(ui.buttonTextColor) document.getElementById('buttonTextColor').value = ui.buttonTextColor;
+
+            if(ui.cardMenuBg) document.getElementById('cardMenuBg').value = ui.cardMenuBg;
+            if(ui.cardBorderColor) document.getElementById('cardBorderColor').value = ui.cardBorderColor;
+            if(ui.cardBorderThickness) document.getElementById('cardBorderThickness').value = ui.cardBorderThickness;
+            if(ui.priceBadgeColor) document.getElementById('priceBadgeColor').value = ui.priceBadgeColor;
+
+            // Pengaturan warna baru untuk Filter Bar & Section Background
+            if(ui.filterBarBg) document.getElementById('filterBarBg').value = ui.filterBarBg;
+            if(ui.sectionBgColor) document.getElementById('sectionBgColor').value = ui.sectionBgColor;
+
+            if(ui.floatingCartBg) document.getElementById('floatingCartBg').value = ui.floatingCartBg;
+            if(ui.floatingCartText) document.getElementById('floatingCartText').value = ui.floatingCartText;
+            if(ui.modalBackdropColor) document.getElementById('modalBackdropColor').value = ui.modalBackdropColor;
+            if(ui.modalBoxBg) document.getElementById('modalBoxBg').value = ui.modalBoxBg;
+
+            if(ui.footerBgColor) document.getElementById('footerBgColor').value = ui.footerBgColor;
+            if(ui.footerTextColor) document.getElementById('footerTextColor').value = ui.footerTextColor;
+
+            // 5. RENDER KOMPONEN LAINNYA
             renderCategoryManager();
-            renderMenuTable(tenantData.menuItems);
+            renderMenuTable(tenantData.menuItems || []);
             document.getElementById('traceStatus').innerText = "Ready & Synced";
         }
 

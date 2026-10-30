@@ -489,9 +489,26 @@
 
         <!-- TAB 5: KITCHEN KDS -->
         <div id="tab-kds" class="tab-content space-y-6">
-            <div class="custom-card rounded-3xl p-6 space-y-4 shadow-xl">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400">Kitchen Display System (KDS)</h2>
-                <p class="text-xs text-stone-400">Real-time order queue routing for chefs (NEW -> COOKING -> READY).</p>
+            <div class="custom-card rounded-3xl p-6 space-y-4 shadow-xl border border-amber-500/30">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                    <i class="fa-solid fa-fire-burner text-sm"></i><span>Kitchen & KDS Configuration</span>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <label class="block text-stone-400 mb-1 font-semibold">KDS Auto-Refresh Interval</label>
+                        <select id="kdsRefreshRate" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                            <option value="realtime">Real-Time (Recommended via onSnapshot)</option>
+                            <option value="5s">Every 5 Seconds</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-stone-400 mb-1 font-semibold">Kitchen Order Sound Alert</label>
+                        <select id="kdsSoundAlert" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
+                            <option value="enabled">Enabled (Chime on New Order)</option>
+                            <option value="disabled">Muted</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -786,6 +803,7 @@
             addTrace(`Rendering manager panel UI components...`, false);
             const profile = tenantData.profile || {};
             const ui = profile.uiStyles || {};
+            const kdsSettings = tenantData.kdsSettings || {};
 
             if (profile.tenantName) {
                 const storeNameInput = document.getElementById('storeName');
@@ -845,6 +863,9 @@
 
             if(ui.footerBgColor) document.getElementById('footerBgColor').value = ui.footerBgColor;
             if(ui.footerTextColor) document.getElementById('footerTextColor').value = ui.footerTextColor;
+
+            if(kdsSettings.refreshRate) document.getElementById('kdsRefreshRate').value = kdsSettings.refreshRate;
+            if(kdsSettings.soundAlert) document.getElementById('kdsSoundAlert').value = kdsSettings.soundAlert;
 
             const op = tenantData.officeHours || {};
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -1184,6 +1205,11 @@
                 footerTextColor: document.getElementById('footerTextColor').value
             };
 
+            const kdsSettings = {
+                refreshRate: document.getElementById('kdsRefreshRate').value,
+                soundAlert: document.getElementById('kdsSoundAlert').value
+            };
+
             const updatedProfile = tenantData.profile || {};
             updatedProfile.tenantName = document.getElementById('storeName').value;
             updatedProfile.logoUrl = document.getElementById('logoUrl').value;
@@ -1195,6 +1221,7 @@
 
             db.collection("tenants").doc(tenantId).set({
                 profile: updatedProfile,
+                kdsSettings: kdsSettings,
                 officeHours: newHours,
                 categories: tenantData.categories || [],
                 menuItems: tenantData.menuItems || [],

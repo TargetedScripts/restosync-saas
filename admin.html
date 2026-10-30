@@ -482,6 +482,7 @@
                 <button onclick="closeMenuItemModal()" class="text-stone-400 hover:text-white text-xl font-bold">&times;</button>
             </div>
             <input type="hidden" id="editItemIndex" value="-1">
+            <input type="hidden" id="editItemId" value="">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 <div>
                     <label class="block text-stone-400 mb-1 font-semibold">Item Name</label>
@@ -520,7 +521,7 @@
                     <label class="block text-stone-400 font-semibold">Multi-Image Upload & Storage Link Display</label>
                     <div class="flex space-x-2">
                         <input type="file" id="modalImageFile" accept="image/*" multiple class="w-full text-xs text-stone-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer">
-                        <button onclick="uploadItemImagesToStorage()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2 rounded-xl font-bold text-xs shrink-0"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>Upload & Get Link</button>
+                        <button onclick="uploadItemImagesToStorage()" type="button" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2 rounded-xl font-bold text-xs shrink-0"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>Upload & Get Link</button>
                     </div>
                     <div>
                         <label class="block text-[11px] text-stone-400 mb-1">Primary Image URL (Automatically populated after upload)</label>
@@ -539,8 +540,8 @@
                 </div>
             </div>
             <div class="flex justify-end space-x-3 pt-4 border-t border-zinc-800">
-                <button onclick="closeMenuItemModal()" class="bg-zinc-800 hover:bg-zinc-700 text-stone-300 px-5 py-2.5 rounded-xl font-bold">Cancel</button>
-                <button onclick="saveMenuItemFromModal()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-6 py-2.5 rounded-xl font-black">Save Item</button>
+                <button onclick="closeMenuItemModal()" type="button" class="bg-zinc-800 hover:bg-zinc-700 text-stone-300 px-5 py-2.5 rounded-xl font-bold">Cancel</button>
+                <button onclick="saveMenuItemFromModal()" type="button" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-6 py-2.5 rounded-xl font-black">Save Item</button>
             </div>
         </div>
     </div>
@@ -833,12 +834,6 @@
             renderCategoryManager();
             renderMenuTable(tenantData.menuItems);
             document.getElementById('traceStatus').innerText = "Ready & Synced";
-
-            const rights = tenantData.rights || {};
-            if(rights.right_pos_access === false) document.getElementById('btn-tab-pos').style.display = 'none';
-            if(rights.right_inventory_control === false) document.getElementById('btn-tab-inventory').style.display = 'none';
-            if(rights.right_kds_access === false) document.getElementById('btn-tab-kds').style.display = 'none';
-            if(rights.right_financial_reports === false) document.getElementById('btn-tab-financial').style.display = 'none';
         }
 
         function renderCategoryManager() {
@@ -847,7 +842,7 @@
             container.innerHTML = tenantData.categories.map((cat, idx) => `
                 <div class="flex items-center space-x-1 bg-zinc-800 border border-zinc-700 px-3 py-1.5 rounded-xl text-xs">
                     <span class="text-stone-200 font-semibold">${cat}</span>
-                    <button onclick="removeCategory(${idx})" class="text-red-400 hover:text-red-300 ml-2 font-bold">&times;</button>
+                    <button onclick="removeCategory(${idx})" type="button" class="text-red-400 hover:text-red-300 ml-2 font-bold">&times;</button>
                 </div>
             `).join('');
 
@@ -885,7 +880,7 @@
                 tbody.innerHTML += `
                     <tr class="hover:bg-zinc-800/30 transition">
                         <td class="py-3 px-4 font-bold text-stone-100 flex items-center space-x-3">
-                            ${item.image ? `<img src="${item.image}" class="w-8 h-8 rounded-lg object-cover border border-zinc-700" onerror="this.style.display='none'">` : ''}
+                            ${item.image ? `<img src="${item.image}" class="w-8 h-8 rounded-lg object-cover border border-zinc-700" onerror="this.style.display='none'">` : '<div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-[10px] text-stone-500">No Img</div>'}
                             <span>${item.name || ''}</span>
                         </td>
                         <td class="py-3 px-4 font-mono">
@@ -897,8 +892,8 @@
                         <td class="py-3 px-4 text-center"><input type="checkbox" ${item.isHidden ? 'checked' : ''} onchange="toggleItemField(${index}, 'isHidden', this.checked)" class="w-4 h-4 rounded text-red-500 bg-zinc-900 border-zinc-700 cursor-pointer"></td>
                         <td class="py-3 px-4 font-mono">${item.spiceLevel || 0}</td>
                         <td class="py-3 px-4 text-right space-x-1">
-                            <button onclick="openMenuItemModal(${index})" class="bg-amber-500/10 text-amber-400 px-3 py-1.5 rounded-lg font-bold"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteMenuItem(${index})" class="bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg font-bold"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="openMenuItemModal(${index})" type="button" class="bg-amber-500/10 text-amber-400 px-3 py-1.5 rounded-lg font-bold"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteMenuItem(${index})" type="button" class="bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg font-bold"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
@@ -914,11 +909,12 @@
 
         function openMenuItemModal(index = -1) {
             const modal = document.getElementById('menuItemModal');
-            document.getElementById('editItemIndex').value = index;
             renderCategoryManager();
 
-            if (index >= 0) {
+            if (index >= 0 && tenantData.menuItems[index]) {
                 const item = tenantData.menuItems[index];
+                document.getElementById('editItemIndex').value = index;
+                document.getElementById('editItemId').value = item.id || '';
                 document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-pen"></i><span>Edit Menu Item: ${item.name}</span>`;
                 document.getElementById('modalName').value = item.name || '';
                 document.getElementById('modalCategory').value = item.category || (tenantData.categories[0] || 'Appetisers');
@@ -931,6 +927,8 @@
                 document.getElementById('modalIsFav').checked = item.isFav || item.isFavorite || false;
                 document.getElementById('modalIsHidden').checked = item.isHidden || false;
             } else {
+                document.getElementById('editItemIndex').value = -1;
+                document.getElementById('editItemId').value = "ITEM_" + Date.now();
                 document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-utensils"></i><span>Add New Menu Item</span>`;
                 document.getElementById('modalName').value = '';
                 document.getElementById('modalCategory').value = tenantData.categories[0] || 'Appetisers';
@@ -951,9 +949,11 @@
         }
 
         function saveMenuItemFromModal() {
-            const index = parseInt(document.getElementById('editItemIndex').value);
+            const indexInput = parseInt(document.getElementById('editItemIndex').value);
+            const itemId = document.getElementById('editItemId').value;
+
             const newItem = {
-                id: index >= 0 ? tenantData.menuItems[index].id : "ITEM_" + Date.now(),
+                id: itemId || "ITEM_" + Date.now(),
                 name: document.getElementById('modalName').value,
                 category: document.getElementById('modalCategory').value,
                 price: parseFloat(document.getElementById('modalPrice').value) || 0,
@@ -968,8 +968,21 @@
             };
 
             if (!tenantData.menuItems) tenantData.menuItems = [];
-            if (index >= 0) {
-                tenantData.menuItems[index] = newItem;
+
+            // Cari berdasarkan index atau ID untuk memastikan keakuratan data
+            let targetIndex = -1;
+            if (indexInput >= 0 && tenantData.menuItems[indexInput]) {
+                targetIndex = indexInput;
+            } else {
+                targetIndex = tenantData.menuItems.findIndex(i => i.id === itemId);
+            }
+
+            if (targetIndex >= 0) {
+                // Pertahankan data lama jika field kosong/tidak sengaja tertimpa
+                if(!newItem.image && tenantData.menuItems[targetIndex].image) {
+                    newItem.image = tenantData.menuItems[targetIndex].image;
+                }
+                tenantData.menuItems[targetIndex] = newItem;
                 showToast("Menu item updated successfully!");
             } else {
                 tenantData.menuItems.push(newItem);
@@ -1003,7 +1016,6 @@
 
             storageRef.put(file).then(snapshot => {
                 snapshot.ref.getDownloadURL().then(downloadURL => {
-                    // OTOMATIS MENGISI URL KE INPUT TEXT PRIMARY IMAGE URL
                     document.getElementById('modalImage').value = downloadURL;
                     showToast("SUCCESS: Image URL generated and set!");
                 });

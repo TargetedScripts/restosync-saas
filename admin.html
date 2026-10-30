@@ -386,17 +386,17 @@
 
                 <!-- 7. FILTER BAR & CONTAINER STYLING -->
                 <div class="bg-[#030712] p-5 rounded-2xl border border-zinc-800 space-y-4">
-    <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wide"><i class="fa-solid fa-filter mr-2"></i>Filter Bar & Container Styling</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-        <div>
-            <label class="block text-stone-400 mb-1">Filter & Category Bar Background</label>
-            <input type="color" id="filterBarBg" value="#18181b" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
-        </div>
-        <div>
-            <label class="block text-stone-400 mb-1">Main Section / Container Background</label>
-            <input type="color" id="sectionBgColor" value="#111827" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
-        </div>
-    </div>
+                    <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wide"><i class="fa-solid fa-filter mr-2"></i>Filter Bar & Container Styling</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <label class="block text-stone-400 mb-1">Filter & Category Bar Background</label>
+                            <input type="color" id="filterBarBg" value="#18181b" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-stone-400 mb-1">Main Section / Container Background</label>
+                            <input type="color" id="sectionBgColor" value="#111827" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -778,28 +778,20 @@
                 if (storeNameInput) storeNameInput.value = profile.tenantName;
             }
 
-            // 2. ISI URL LOGO & TAMPILKAN PREVIEW-NYA (ID DIPERBAIKI: logoPreviewImage)
+            // 2. ISI URL LOGO & TAMPILKAN PREVIEW-NYA
             if (profile.logoUrl) {
                 const logoInput = document.getElementById('logoUrl');
                 if (logoInput) logoInput.value = profile.logoUrl;
-                
-                const logoPreview = document.getElementById('logoPreviewImage');
-                if (logoPreview) {
-                    logoPreview.src = profile.logoUrl;
-                }
+                updateLogoPreview(profile.logoUrl);
             }
 
-            // 3. ISI HERO IMAGE 1, 2, 3 & TAMPILKAN PREVIEW-NYA (ID DIPERBAIKI: hero1Preview, dst)
+            // 3. ISI HERO IMAGE 1, 2, 3 & TAMPILKAN PREVIEW-NYA
             ['1', '2', '3'].forEach(num => {
                 const heroVal = profile[`heroImage${num}`];
                 if (heroVal) {
                     const heroInput = document.getElementById(`heroImage${num}`);
                     if (heroInput) heroInput.value = heroVal;
-
-                    const heroPreview = document.getElementById(`hero${num}Preview`);
-                    if (heroPreview) {
-                        heroPreview.src = heroVal;
-                    }
+                    updateHeroPreview(num, heroVal);
                 }
             });
 
@@ -840,7 +832,20 @@
             if(ui.footerBgColor) document.getElementById('footerBgColor').value = ui.footerBgColor;
             if(ui.footerTextColor) document.getElementById('footerTextColor').value = ui.footerTextColor;
 
-            // 5. RENDER KOMPONEN LAINNYA
+            // 5. RENDER JAM OPERASIONAL
+            const op = tenantData.officeHours || {};
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const hoursContainer = document.getElementById('officeHoursContainer');
+            if (hoursContainer) {
+                hoursContainer.innerHTML = days.map(day => `
+                    <div class="bg-[#030712] p-3 rounded-xl border border-zinc-800 space-y-1">
+                        <label class="block text-stone-400 font-semibold">${day}</label>
+                        <input type="text" id="hour_${day}" value="${op[day] || '09:00 - 22:00'}" class="w-full custom-input rounded-lg px-2.5 py-1.5 text-xs font-mono">
+                    </div>
+                `).join('');
+            }
+
+            // 6. RENDER KOMPONEN LAINNYA
             renderCategoryManager();
             renderMenuTable(tenantData.menuItems || []);
             document.getElementById('traceStatus').innerText = "Ready & Synced";
@@ -857,7 +862,9 @@
             `).join('');
 
             const modalCatSelect = document.getElementById('modalCategory');
-            modalCatSelect.innerHTML = tenantData.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            if(modalCatSelect) {
+                modalCatSelect.innerHTML = tenantData.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            }
         }
 
         function addCategory() {
@@ -883,6 +890,7 @@
         function renderMenuTable(items) {
             addTrace(`Rendering ${items.length} menu items into the table catalog.`, false);
             const tbody = document.getElementById('menuTableBody');
+            if(!tbody) return;
             tbody.innerHTML = '';
             
             items.forEach((item, index) => {
@@ -914,7 +922,6 @@
         function toggleItemField(index, field, val) {
             if(tenantData.menuItems[index]) {
                 tenantData.menuItems[index][field] = val;
-                // Sinkronkan isFav dengan isFavorite agar konsisten
                 if (field === 'isFav') {
                     tenantData.menuItems[index]['isFavorite'] = val;
                 }
@@ -1119,7 +1126,10 @@
             addTrace(`Saving changes to Firebase Cloud...`, false);
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             let newHours = {};
-            days.forEach(day => { newHours[day] = document.getElementById(`hour_${day}`).value; });
+            days.forEach(day => { 
+                const hourInput = document.getElementById(`hour_${day}`);
+                if(hourInput) newHours[day] = hourInput.value; 
+            });
 
             const uiStyles = {
                 primaryColor: document.getElementById('primaryColor').value,
@@ -1146,7 +1156,6 @@
                 cardBorderThickness: document.getElementById('cardBorderThickness').value,
                 priceBadgeColor: document.getElementById('priceBadgeColor').value,
 
-                // Tambahan baru untuk Filter Bar & Section Background
                 filterBarBg: document.getElementById('filterBarBg').value,
                 sectionBgColor: document.getElementById('sectionBgColor').value,
 
@@ -1182,6 +1191,6 @@
                 showToast("Failed to save: " + err.message, true);
             });
         }
-</script>
+    </script>
 </body>
 </html>

@@ -81,15 +81,22 @@
       </div>
 
       <div id="cartItemsList" class="flex-grow overflow-y-auto space-y-2 text-xs divide-y divide-zinc-800/50"></div>
-      
-      <div class="pt-4 border-t border-zinc-800 space-y-2 text-xs bg-zinc-950 p-4 rounded-2xl">
+
+      <div class="pt-4 border-t border-zinc-800 space-y-3 text-xs bg-zinc-950 p-4 rounded-2xl">
+        <div class="space-y-2 pb-2 border-b border-zinc-800">
+            <div>
+                <label class="block text-stone-400 mb-1 font-semibold">Customer Name</label>
+                <input type="text" id="customerName" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-stone-200 text-xs" placeholder="Enter your name...">
+            </div>
+            <div>
+                <label class="block text-stone-400 mb-1 font-semibold">Phone Number</label>
+                <input type="text" id="customerPhone" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-stone-200 text-xs font-mono" placeholder="Enter phone number...">
+            </div>
+        </div>
         <div class="flex justify-between text-stone-400"><span>Subtotal (Excl. GST)</span><span id="cartSubtotal" class="font-mono text-stone-200">$0.00</span></div>
         <div class="flex justify-between text-stone-400"><span>NZ 15% GST (Included)</span><span id="cartGST" class="font-mono text-stone-200">$0.00</span></div>
         <div class="flex justify-between font-bold text-base text-amber-400 pt-2 border-t border-zinc-800"><span>Total (NZD)</span><span id="cartTotal" class="font-mono">$0.00</span></div>
-        
-        <button onclick="processCheckout()" class="w-full mt-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-3 rounded-xl text-xs shadow-lg transition">
-          Checkout & Confirm Order
-        </button>
+        <button onclick="processCheckout()" class="w-full mt-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-3 rounded-xl text-xs shadow-lg transition">Checkout & Send to Kitchen</button>
       </div>
     </div>
   </div>
@@ -602,35 +609,44 @@
       document.getElementById('cartModal').classList.toggle('hidden');
     }
 
-    // New Checkout function with Phone Confirmation & Order ID (English)
-    async function processCheckout() {
-      const name = document.getElementById('customerName').value.trim();
-      const phone = document.getElementById('customerPhone').value.trim();
+    function processCheckout() {
+        if (cart.length === 0) {
+            alert("Your cart is empty!");
+            return;
+        }
 
-      if (!name || !phone) {
-        alert('Please enter your Name and Phone Number before checkout.');
-        return;
-      }
+        const customerName = document.getElementById('customerName').value.trim();
+        const customerPhone = document.getElementById('customerPhone').value.trim();
 
-      if (cart.length === 0) {
-        alert('Your cart is empty.');
-        return;
-      }
+        if (!customerName || !customerPhone) {
+            alert("Please enter your Name and Phone Number before checkout!");
+            return;
+        }
 
-      // Format data cart agar sesuai dengan parameter function (pastikan properti quantity ada)
-      const formattedCartItems = cart.map(i => ({
-        id: i.cartId,
-        name: i.name,
-        price: i.price,
-        quantity: i.qty,
-        notes: ''
-      }));
+        const totalAmount = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+        const orderData = {
+            customerName: customerName,
+            customerPhone: customerPhone,
+            items: cart,
+            totalAmount: totalAmount,
+            status: "NEW", // Status awal masuk KDS dapur
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
 
-      // Panggil fungsi Firestore yang sudah Anda buat
-      await placeOrderToFirestore(formattedCartItems, { name, phone }, TENANT_ID);
-
-      // Tutup modal keranjang setelah selesai
-      toggleCartModal();
+        // Mengirim data ke sub-koleksi orders tenant di Firestore
+        db.collection("tenants").doc(TENANT_ID).collection("orders").add(orderData)
+          .then((docRef) => {
+              alert(`Success! Order placed with ID: ${docRef.id}. Sent to Kitchen KDS!`);
+              cart = []; // Kosongkan keranjang
+              document.getElementById('cartCount').innerText = '0';
+              document.getElementById('customerName').value = '';
+              document.getElementById('customerPhone').value = '';
+              updateCartUI();
+              toggleCartModal();
+          })
+          .catch((error) => {
+              alert("Checkout failed: " + error.message);
+          });
     }
 
 </script>

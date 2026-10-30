@@ -48,7 +48,8 @@
 
   <!-- MENU SECTION -->
   <section class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
-    <div class="sticky top-[57px] z-35 bg-zinc-900/95 py-3 -mx-4 px-4 mb-6 border-b border-zinc-800 backdrop-blur-md flex flex-wrap justify-between items-center gap-4">
+    <!-- FILTER BAR DENGAN ID filterBarContainer -->
+    <div id="filterBarContainer" class="sticky top-[57px] z-35 bg-zinc-900/95 py-3 -mx-4 px-4 mb-6 border-b border-zinc-800 backdrop-blur-md flex flex-wrap justify-between items-center gap-4 transition-colors duration-200">
       <div id="categoryPills" class="flex space-x-2 overflow-x-auto no-scrollbar py-1"></div>
       <div class="flex items-center space-x-1 bg-zinc-800 p-1 rounded-xl border border-zinc-700 text-xs">
         <button onclick="switchLayout('grid')" id="btnLayoutGrid" class="px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-zinc-950 transition"><i class="fa-solid fa-grip mr-1"></i> Grid</button>
@@ -186,6 +187,12 @@
         headerEl.style.borderBottom = `${ui.headerBorderSize} solid ${ui.headerBorderColor}`;
       }
 
+      // TERAPKAN WARNA FILTER BAR DINAMIS DARI ADMIN
+      const filterBar = document.getElementById('filterBarContainer');
+      if (ui.filterBarBg && filterBar) {
+        filterBar.style.backgroundColor = ui.filterBarBg;
+      }
+
       const extraTextEl = document.getElementById('headerExtraText');
       if (ui.headerExtraText) {
         extraTextEl.innerText = ui.headerExtraText;
@@ -227,7 +234,6 @@
       
       let slidesData = [];
 
-      // 1. Ambil hero image default (heroImage1, heroImage2, heroImage3) dari profil toko
       const defaultHeroImages = [
         profile.heroImage1,
         profile.heroImage2,
@@ -244,7 +250,6 @@
         });
       });
 
-      // 2. Tambahkan item menu yang dicentang isHero === true ke dalam antrean slider
       const menuItems = tenantData.menuItems || [];
       const heroMenuItems = menuItems.filter(i => i.isHero === true || i.isHero === 'true');
 
@@ -261,7 +266,6 @@
         }
       });
 
-      // 3. Jika tidak ada sama sekali gambar default maupun menu hero, gunakan fallback Unsplash
       if (slidesData.length === 0) {
         slidesData.push({
           image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
@@ -320,13 +324,11 @@
 
     function getActiveMenuItems() {
       let items = [];
-      // Prioritaskan sepenuhnya data dari database Firestore yang sedang aktif
       if (tenantData.menuItems && tenantData.menuItems.length > 0) {
         items = tenantData.menuItems;
       } else if (tenantData.config?.menuItems && tenantData.config.menuItems.length > 0) {
         items = tenantData.config.menuItems;
       } else {
-        // Jika Firestore kosong, baru gunakan cadangan
         items = (typeof RESTOSYNC_CONFIG !== 'undefined' && RESTOSYNC_CONFIG.menuItems) ? RESTOSYNC_CONFIG.menuItems : [];
       }
       return items.filter(i => i.isAvailable !== false && i.isHidden !== true && i.hide !== true && i.isHidden !== 'true');
@@ -378,6 +380,10 @@
         return;
       }
 
+      const profile = tenantData.profile || {};
+      const ui = profile.uiStyles || {};
+      const cardBgStyle = ui.cardMenuBg ? `background-color: ${ui.cardMenuBg};` : '';
+
       const renderBadges = (item) => {
         let badgesHtml = '';
         const spice = Number(item.spiceLevel || 0);
@@ -400,12 +406,10 @@
             ${items.map((item, idx) => {
               const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
               const itemId = item.id || 'item_' + idx;
-              
-              // PERBAIKAN: Mendukung penarikan URL gambar dari key 'image' atau 'imageUrl' (baik lokal maupun Firebase Storage)
               const imgSrc = item.image || item.imageUrl || '';
 
               return `
-                <div class="bg-zinc-800/80 rounded-2xl p-4 border border-zinc-700/60 flex flex-col justify-between shadow-xl text-xs hover:border-amber-500/40 transition">
+                <div style="${cardBgStyle}" class="bg-zinc-800/80 rounded-2xl p-4 border border-zinc-700/60 flex flex-col justify-between shadow-xl text-xs hover:border-amber-500/40 transition">
                   <div>
                     ${imgSrc ? `<div class="w-full h-40 bg-zinc-950 mb-3.5 rounded-xl overflow-hidden"><img src="${imgSrc}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'"></div>` : ''}
                     <h3 class="font-bold text-stone-100 text-sm leading-snug">${item.name}</h3>
@@ -426,7 +430,7 @@
         `;
       } else {
         document.getElementById('menuContentBox').innerHTML = `
-          <div class="bg-zinc-800/60 rounded-3xl p-6 border border-zinc-700/60 shadow-xl space-y-4 max-w-4xl mx-auto">
+          <div style="${cardBgStyle}" class="bg-zinc-800/60 rounded-3xl p-6 border border-zinc-700/60 shadow-xl space-y-4 max-w-4xl mx-auto">
             <h3 class="text-amber-400 font-bold text-xs uppercase tracking-widest border-b border-zinc-700 pb-2 mb-4"><i class="fa-solid fa-book-open mr-2"></i>Classic Menu Book &bull; [${currentFilter}]</h3>
             <div class="divide-y divide-zinc-700/50">
               ${items.map((item, idx) => {

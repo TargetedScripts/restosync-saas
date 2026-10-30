@@ -517,12 +517,15 @@
                     <input type="number" id="modalStock" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" value="20">
                 </div>
                 <div class="md:col-span-2 space-y-2 pt-2 border-t border-zinc-800">
-                    <label class="block text-stone-400 font-semibold">Multi-Image Upload / Storage Selector</label>
+                    <label class="block text-stone-400 font-semibold">Multi-Image Upload & Storage Link Display</label>
                     <div class="flex space-x-2">
                         <input type="file" id="modalImageFile" accept="image/*" multiple class="w-full text-xs text-stone-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer">
-                        <button onclick="uploadItemImagesToStorage()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2 rounded-xl font-bold text-xs shrink-0">Upload to Cloud</button>
+                        <button onclick="uploadItemImagesToStorage()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2 rounded-xl font-bold text-xs shrink-0"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>Upload & Get Link</button>
                     </div>
-                    <input type="text" id="modalImage" class="w-full custom-input rounded-xl px-3.5 py-2 text-stone-200 font-mono text-[11px]" placeholder="Primary Image URL">
+                    <div>
+                        <label class="block text-[11px] text-stone-400 mb-1">Primary Image URL (Automatically populated after upload)</label>
+                        <input type="text" id="modalImage" class="w-full custom-input rounded-xl px-3.5 py-2 text-amber-300 font-mono text-[11px]" placeholder="https://firebasestorage.googleapis.com/...">
+                    </div>
                 </div>
                 <div class="flex items-center space-x-6 pt-2 md:col-span-2">
                     <label class="flex items-center space-x-2 cursor-pointer">
@@ -881,7 +884,10 @@
                 const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
                 tbody.innerHTML += `
                     <tr class="hover:bg-zinc-800/30 transition">
-                        <td class="py-3 px-4 font-bold text-stone-100">${item.name || ''}</td>
+                        <td class="py-3 px-4 font-bold text-stone-100 flex items-center space-x-3">
+                            ${item.image ? `<img src="${item.image}" class="w-8 h-8 rounded-lg object-cover border border-zinc-700" onerror="this.style.display='none'">` : ''}
+                            <span>${item.name || ''}</span>
+                        </td>
                         <td class="py-3 px-4 font-mono">
                             <span class="${hasPromo ? 'line-through text-stone-500 text-[11px]' : 'text-amber-400'}">$${Number(item.price || 0).toFixed(2)}</span>
                             ${hasPromo ? `<span class="text-amber-400 ml-1.5 font-bold">$${Number(item.promoPrice).toFixed(2)}</span>` : ''}
@@ -993,10 +999,13 @@
             const storagePath = `tenants/${tenantId}/images/item_${Date.now()}_${file.name}`;
             const storageRef = storage.ref().child(storagePath);
 
+            showToast("Uploading image to Cloud Storage...", false);
+
             storageRef.put(file).then(snapshot => {
                 snapshot.ref.getDownloadURL().then(downloadURL => {
+                    // OTOMATIS MENGISI URL KE INPUT TEXT PRIMARY IMAGE URL
                     document.getElementById('modalImage').value = downloadURL;
-                    showToast("Image successfully uploaded to Firebase Storage!");
+                    showToast("SUCCESS: Image URL generated and set!");
                 });
             }).catch(err => {
                 alert("Upload failed: " + err.message);

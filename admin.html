@@ -625,7 +625,7 @@
                         Sunday: RESTOSYNC_CONFIG.operatingHours.sun
                     };
 
-                    // PERBAIKAN UTAMA: Ambil menu dari RESTOSYNC_CONFIG jika Firestore kosong
+                    // PERBAIKAN: Ambil menu dari RESTOSYNC_CONFIG jika Firestore kosong
                     if (!tenantData.menuItems || tenantData.menuItems.length === 0) {
                         tenantData.menuItems = RESTOSYNC_CONFIG.menuItems || [];
                     }
@@ -732,7 +732,7 @@
                 `;
             });
 
-            // PERBAIKAN KONSISTENSI PENGAMBILAN MENU
+            // KONSISTENSI PENGAMBILAN MENU
             let finalMenuItems = [];
             if (tenantData.menuItems && tenantData.menuItems.length > 0) {
                 finalMenuItems = tenantData.menuItems;

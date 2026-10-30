@@ -250,6 +250,7 @@
       
       let slidesData = [];
 
+      // 1. Ambil hero image default (heroImage1, heroImage2, heroImage3) dari profil toko
       const defaultHeroImages = [
         profile.heroImage1,
         profile.heroImage2,
@@ -266,6 +267,7 @@
         });
       });
 
+      // 2. Tambahkan item menu yang dicentang isHero === true ke dalam antrean slider
       const menuItems = tenantData.menuItems || [];
       const heroMenuItems = menuItems.filter(i => i.isHero === true || i.isHero === 'true');
 
@@ -282,6 +284,7 @@
         }
       });
 
+      // 3. Fallback jika tidak ada sama sekali gambar default maupun menu hero
       if (slidesData.length === 0) {
         slidesData.push({
           image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
@@ -311,6 +314,7 @@
       const textBelowEl = document.getElementById('heroTextBelowLogo');
       textBelowEl.style.color = tintColor;
 
+      // 4. Perbaikan logika pengecekan Enable Flying Logo (jika No, logo dan teks di bawahnya disembunyikan)
       const flyingEnabled = ui.heroFlyingLogoEnabled === 'yes' || profile.heroFlyingLogoEnabled === 'yes';
       const logoUrl = profile.logoUrl || '';
       const flyingLogoEl = document.getElementById('heroFlyingLogo');
@@ -318,8 +322,10 @@
       if (flyingEnabled && logoUrl) {
         flyingLogoEl.src = logoUrl;
         flyingLogoEl.style.display = 'block';
+        textBelowEl.style.display = 'block'; // Tampilkan teks jika flying logo aktif
       } else {
         flyingLogoEl.style.display = 'none';
+        textBelowEl.style.display = 'none';  // Sembunyikan teks jika flying logo diset ke No / mati
       }
 
       const textBelow = ui.heroFlyingLogoText || profile.heroFlyingLogoText || '';

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RestoSync SaaS - Live Store Enterprise</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .hero-slide { transition: opacity 1s ease-in-out; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body id="mainBody" class="bg-zinc-900 text-stone-200 flex flex-col min-h-screen pb-16">
+
+  <!-- HEADER -->
+  <header id="mainHeader" class="sticky top-0 z-50 border-b border-zinc-800/60 w-full bg-black"> 
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center space-x-3 shrink-0">
+        <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain" style="height: 38px;" onerror="this.style.display='none'">
+        <span id="headerStoreName" class="font-bold text-sm uppercase tracking-wider text-amber-300">Loading Store...</span>
+      </div>
+      <button onclick="toggleCartModal()" id="cartBtn" class="font-bold px-3.5 py-2 rounded-xl text-xs flex items-center space-x-2 bg-amber-500 text-zinc-950 shadow-lg transition hover:bg-amber-400">
+        <i class="fa-solid fa-basket-shopping"></i><span>Cart</span><span id="cartCount" class="bg-zinc-950 text-amber-400 text-xs px-2 py-0.5 rounded-full font-mono">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO BANNER -->
+  <section class="relative w-full h-[320px] md:h-[420px] bg-zinc-950 overflow-hidden">
+    <div id="heroSlidesContainer" class="absolute inset-0 w-full h-full">
+      <div class="absolute inset-0 w-full h-full">
+        <img id="heroImgMain" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover">
+      </div>
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-black/40 to-black/60 flex flex-col justify-center items-center text-center p-4 text-white z-10">
+      <h2 id="heroTaglineTitle" class="text-xl md:text-3xl font-extrabold tracking-widest uppercase mb-1">Loading...</h2>
+      <p id="bannerTagline" class="text-xs md:text-sm text-stone-300">Connecting to live cloud database...</p>
+    </div>
+  </section>
+
+  <!-- MENU SECTION -->
+  <section class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
+    <div class="sticky top-[57px] z-35 bg-zinc-900/95 py-3 -mx-4 px-4 mb-6 border-b border-zinc-800 backdrop-blur-md">
+      <div id="categoryPills" class="flex space-x-2 overflow-x-auto no-scrollbar py-1"></div>
+    </div>
+    <div id="menuContentBox" class="w-full"></div>
+  </section>
+
+  <!-- CART MODAL -->
+  <div id="cartModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-end">
+    <div class="bg-zinc-900 w-full max-w-md h-full flex flex-col shadow-2xl p-6 space-y-4 border-l border-zinc-800">
+      <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+        <h3 class="font-bold text-base text-white flex items-center space-x-2"><i class="fa-solid fa-basket-shopping text-amber-400"></i><span>Your Order Cart</span></h3>
+        <button onclick="toggleCartModal()" class="text-stone-400 hover:text-white text-xl font-bold">&times;</button>
+      </div>
+      <div id="cartItemsList" class="flex-grow overflow-y-auto space-y-2 text-xs divide-y divide-zinc-800/50"></div>
+      <div class="pt-4 border-t border-zinc-800 space-y-2 text-xs bg-zinc-950 p-4 rounded-2xl">
+        <div class="flex justify-between text-stone-400"><span>Subtotal (Excl. GST)</span><span id="cartSubtotal" class="font-mono text-stone-200">$0.00</span></div>
+        <div class="flex justify-between text-stone-400"><span>NZ 15% GST (Included)</span><span id="cartGST" class="font-mono text-stone-200">$0.00</span></div>
+        <div class="flex justify-between font-bold text-base text-amber-400 pt-2 border-t border-zinc-800"><span>Total (NZD)</span><span id="cartTotal" class="font-mono">$0.00</span></div>
+        <button onclick="alert('Order submitted to POS Terminal!')" class="w-full mt-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-3 rounded-xl text-xs shadow-lg transition">Checkout & Send to Kitchen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer id="mainFooter" class="text-xs py-8 border-t border-zinc-800 mt-12 bg-black text-stone-400">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div>
+        <h4 id="footerStoreName" class="font-bold text-sm mb-1 text-stone-200">Store Name</h4>
+        <p id="footerAddress" class="mb-1 text-xs">Address...</p>
+        <p class="text-xs">Phone: <a id="footerPhone" href="#" class="underline text-amber-400">Phone...</a></p>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm mb-1 text-stone-200"><i class="fa-solid fa-clock mr-1 text-amber-400"></i> Operating Hours</h4>
+        <div id="footerOperatingHours" class="space-y-1 text-xs"><p>Loading hours...</p></div>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm mb-1 text-stone-200"><i class="fa-solid fa-toolbox mr-1 text-amber-400"></i> Quick Links</h4>
+        <div class="flex flex-col space-y-1 text-xs">
+          <a id="adminPortalLink" href="admin.html" class="text-amber-400 hover:underline"><i class="fa-solid fa-user-gear mr-1"></i> Open Manager Portal</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- FIREBASE COMPAT SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
+      authDomain: "restosync-saas.firebaseapp.com",
+      projectId: "restosync-saas",
+      storageBucket: "restosync-saas.firebasestorage.app",
+      messagingSenderId: "780544019719",
+      appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const TENANT_ID = urlParams.get('tenant') || 'bangkokthaipalmy';
+
+    let tenantData = {};
+    let currentFilter = 'ALL';
+    let cart = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Update link admin portal agar membawa parameter tenant yang sama
+      document.getElementById('adminPortalLink').href = `admin.html?tenant=${TENANT_ID}`;
+
+      // Ambil data secara online & real-time dari Firestore dokumen tenants/{TENANT_ID}
+      db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
+        if (doc.exists) {
+          tenantData = doc.data();
+          initStoreBranding();
+          renderCategoryPills();
+          renderMenuContentBox();
+        } else {
+          document.getElementById('heroTaglineTitle').innerText = "Tenant Not Found";
+          document.getElementById('bannerTagline').innerText = `Tenant ID [${TENANT_ID}] does not exist in Firebase.`;
+        }
+      }, (error) => {
+        console.error("Firestore error:", error);
+      });
+    });
+
+    function initStoreBranding() {
+      // Mendukung struktur profil dari system-console.html / admin.html & config standar
+      const profile = tenantData.profile || {};
+      const config = tenantData.config || {};
+      
+      const storeName = profile.tenantName || config.store?.name || TENANT_ID;
+      const tagline = profile.tagline || config.store?.tagline || 'Authentic flavours cooked fresh.';
+      const address = profile.address || config.store?.address || '';
+      const phone = profile.phone || config.store?.phone || '';
+      const logoUrl = profile.logoUrl || config.branding?.logo || '';
+      const heroImg = profile.heroImage1 || config.branding?.heroImages?.[0] || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80';
+
+      document.getElementById('headerStoreName').innerText = storeName;
+      document.getElementById('heroTaglineTitle').innerText = storeName;
+      document.getElementById('bannerTagline').innerText = tagline;
+      document.getElementById('footerStoreName').innerText = storeName;
+      document.getElementById('footerAddress').innerText = address;
+      document.getElementById('footerPhone').innerText = phone;
+      document.getElementById('footerPhone').href = `tel:${phone}`;
+      document.getElementById('heroImgMain').src = heroImg;
+
+      if (logoUrl) {
+        document.getElementById('storeLogo').src = logoUrl;
+      }
+
+      // Jam Operasional (Mendukung officeHours atau operatingHours)
+      const op = tenantData.officeHours || config.operatingHours || {};
+      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      const hoursHtml = days.map(day => {
+        const val = op[day] || op[day.toLowerCase()] || 'Closed';
+        return `<div class="flex justify-between"><span>${day}:</span><span class="text-stone-200 font-mono">${val}</span></div>`;
+      }).join('');
+      document.getElementById('footerOperatingHours').innerHTML = hoursHtml || '<p>Hours not set</p>';
+    }
+
+    function getActiveMenuItems() {
+      // Mendukung menuItems di root dokumen (dari admin.html) maupun di dalam config
+      const items = tenantData.menuItems || tenantData.config?.menuItems || [];
+      return items.filter(i => i.isAvailable !== false && i.isHidden !== true);
+    }
+
+    function renderCategoryPills() {
+      const items = getActiveMenuItems();
+      const categories = [...new Set(items.map(i => i.category || 'General'))];
+      const pills = document.getElementById('categoryPills');
+      
+      let html = `<button onclick="filterCategory('ALL')" class="px-4 py-2 rounded-full text-xs font-bold transition ${currentFilter === 'ALL' ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-stone-300 hover:bg-zinc-700'}">ALL</button>`;
+      
+      html += categories.map(c => `
+        <button onclick="filterCategory('${c}')" class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === c ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-stone-300 hover:bg-zinc-700'}">${c}</button>
+      `).join('');
+      
+      pills.innerHTML = html;
+    }
+
+    function filterCategory(cat) {
+      currentFilter = cat;
+      renderCategoryPills();
+      renderMenuContentBox();
+    }
+
+    function renderMenuContentBox() {
+      const items = getActiveMenuItems().filter(i => currentFilter === 'ALL' || (i.category || 'General') === currentFilter);
+      
+      if (items.length === 0) {
+        document.getElementById('menuContentBox').innerHTML = `<div class="text-center py-16 text-stone-500 text-xs font-mono">No active menu items found for category [${currentFilter}].</div>`;
+        return;
+      }
+
+      document.getElementById('menuContentBox').innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          ${items.map((item, idx) => {
+            const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
+            const itemId = item.id || 'item_' + idx;
+            return `
+              <div class="bg-zinc-800/80 rounded-2xl p-4 border border-zinc-700/60 flex flex-col justify-between shadow-xl text-xs hover:border-amber-500/40 transition">
+                <div>
+                  ${item.image ? `<div class="w-full h-40 bg-zinc-950 mb-3.5 rounded-xl overflow-hidden"><img src="${item.image}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'"></div>` : ''}
+                  <div class="flex justify-between items-start gap-2">
+                    <h3 class="font-bold text-stone-100 text-sm leading-snug">${item.name}</h3>
+                    ${item.isFav || item.isFavorite ? '<span class="text-amber-400" title="Favorite"><i class="fa-solid fa-star"></i></span>' : ''}
+                  </div>
+                  <p class="text-[11px] text-stone-400 mt-1.5 leading-relaxed">${item.description || ''}</p>
+                  <div class="mt-3 flex items-baseline space-x-2">
+                    <span class="${hasPromo ? 'line-through text-zinc-500 text-xs font-mono' : 'font-black text-amber-400 text-base font-mono'}">$${Number(item.price || 0).toFixed(2)}</span>
+                    ${hasPromo ? `<span class="font-black text-amber-400 text-base font-mono">$${Number(item.promoPrice).toFixed(2)}</span>` : ''}
+                  </div>
+                </div>
+                <button onclick="addItemToCart('${itemId}')" class="mt-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center space-x-2">
+                  <i class="fa-solid fa-plus"></i><span>Add to Order</span>
+                </button>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function addItemToCart(id) {
+      const items = getActiveMenuItems();
+      const item = items.find((i, idx) => (i.id || 'item_' + idx) === id);
+      if (!item) return;
+
+      const finalPrice = item.promoPrice && Number(item.promoPrice) < Number(item.price) ? Number(item.promoPrice) : Number(item.price);
+      const existing = cart.find(c => c.cartId === id);
+      
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ cartId: id, name: item.name, price: finalPrice, qty: 1 });
+      }
+
+      document.getElementById('cartCount').innerText = cart.reduce((sum, i) => sum + i.qty, 0);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+      const subtotal = total / 1.15; // Kalkulasi standar NZ GST 15%
+      const gst = total - subtotal;
+
+      document.getElementById('cartSubtotal').innerText = `$${subtotal.toFixed(2)}`;
+      document.getElementById('cartGST').innerText = `$${gst.toFixed(2)}`;
+      document.getElementById('cartTotal').innerText = `$${total.toFixed(2)}`;
+      
+      document.getElementById('cartItemsList').innerHTML = cart.length === 0 
+        ? `<div class="text-center py-8 text-stone-500">Your cart is empty.</div>`
+        : cart.map(i => `
+            <div class="flex justify-between items-center py-2.5">
+              <div>
+                <strong class="block text-stone-200">${i.name}</strong>
+                <span class="text-[10px] text-stone-400 font-mono">Qty: ${i.qty} &times; $${i.price.toFixed(2)}</span>
+              </div>
+              <span class="text-amber-400 font-bold font-mono">$${(i.price * i.qty).toFixed(2)}</span>
+            </div>
+          `).join('');
+    }
+
+    function toggleCartModal() {
+      document.getElementById('cartModal').classList.toggle('hidden');
+    }
+  </script>
+</body>
+</html>

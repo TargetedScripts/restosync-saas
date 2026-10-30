@@ -285,7 +285,6 @@
       } else if (typeof menuItems !== 'undefined') {
         items = menuItems;
       }
-      // Filter out hidden items (isवुid / isHidden / hide)
       return items.filter(i => i.isAvailable !== false && i.isHidden !== true && i.hide !== true && i.isHidden !== 'true');
     }
 
@@ -296,7 +295,6 @@
       
       let html = `<button onclick="filterCategory('ALL')" class="px-4 py-2 rounded-full text-xs font-bold transition ${currentFilter === 'ALL' ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-stone-300 hover:bg-zinc-700'}">ALL</button>`;
       
-      // Tambahkan tombol filter khusus FAVOURITE dan PROMO
       html += `<button onclick="filterCategory('FAVOURITE')" class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === 'FAVOURITE' ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-amber-400 hover:bg-zinc-700'}"><i class="fa-solid fa-star mr-1"></i> Favourite</button>`;
       html += `<button onclick="filterCategory('PROMO')" class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === 'PROMO' ? 'bg-amber-500 text-zinc-950 shadow-md' : 'bg-zinc-800 text-orange-400 hover:bg-zinc-700'}"><i class="fa-solid fa-fire mr-1"></i> Promo</button>`;
 
@@ -323,7 +321,6 @@
     function renderMenuContentBox() {
       let items = getActiveMenuItems();
       
-      // Logika Filter berdasarkan kategori, FAVOURITE, atau PROMO
       if (currentFilter === 'FAVOURITE') {
         items = items.filter(i => i.isFav === true || i.isFavorite === true || i.isFav === 'true');
       } else if (currentFilter === 'PROMO') {
@@ -359,10 +356,14 @@
             ${items.map((item, idx) => {
               const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
               const itemId = item.id || 'item_' + idx;
+              
+              // PERBAIKAN: Mendukung penarikan URL gambar dari key 'image' atau 'imageUrl' (baik lokal maupun Firebase Storage)
+              const imgSrc = item.image || item.imageUrl || '';
+
               return `
                 <div class="bg-zinc-800/80 rounded-2xl p-4 border border-zinc-700/60 flex flex-col justify-between shadow-xl text-xs hover:border-amber-500/40 transition">
                   <div>
-                    ${item.image ? `<div class="w-full h-40 bg-zinc-950 mb-3.5 rounded-xl overflow-hidden"><img src="${item.image}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'"></div>` : ''}
+                    ${imgSrc ? `<div class="w-full h-40 bg-zinc-950 mb-3.5 rounded-xl overflow-hidden"><img src="${imgSrc}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'"></div>` : ''}
                     <h3 class="font-bold text-stone-100 text-sm leading-snug">${item.name}</h3>
                     <p class="text-[11px] text-stone-400 mt-1.5 leading-relaxed">${item.description || ''}</p>
                     ${renderBadges(item)}

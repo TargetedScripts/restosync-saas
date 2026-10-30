@@ -91,17 +91,10 @@
                 <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
                     <i class="fa-solid fa-palette text-sm"></i><span>Store Profile & Logo Configuration</span>
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
                     <div>
                         <label class="block text-stone-400 mb-1.5 font-semibold">Store / Restaurant Name</label>
                         <input type="text" id="storeName" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200">
-                    </div>
-                    <div>
-                        <label class="block text-stone-400 mb-1.5 font-semibold">Primary Theme Color</label>
-                        <div class="flex items-center space-x-3">
-                            <input type="color" id="primaryColor" value="#f59e0b" class="w-10 h-10 rounded-xl bg-transparent cursor-pointer" oninput="document.getElementById('primaryColorText').value=this.value">
-                            <input type="text" id="primaryColorText" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" value="#f59e0b">
-                        </div>
                     </div>
                     <div>
                         <label class="block text-stone-400 mb-1.5 font-semibold text-cyan-300">Client .JS Asset Path (Linked to Repo)</label>
@@ -384,10 +377,10 @@
                     </div>
                 </div>
 
-                <!-- 7. FILTER BAR & CONTAINER STYLING -->
+                <!-- 7. FILTER BAR & CATEGORY BUTTONS STYLING -->
                 <div class="bg-[#030712] p-5 rounded-2xl border border-zinc-800 space-y-4">
-                    <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wide"><i class="fa-solid fa-filter mr-2"></i>Filter Bar & Container Styling</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wide"><i class="fa-solid fa-filter mr-2"></i>Filter Bar & Category Buttons Styling</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
                         <div>
                             <label class="block text-stone-400 mb-1">Filter & Category Bar Background</label>
                             <input type="color" id="filterBarBg" value="#18181b" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
@@ -395,6 +388,14 @@
                         <div>
                             <label class="block text-stone-400 mb-1">Main Section / Container Background</label>
                             <input type="color" id="sectionBgColor" value="#111827" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-stone-400 mb-1">Category Button Active BG</label>
+                            <input type="color" id="catBtnActiveBg" value="#f59e0b" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-stone-400 mb-1">Category Button Active Text</label>
+                            <input type="color" id="catBtnActiveText" value="#030712" class="w-full h-9 rounded-xl bg-transparent cursor-pointer">
                         </div>
                     </div>
                 </div>
@@ -772,20 +773,17 @@
             const profile = tenantData.profile || {};
             const ui = profile.uiStyles || {};
 
-            // 1. ISI NAMA TOKO & SETTING UTAMA
             if (profile.tenantName) {
                 const storeNameInput = document.getElementById('storeName');
                 if (storeNameInput) storeNameInput.value = profile.tenantName;
             }
 
-            // 2. ISI URL LOGO & TAMPILKAN PREVIEW-NYA
             if (profile.logoUrl) {
                 const logoInput = document.getElementById('logoUrl');
                 if (logoInput) logoInput.value = profile.logoUrl;
                 updateLogoPreview(profile.logoUrl);
             }
 
-            // 3. ISI HERO IMAGE 1, 2, 3 & TAMPILKAN PREVIEW-NYA
             ['1', '2', '3'].forEach(num => {
                 const heroVal = profile[`heroImage${num}`];
                 if (heroVal) {
@@ -795,8 +793,6 @@
                 }
             });
 
-            // 4. PEMUATAN GAYA WARNA (UI STYLES)
-            if(ui.primaryColor) { document.getElementById('primaryColor').value = ui.primaryColor; document.getElementById('primaryColorText').value = ui.primaryColor; }
             if(ui.headerBgColor) document.getElementById('headerBgColor').value = ui.headerBgColor;
             if(ui.headerBorderColor) document.getElementById('headerBorderColor').value = ui.headerBorderColor;
             if(ui.headerBorderSize) document.getElementById('headerBorderSize').value = ui.headerBorderSize;
@@ -820,9 +816,10 @@
             if(ui.cardBorderThickness) document.getElementById('cardBorderThickness').value = ui.cardBorderThickness;
             if(ui.priceBadgeColor) document.getElementById('priceBadgeColor').value = ui.priceBadgeColor;
 
-            // Pengaturan warna baru untuk Filter Bar & Section Background
             if(ui.filterBarBg) document.getElementById('filterBarBg').value = ui.filterBarBg;
             if(ui.sectionBgColor) document.getElementById('sectionBgColor').value = ui.sectionBgColor;
+            if(ui.catBtnActiveBg) document.getElementById('catBtnActiveBg').value = ui.catBtnActiveBg;
+            if(ui.catBtnActiveText) document.getElementById('catBtnActiveText').value = ui.catBtnActiveText;
 
             if(ui.floatingCartBg) document.getElementById('floatingCartBg').value = ui.floatingCartBg;
             if(ui.floatingCartText) document.getElementById('floatingCartText').value = ui.floatingCartText;
@@ -832,7 +829,6 @@
             if(ui.footerBgColor) document.getElementById('footerBgColor').value = ui.footerBgColor;
             if(ui.footerTextColor) document.getElementById('footerTextColor').value = ui.footerTextColor;
 
-            // 5. RENDER JAM OPERASIONAL
             const op = tenantData.officeHours || {};
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const hoursContainer = document.getElementById('officeHoursContainer');
@@ -845,7 +841,6 @@
                 `).join('');
             }
 
-            // 6. RENDER KOMPONEN LAINNYA
             renderCategoryManager();
             renderMenuTable(tenantData.menuItems || []);
             document.getElementById('traceStatus').innerText = "Ready & Synced";
@@ -1132,7 +1127,6 @@
             });
 
             const uiStyles = {
-                primaryColor: document.getElementById('primaryColor').value,
                 headerBgColor: document.getElementById('headerBgColor').value,
                 headerBorderColor: document.getElementById('headerBorderColor').value,
                 headerBorderSize: document.getElementById('headerBorderSize').value,
@@ -1158,6 +1152,8 @@
 
                 filterBarBg: document.getElementById('filterBarBg').value,
                 sectionBgColor: document.getElementById('sectionBgColor').value,
+                catBtnActiveBg: document.getElementById('catBtnActiveBg').value,
+                catBtnActiveText: document.getElementById('catBtnActiveText').value,
 
                 floatingCartBg: document.getElementById('floatingCartBg').value,
                 floatingCartText: document.getElementById('floatingCartText').value,

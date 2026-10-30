@@ -969,7 +969,6 @@
 
             if (!tenantData.menuItems) tenantData.menuItems = [];
 
-            // Cari berdasarkan index atau ID untuk memastikan keakuratan data
             let targetIndex = -1;
             if (indexInput >= 0 && tenantData.menuItems[indexInput]) {
                 targetIndex = indexInput;
@@ -978,7 +977,6 @@
             }
 
             if (targetIndex >= 0) {
-                // Pertahankan data lama jika field kosong/tidak sengaja tertimpa
                 if(!newItem.image && tenantData.menuItems[targetIndex].image) {
                     newItem.image = tenantData.menuItems[targetIndex].image;
                 }

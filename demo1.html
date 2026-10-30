@@ -222,65 +222,101 @@
     }
 
     function initHeroSlider() {
-  const profile = tenantData.profile || {};
-  const ui = profile.uiStyles || {};
-  
-  // Cek apakah ada menu items yang diset sebagai hero (isHero === true)
-  const menuItems = tenantData.menuItems || [];
-  const heroMenuItems = menuItems.filter(i => i.isHero === true || i.isHero === 'true');
+      const profile = tenantData.profile || {};
+      const ui = profile.uiStyles || {};
+      
+      let slidesData = [];
 
-  let slidesData = [];
+      // 1. Ambil hero image default (heroImage1, heroImage2, heroImage3) dari profil toko
+      const defaultHeroImages = [
+        profile.heroImage1,
+        profile.heroImage2,
+        profile.heroImage3
+      ].filter(img => img && img.trim() !== '' && !img.includes('undefined') && !img.includes('null'));
 
-  if (heroMenuItems.length > 0) {
-    // Ambil gambar dan detail dari menu item yang berstatus isHero
-    slidesData = heroMenuItems.map(item => ({
-      image: item.image || item.imageUrl || '',
-      title: item.name,
-      description: item.description,
-      price: item.promoPrice && Number(item.promoPrice) < Number(item.price) ? item.promoPrice : item.price
-    }));
-  } else {
-    // Fallback ke banner standar dari profil jika tidak ada menu yang diset isHero
-    const fallbackImages = [
-      profile.heroImage1,
-      profile.heroImage2,
-      profile.heroImage3
-    ].filter(img => img && img.trim() !== '' && !img.includes('undefined') && !img.includes('null'));
+      defaultHeroImages.forEach(img => {
+        slidesData.push({
+          image: img,
+          title: '',
+          description: '',
+          price: null,
+          isMenuHero: false
+        });
+      });
 
-    if (fallbackImages.length === 0) {
-      fallbackImages.push('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');
-    }
-    slidesData = fallbackImages.map(img => ({ image: img, title: '', description: '', price: null }));
-  }
+      // 2. Tambahkan item menu yang dicentang isHero === true ke dalam antrean slider
+      const menuItems = tenantData.menuItems || [];
+      const heroMenuItems = menuItems.filter(i => i.isHero === true || i.isHero === 'true');
 
-  const container = document.getElementById('heroSlidesContainer');
-  container.innerHTML = slidesData.map((slide, idx) => `
-    <div class="hero-slide ${idx === 0 ? 'active' : ''} relative">
-      <img src="${slide.image}" class="w-full h-full object-cover">
-      ${slide.title ? `
-        <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-6 md:p-12 z-20">
-          <span class="bg-amber-500 text-zinc-950 text-xs font-bold px-2.5 py-1 rounded-md w-max mb-2"><i class="fa-solid fa-fire mr-1"></i> Featured Hero Menu</span>
-          <h2 class="text-2xl md:text-4xl font-extrabold text-white">${slide.title}</h2>
-          <p class="text-stone-300 text-xs md:text-sm mt-1 max-w-xl line-clamp-2">${slide.description || ''}</p>
-          <span class="text-amber-400 font-mono font-black text-lg mt-2">$${Number(slide.price).toFixed(2)}</span>
+      heroMenuItems.forEach(item => {
+        const imgSrc = item.image || item.imageUrl || '';
+        if (imgSrc) {
+          slidesData.push({
+            image: imgSrc,
+            title: item.name,
+            description: item.description,
+            price: item.promoPrice && Number(item.promoPrice) < Number(item.price) ? item.promoPrice : item.price,
+            isMenuHero: true
+          });
+        }
+      });
+
+      // 3. Jika tidak ada sama sekali gambar default maupun menu hero, gunakan fallback Unsplash
+      if (slidesData.length === 0) {
+        slidesData.push({
+          image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+          title: '',
+          description: '',
+          price: null,
+          isMenuHero: false
+        });
+      }
+
+      const container = document.getElementById('heroSlidesContainer');
+      container.innerHTML = slidesData.map((slide, idx) => `
+        <div class="hero-slide ${idx === 0 ? 'active' : ''} relative">
+          <img src="${slide.image}" class="w-full h-full object-cover">
+          ${slide.isMenuHero ? `
+            <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-6 md:p-12 z-20">
+              <span class="bg-amber-500 text-zinc-950 text-xs font-bold px-2.5 py-1 rounded-md w-max mb-2"><i class="fa-solid fa-fire mr-1"></i> Featured Hero Menu</span>
+              <h2 class="text-2xl md:text-4xl font-extrabold text-white">${slide.title}</h2>
+              <p class="text-stone-300 text-xs md:text-sm mt-1 max-w-xl line-clamp-2">${slide.description || ''}</p>
+              <span class="text-amber-400 font-mono font-black text-lg mt-2">$${Number(slide.price).toFixed(2)}</span>
+            </div>
+          ` : ''}
         </div>
-      ` : ''}
-    </div>
-  `).join('');
+      `).join('');
 
-  // Bagian timer slider selanjutnya tetap berjalan seperti biasa...
-  if (heroTimer) clearInterval(heroTimer);
-  if (slidesData.length > 1) {
-    heroSlideIndex = 0;
-    heroTimer = setInterval(() => {
-      const slides = document.querySelectorAll('.hero-slide');
-      if (slides.length === 0) return;
-      slides[heroSlideIndex].classList.remove('active');
-      heroSlideIndex = (heroSlideIndex + 1) % slides.length;
-      slides[heroSlideIndex].classList.add('active');
-    }, 4500);
-  }
-}
+      const tintColor = ui.heroOverlayColor || '#ffffff';
+      const textBelowEl = document.getElementById('heroTextBelowLogo');
+      textBelowEl.style.color = tintColor;
+
+      const flyingEnabled = ui.heroFlyingLogoEnabled === 'yes' || profile.heroFlyingLogoEnabled === 'yes';
+      const logoUrl = profile.logoUrl || '';
+      const flyingLogoEl = document.getElementById('heroFlyingLogo');
+      
+      if (flyingEnabled && logoUrl) {
+        flyingLogoEl.src = logoUrl;
+        flyingLogoEl.style.display = 'block';
+      } else {
+        flyingLogoEl.style.display = 'none';
+      }
+
+      const textBelow = ui.heroFlyingLogoText || profile.heroFlyingLogoText || '';
+      textBelowEl.innerText = textBelow;
+
+      if (heroTimer) clearInterval(heroTimer);
+      if (slidesData.length > 1) {
+        heroSlideIndex = 0;
+        heroTimer = setInterval(() => {
+          const slides = document.querySelectorAll('.hero-slide');
+          if (slides.length === 0) return;
+          slides[heroSlideIndex].classList.remove('active');
+          heroSlideIndex = (heroSlideIndex + 1) % slides.length;
+          slides[heroSlideIndex].classList.add('active');
+        }, 4500);
+      }
+    }
 
     function getActiveMenuItems() {
       let items = [];

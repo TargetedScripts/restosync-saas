@@ -263,7 +263,7 @@
           title: '',
           description: '',
           price: null,
-          isMenuHero: false
+          isMenuHero: false // Menandakan ini adalah slide default
         });
       });
 
@@ -279,7 +279,7 @@
             title: item.name,
             description: item.description,
             price: item.promoPrice && Number(item.promoPrice) < Number(item.price) ? item.promoPrice : item.price,
-            isMenuHero: true
+            isMenuHero: true // Menandakan ini adalah slide menu hero
           });
         }
       });
@@ -297,7 +297,7 @@
 
       const container = document.getElementById('heroSlidesContainer');
       container.innerHTML = slidesData.map((slide, idx) => `
-        <div class="hero-slide ${idx === 0 ? 'active' : ''} relative">
+        <div class="hero-slide ${idx === 0 ? 'active' : ''} relative" data-is-menu-hero="${slide.isMenuHero}">
           <img src="${slide.image}" class="w-full h-full object-cover">
           ${slide.isMenuHero ? `
             <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-6 md:p-12 z-20">
@@ -314,22 +314,33 @@
       const textBelowEl = document.getElementById('heroTextBelowLogo');
       textBelowEl.style.color = tintColor;
 
-      // 4. Perbaikan logika pengecekan Enable Flying Logo (jika No, logo dan teks di bawahnya disembunyikan)
       const flyingEnabled = ui.heroFlyingLogoEnabled === 'yes' || profile.heroFlyingLogoEnabled === 'yes';
       const logoUrl = profile.logoUrl || '';
       const flyingLogoEl = document.getElementById('heroFlyingLogo');
-      
-      if (flyingEnabled && logoUrl) {
-        flyingLogoEl.src = logoUrl;
-        flyingLogoEl.style.display = 'block';
-        textBelowEl.style.display = 'block'; // Tampilkan teks jika flying logo aktif
-      } else {
-        flyingLogoEl.style.display = 'none';
-        textBelowEl.style.display = 'none';  // Sembunyikan teks jika flying logo diset ke No / mati
-      }
-
       const textBelow = ui.heroFlyingLogoText || profile.heroFlyingLogoText || '';
       textBelowEl.innerText = textBelow;
+
+      // Fungsi pembantu untuk mengatur visibilitas flying logo & teks berdasarkan slide aktif
+      function updateFlyingLogoVisibility() {
+        const activeSlide = document.querySelector('.hero-slide.active');
+        if (!activeSlide) return;
+
+        const isMenuHero = activeSlide.getAttribute('data-is-menu-hero') === 'true';
+
+        // Jika opsi admin ENABLE YES, TAPI sedang di slide menu hero -> SEMBUNYIKAN logo & teks
+        if (flyingEnabled && logoUrl && !isMenuHero) {
+          flyingLogoEl.src = logoUrl;
+          flyingLogoEl.style.display = 'block';
+          textBelowEl.style.display = 'block';
+        } else {
+          // Sembunyikan jika diatur NO atau sedang berada di slide menu hero
+          flyingLogoEl.style.display = 'none';
+          textBelowEl.style.display = 'none';
+        }
+      }
+
+      // Jalankan pengecekan awal untuk slide pertama
+      updateFlyingLogoVisibility();
 
       if (heroTimer) clearInterval(heroTimer);
       if (slidesData.length > 1) {
@@ -340,10 +351,13 @@
           slides[heroSlideIndex].classList.remove('active');
           heroSlideIndex = (heroSlideIndex + 1) % slides.length;
           slides[heroSlideIndex].classList.add('active');
+
+          // Perbarui visibilitas logo setiap kali slide bergeser
+          updateFlyingLogoVisibility();
         }, 4500);
       }
     }
-
+    
     function getActiveMenuItems() {
       let items = [];
       if (tenantData.menuItems && tenantData.menuItems.length > 0) {

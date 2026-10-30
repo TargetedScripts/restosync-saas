@@ -26,6 +26,7 @@
       <div class="flex items-center space-x-3 shrink-0">
         <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
         <div>
+          <!-- Hanya menampilkan Additional Header Text saja sesuai kesepakatan -->
           <span id="headerExtraText" class="font-bold text-xs uppercase tracking-wider block" style="display: none;"></span>
         </div>
       </div>
@@ -39,9 +40,11 @@
   <section id="heroSection" class="relative w-full h-[360px] md:h-[460px] bg-zinc-950 overflow-hidden flex items-center justify-center">
     <div id="heroSlidesContainer" class="absolute inset-0 w-full h-full"></div>
     <div id="heroOverlay" class="absolute inset-0 bg-black/40 z-10"></div>
-    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6 text-white z-20 max-w-2xl mx-auto">
+    
+    <!-- Content: Flying Logo & Text Below Flying Logo -->
+    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6 z-20 max-w-2xl mx-auto">
       <img id="heroFlyingLogo" src="" alt="Flying Logo" class="h-16 md:h-20 w-auto object-contain mb-3 flying-logo drop-shadow-2xl" style="display: none;" onerror="this.style.display='none'">
-      <p id="heroTextBelowLogo" class="text-xs md:text-sm font-semibold tracking-wide text-stone-200 drop-shadow-md uppercase"></p>
+      <p id="heroTextBelowLogo" class="text-xs md:text-sm font-semibold tracking-wide drop-shadow-md uppercase"></p>
     </div>
     <div id="heroDots" class="absolute bottom-4 z-30 flex space-x-2"></div>
   </section>
@@ -130,12 +133,9 @@
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('adminPortalLink').href = `admin.html?tenant=${TENANT_ID}`;
 
-      // Ambil data dokumen tenant dari Firestore terlebih dahulu
       db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
         if (doc.exists) {
           tenantData = doc.data();
-          
-          // Cek apakah ada konfigurasi file .js tenant di repositori (jsAssetUrl)
           const profile = tenantData.profile || {};
           const jsPath = profile.jsAssetUrl;
 
@@ -155,22 +155,14 @@
     });
 
     function loadTenantJsAsset(jsPath, callback) {
-      // Mencegah pemuatan berulang jika script sudah ada
       if (document.querySelector(`script[src="${jsPath}"]`)) {
         if (typeof callback === 'function') callback();
         return;
       }
-
       const scriptTag = document.createElement('script');
       scriptTag.src = jsPath;
-      scriptTag.onload = function() {
-        console.log(`Successfully loaded tenant JS asset: ${jsPath}`);
-        if (typeof callback === 'function') callback();
-      };
-      scriptTag.onerror = function() {
-        console.warn(`Failed to load tenant JS asset from ${jsPath}. Falling back to Firestore data only.`);
-        if (typeof callback === 'function') callback();
-      };
+      scriptTag.onload = () => { if (typeof callback === 'function') callback(); };
+      scriptTag.onerror = () => { if (typeof callback === 'function') callback(); };
       document.head.appendChild(scriptTag);
     }
 
@@ -191,13 +183,13 @@
       const phone = profile.phone || config.store?.phone || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.phone : '');
       const logoUrl = profile.logoUrl || config.branding?.logo || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.logo : '');
 
-      // 1. Header Styling & Additional Text
       const headerEl = document.getElementById('mainHeader');
       if (ui.headerBgColor) headerEl.style.backgroundColor = ui.headerBgColor;
       if (ui.headerBorderColor && ui.headerBorderSize && ui.headerBorderSize !== '0px') {
         headerEl.style.borderBottom = `${ui.headerBorderSize} solid ${ui.headerBorderColor}`;
       }
 
+      // Additional Header Text (Tanpa nama tenant)
       const extraTextEl = document.getElementById('headerExtraText');
       if (ui.headerExtraText) {
         extraTextEl.innerText = ui.headerExtraText;
@@ -207,7 +199,6 @@
         extraTextEl.style.display = 'none';
       }
 
-      // 2. Logo & Scale
       const logoEl = document.getElementById('storeLogo');
       if (logoUrl) {
         logoEl.src = logoUrl;
@@ -218,7 +209,6 @@
         logoEl.style.display = 'none';
       }
 
-      // 3. Footer Info
       document.getElementById('footerStoreName').innerText = storeName;
       document.getElementById('footerAddress').innerText = address;
       document.getElementById('footerPhone').innerText = phone;
@@ -244,7 +234,7 @@
         profile.heroImage1 || config.branding?.heroImages?.[0] || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.heroImages?.[0] : null),
         profile.heroImage2 || config.branding?.heroImages?.[1] || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.heroImages?.[1] : null),
         profile.heroImage3 || config.branding?.heroImages?.[2] || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.heroImages?.[2] : null)
-      ].filter(img => img && img.trim() !== '');
+      ].filter(img => img && img.trim() !== '' && !img.includes('undefined') && !img.includes('null'));
 
       if (images.length === 0) {
         images.push('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');
@@ -257,9 +247,10 @@
         </div>
       `).join('');
 
-      if (ui.heroOverlayColor) {
-        document.getElementById('heroOverlay').style.backgroundColor = ui.heroOverlayColor;
-      }
+      // Menyesuaikan warna teks/logo di hero berdasarkan field Layer Tint / Overlay dari admin
+      const tintColor = ui.heroOverlayColor || '#ffffff';
+      const textBelowEl = document.getElementById('heroTextBelowLogo');
+      textBelowEl.style.color = tintColor;
 
       const flyingEnabled = ui.heroFlyingLogoEnabled === 'yes' || profile.heroFlyingLogoEnabled === 'yes';
       const logoUrl = profile.logoUrl || config.branding?.logo || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.logo : '');
@@ -273,7 +264,7 @@
       }
 
       const textBelow = ui.heroFlyingLogoText || profile.heroFlyingLogoText || '';
-      document.getElementById('heroTextBelowLogo').innerText = textBelow;
+      textBelowEl.innerText = textBelow;
 
       if (heroTimer) clearInterval(heroTimer);
       if (images.length > 1) {
@@ -289,9 +280,15 @@
     }
 
     function getActiveMenuItems() {
-      let items = tenantData.menuItems || tenantData.config?.menuItems || [];
-      if (items.length === 0 && typeof RESTOSYNC_CONFIG !== 'undefined' && RESTOSYNC_CONFIG.menuItems) {
+      let items = [];
+      if (tenantData.menuItems && tenantData.menuItems.length > 0) {
+        items = tenantData.menuItems;
+      } else if (tenantData.config?.menuItems && tenantData.config.menuItems.length > 0) {
+        items = tenantData.config.menuItems;
+      } else if (typeof RESTOSYNC_CONFIG !== 'undefined' && RESTOSYNC_CONFIG.menuItems) {
         items = RESTOSYNC_CONFIG.menuItems;
+      } else if (typeof menuItems !== 'undefined') {
+        items = menuItems;
       }
       return items.filter(i => i.isAvailable !== false && i.isHidden !== true);
     }
@@ -327,7 +324,7 @@
       const items = getActiveMenuItems().filter(i => currentFilter === 'ALL' || (i.category || 'General') === currentFilter);
       
       if (items.length === 0) {
-        document.getElementById('menuContentBox').innerHTML = `<div class="text-center py-16 text-stone-500 text-xs font-mono">No active menu items found for category [${currentFilter}].</div>`;
+        document.getElementById('menuContentBox').innerHTML = `<div class="text-center py-16 text-stone-500 text-xs font-mono">No active menu items found. (Pastikan data menu sudah diinput di Admin Panel).</div>`;
         return;
       }
 

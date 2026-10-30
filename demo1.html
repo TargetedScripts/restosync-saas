@@ -48,7 +48,7 @@
 
   <!-- MENU SECTION -->
   <section class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
-    <!-- FILTER BAR DENGAN ID filterBarContainer -->
+    <!-- FILTER BAR CONTAINER -->
     <div id="filterBarContainer" class="sticky top-[57px] z-35 bg-zinc-900/95 py-3 -mx-4 px-4 mb-6 border-b border-zinc-800 backdrop-blur-md flex flex-wrap justify-between items-center gap-4 transition-colors duration-200">
       <div id="categoryPills" class="flex space-x-2 overflow-x-auto no-scrollbar py-1"></div>
       <div class="flex items-center space-x-1 bg-zinc-800 p-1 rounded-xl border border-zinc-700 text-xs">
@@ -186,14 +186,14 @@
       if (ui.headerBorderColor && ui.headerBorderSize && ui.headerBorderSize !== '0px') {
         headerEl.style.borderBottom = `${ui.headerBorderSize} solid ${ui.headerBorderColor}`;
       }
-      
-    // TERAPKAN WARNA BODY / LATAR BELAKANG KOSONG UTAMA DARI ADMIN
+
+      // TERAPKAN WARNA BODY / LATAR BELAKANG KOSONG UTAMA
       const mainBodyEl = document.getElementById('mainBody');
       if (ui.bodyBgColor && mainBodyEl) {
         mainBodyEl.style.backgroundColor = ui.bodyBgColor;
       }
 
-      // TERAPKAN WARNA FILTER BAR DINAMIS DARI ADMIN
+      // TERAPKAN WARNA FILTER BAR CONTAINER
       const filterBar = document.getElementById('filterBarContainer');
       if (ui.filterBarBg && filterBar) {
         filterBar.style.backgroundColor = ui.filterBarBg;

@@ -51,7 +51,7 @@
     <!-- FILTER BAR CONTAINER -->
     <div id="filterBarContainer" class="sticky top-[57px] z-35 bg-zinc-900/95 py-3 -mx-4 px-4 mb-6 border-b border-zinc-800 backdrop-blur-md flex flex-wrap justify-between items-center gap-4 transition-colors duration-200">
       <div id="categoryPills" class="flex space-x-2 overflow-x-auto no-scrollbar py-1"></div>
-      <div class="flex items-center space-x-1 bg-zinc-800 p-1 rounded-xl border border-zinc-700 text-xs">
+      <div id="layoutToggleBox" class="flex items-center space-x-1 bg-zinc-800 p-1 rounded-xl border border-zinc-700 text-xs">
         <button onclick="switchLayout('grid')" id="btnLayoutGrid" class="px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-zinc-950 transition"><i class="fa-solid fa-grip mr-1"></i> Grid</button>
         <button onclick="switchLayout('list')" id="btnLayoutList" class="px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition"><i class="fa-solid fa-book-open mr-1"></i> Menu Book</button>
       </div>
@@ -191,10 +191,16 @@
       if (ui.bodyBgColor && mainBodyEl) {
         mainBodyEl.style.backgroundColor = ui.bodyBgColor;
       }
+      if (ui.bodyTextColor && mainBodyEl) {
+        mainBodyEl.style.color = ui.bodyTextColor;
+      }
 
       const filterBar = document.getElementById('filterBarContainer');
-      if (ui.filterBarBg && filterBar) {
-        filterBar.style.backgroundColor = ui.filterBarBg;
+      if (filterBar) {
+        if (ui.filterBarBg) filterBar.style.backgroundColor = ui.filterBarBg;
+        if (ui.filterBarBorderColor) {
+          filterBar.style.borderBottom = `1px solid ${ui.filterBarBorderColor}`;
+        }
       }
 
       const extraTextEl = document.getElementById('headerExtraText');
@@ -221,13 +227,19 @@
       document.getElementById('footerPhone').innerText = phone;
       document.getElementById('footerPhone').href = `tel:${phone}`;
 
+      const footerEl = document.getElementById('mainFooter');
+      if (footerEl) {
+        if (ui.footerBgColor) footerEl.style.backgroundColor = ui.footerBgColor;
+        if (ui.footerTextColor) footerEl.style.color = ui.footerTextColor;
+      }
+
       const op = tenantData.officeHours || config.operatingHours || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.operatingHours : {});
       const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       const shortDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
       
       const hoursHtml = days.map((day, idx) => {
         const val = op[day] || op[day.toLowerCase()] || op[shortDays[idx]] || 'Closed';
-        return `<div class="flex justify-between"><span>${day}:</span><span class="text-stone-200 font-mono">${val}</span></div>`;
+        return `<div class="flex justify-between"><span>${day}:</span><span class="font-mono">${val}</span></div>`;
       }).join('');
       document.getElementById('footerOperatingHours').innerHTML = hoursHtml || '<p>Hours not set</p>';
     }
@@ -345,23 +357,27 @@
       
       const profile = tenantData.profile || {};
       const ui = profile.uiStyles || {};
-      const customActiveBg = ui.catBtnActiveBg || '#f59e0b';
-      const customActiveText = ui.catBtnActiveText || '#030712';
+      
+      const activeBg = ui.catBtnActiveBg || '#f59e0b';
+      const activeText = ui.catBtnActiveText || '#030712';
+      const inactiveBg = ui.catBtnInactiveBg || '#1f2937';
+      const inactiveText = ui.catBtnInactiveText || '#f1f5f9';
+      const borderColor = ui.catBtnBorderColor || '#374151';
 
       const getBtnStyle = (isActive) => {
         if (isActive) {
-          return `style="background-color: ${customActiveBg}; color: ${customActiveText};"`;
+          return `style="background-color: ${activeBg}; color: ${activeText}; border: 1px solid ${borderColor};"`;
         }
-        return '';
+        return `style="background-color: ${inactiveBg}; color: ${inactiveText}; border: 1px solid ${borderColor};"`;
       };
 
-      let html = `<button onclick="filterCategory('ALL')" ${getBtnStyle(currentFilter === 'ALL')} class="px-4 py-2 rounded-full text-xs font-bold transition ${currentFilter === 'ALL' ? 'shadow-md' : 'bg-zinc-800 text-stone-300 hover:bg-zinc-700'}">ALL</button>`;
+      let html = `<button onclick="filterCategory('ALL')" ${getBtnStyle(currentFilter === 'ALL')} class="px-4 py-2 rounded-full text-xs font-bold transition shadow-sm">ALL</button>`;
       
-      html += `<button onclick="filterCategory('FAVOURITE')" ${getBtnStyle(currentFilter === 'FAVOURITE')} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === 'FAVOURITE' ? 'shadow-md' : 'bg-zinc-800 text-amber-400 hover:bg-zinc-700'}"><i class="fa-solid fa-star mr-1"></i> Favourite</button>`;
-      html += `<button onclick="filterCategory('PROMO')" ${getBtnStyle(currentFilter === 'PROMO')} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === 'PROMO' ? 'shadow-md' : 'bg-zinc-800 text-orange-400 hover:bg-zinc-700'}"><i class="fa-solid fa-fire mr-1"></i> Promo</button>`;
+      html += `<button onclick="filterCategory('FAVOURITE')" ${getBtnStyle(currentFilter === 'FAVOURITE')} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap shadow-sm"><i class="fa-solid fa-star mr-1"></i> Favourite</button>`;
+      html += `<button onclick="filterCategory('PROMO')" ${getBtnStyle(currentFilter === 'PROMO')} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap shadow-sm"><i class="fa-solid fa-fire mr-1"></i> Promo</button>`;
 
       html += categories.map(c => `
-        <button onclick="filterCategory('${c}')" ${getBtnStyle(currentFilter === c)} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${currentFilter === c ? 'shadow-md' : 'bg-zinc-800 text-stone-300 hover:bg-zinc-700'}">${c}</button>
+        <button onclick="filterCategory('${c}')" ${getBtnStyle(currentFilter === c)} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap shadow-sm">${c}</button>
       `).join('');
       
       pills.innerHTML = html;
@@ -377,28 +393,38 @@
       currentLayout = layout;
       const profile = tenantData.profile || {};
       const ui = profile.uiStyles || {};
-      const customActiveBg = ui.catBtnActiveBg || '#f59e0b';
-      const customActiveText = ui.catBtnActiveText || '#030712';
+      
+      const activeBg = ui.catBtnActiveBg || '#f59e0b';
+      const activeText = ui.catBtnActiveText || '#030712';
+      const inactiveBg = ui.catBtnInactiveBg || '#1f2937';
+      const inactiveText = ui.catBtnInactiveText || '#f1f5f9';
+      const borderColor = ui.catBtnBorderColor || '#374151';
 
       const gridBtn = document.getElementById('btnLayoutGrid');
       const listBtn = document.getElementById('btnLayoutList');
+      const layoutToggleBox = document.getElementById('layoutToggleBox');
+
+      if (layoutToggleBox && borderColor) {
+        layoutToggleBox.style.borderColor = borderColor;
+        if (ui.filterBarBg) layoutToggleBox.style.backgroundColor = inactiveBg;
+      }
 
       if (layout === 'grid') {
-        gridBtn.style.backgroundColor = customActiveBg;
-        gridBtn.style.color = customActiveText;
-        gridBtn.className = 'px-3 py-1.5 rounded-lg font-bold transition';
+        gridBtn.style.backgroundColor = activeBg;
+        gridBtn.style.color = activeText;
+        gridBtn.style.border = `1px solid ${borderColor}`;
         
-        listBtn.style.backgroundColor = '';
-        listBtn.style.color = '';
-        listBtn.className = 'px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition';
+        listBtn.style.backgroundColor = inactiveBg;
+        listBtn.style.color = inactiveText;
+        listBtn.style.border = `1px solid transparent`;
       } else {
-        listBtn.style.backgroundColor = customActiveBg;
-        listBtn.style.color = customActiveText;
-        listBtn.className = 'px-3 py-1.5 rounded-lg font-bold transition';
+        listBtn.style.backgroundColor = activeBg;
+        listBtn.style.color = activeText;
+        listBtn.style.border = `1px solid ${borderColor}`;
 
-        gridBtn.style.backgroundColor = '';
-        gridBtn.style.color = '';
-        gridBtn.className = 'px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition';
+        gridBtn.style.backgroundColor = inactiveBg;
+        gridBtn.style.color = inactiveText;
+        gridBtn.style.border = `1px solid transparent`;
       }
 
       renderMenuContentBox();
@@ -423,6 +449,7 @@
       const profile = tenantData.profile || {};
       const ui = profile.uiStyles || {};
       const cardBgStyle = ui.cardMenuBg ? `background-color: ${ui.cardMenuBg};` : '';
+      const cardBorder = ui.cardBorderColor ? `border: ${ui.cardBorderThickness || '1px'} solid ${ui.cardBorderColor};` : '';
 
       const renderBadges = (item) => {
         let badgesHtml = '';
@@ -449,7 +476,7 @@
               const imgSrc = item.image || item.imageUrl || '';
 
               return `
-                <div style="${cardBgStyle}" class="bg-zinc-800/80 rounded-2xl p-4 border border-zinc-700/60 flex flex-col justify-between shadow-xl text-xs hover:border-amber-500/40 transition">
+                <div style="${cardBgStyle} ${cardBorder}" class="bg-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-xl text-xs transition">
                   <div>
                     ${imgSrc ? `<div class="w-full h-40 bg-zinc-950 mb-3.5 rounded-xl overflow-hidden"><img src="${imgSrc}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'"></div>` : ''}
                     <h3 class="font-bold text-stone-100 text-sm leading-snug">${item.name}</h3>
@@ -470,7 +497,7 @@
         `;
       } else {
         document.getElementById('menuContentBox').innerHTML = `
-          <div style="${cardBgStyle}" class="bg-zinc-800/60 rounded-3xl p-6 border border-zinc-700/60 shadow-xl space-y-4 max-w-4xl mx-auto">
+          <div style="${cardBgStyle} ${cardBorder}" class="bg-zinc-800/60 rounded-3xl p-6 shadow-xl space-y-4 max-w-4xl mx-auto">
             <h3 class="text-amber-400 font-bold text-xs uppercase tracking-widest border-b border-zinc-700 pb-2 mb-4"><i class="fa-solid fa-book-open mr-2"></i>Classic Menu Book &bull; [${currentFilter}]</h3>
             <div class="divide-y divide-zinc-700/50">
               ${items.map((item, idx) => {

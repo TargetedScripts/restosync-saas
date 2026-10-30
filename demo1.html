@@ -9,7 +9,13 @@
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .hero-slide { transition: opacity 1s ease-in-out; }
+    .hero-slide { opacity: 0; transition: opacity 1s ease-in-out; position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+    .hero-slide.active { opacity: 1; display: block; }
+    @keyframes floatLogo {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .flying-logo { animation: floatLogo 3s ease-in-out infinite; }
   </style>
 </head>
 <body id="mainBody" class="bg-zinc-900 text-stone-200 flex flex-col min-h-screen pb-16">
@@ -20,8 +26,7 @@
       <div class="flex items-center space-x-3 shrink-0">
         <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
         <div>
-          <span id="headerStoreName" class="font-bold text-sm uppercase tracking-wider block">Loading Store...</span>
-          <span id="headerExtraText" class="text-[10px] text-stone-400 block" style="display: none;"></span>
+          <span id="headerExtraText" class="font-bold text-xs uppercase tracking-wider block" style="display: none;"></span>
         </div>
       </div>
       <button onclick="toggleCartModal()" id="cartBtn" class="font-bold px-3.5 py-2 rounded-xl text-xs flex items-center space-x-2 bg-amber-500 text-zinc-950 shadow-lg transition hover:bg-amber-400">
@@ -30,28 +35,19 @@
     </div>
   </header>
 
-  <!-- HERO SECTION (Menampilkan produk yang dicentang / ticked di data menu) -->
-  <section id="heroSection" class="relative w-full h-[340px] md:h-[440px] bg-zinc-950 overflow-hidden flex items-center justify-center">
-    <div id="heroBgContainer" class="absolute inset-0 w-full h-full">
-      <img id="heroImgMain" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover">
+  <!-- HERO SECTION -->
+  <section id="heroSection" class="relative w-full h-[360px] md:h-[460px] bg-zinc-950 overflow-hidden flex items-center justify-center">
+    <div id="heroSlidesContainer" class="absolute inset-0 w-full h-full"></div>
+    <div id="heroOverlay" class="absolute inset-0 bg-black/40 z-10"></div>
+    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6 text-white z-20 max-w-2xl mx-auto">
+      <img id="heroFlyingLogo" src="" alt="Flying Logo" class="h-16 md:h-20 w-auto object-contain mb-3 flying-logo drop-shadow-2xl" style="display: none;" onerror="this.style.display='none'">
+      <p id="heroTextBelowLogo" class="text-xs md:text-sm font-semibold tracking-wide text-stone-200 drop-shadow-md uppercase"></p>
     </div>
-    <!-- Layer Tint / Overlay -->
-    <div id="heroOverlay" class="absolute inset-0 bg-black/50"></div>
-    
-    <!-- Content / Featured Product Info (Tanpa Flying Logo) -->
-    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6 text-white z-10 max-w-2xl mx-auto">
-      <span id="heroBadge" class="bg-amber-500 text-zinc-950 font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-widest mb-2 shadow-lg hidden">Featured Promo Item</span>
-      <h2 id="heroItemTitle" class="text-xl md:text-3xl font-extrabold tracking-wide uppercase mb-1 drop-shadow-md">Welcome</h2>
-      <p id="heroItemDesc" class="text-xs md:text-sm text-stone-300 drop-shadow mb-3 line-clamp-2">Authentic flavours cooked fresh to order.</p>
-      <div id="heroItemPriceBox" class="flex items-center space-x-3 bg-zinc-900/80 px-4 py-2 rounded-2xl backdrop-blur-md border border-zinc-700 hidden">
-        <span id="heroItemPrice" class="font-mono text-amber-400 font-bold text-base">$0.00</span>
-      </div>
-    </div>
+    <div id="heroDots" class="absolute bottom-4 z-30 flex space-x-2"></div>
   </section>
 
   <!-- MENU SECTION -->
   <section class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
-    <!-- Category Pills & Layout Switcher -->
     <div class="sticky top-[57px] z-35 bg-zinc-900/95 py-3 -mx-4 px-4 mb-6 border-b border-zinc-800 backdrop-blur-md flex flex-wrap justify-between items-center gap-4">
       <div id="categoryPills" class="flex space-x-2 overflow-x-auto no-scrollbar py-1"></div>
       <div class="flex items-center space-x-1 bg-zinc-800 p-1 rounded-xl border border-zinc-700 text-xs">
@@ -59,7 +55,6 @@
         <button onclick="switchLayout('list')" id="btnLayoutList" class="px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition"><i class="fa-solid fa-book-open mr-1"></i> Menu Book</button>
       </div>
     </div>
-
     <div id="menuContentBox" class="w-full"></div>
   </section>
 
@@ -127,37 +122,74 @@
 
     let tenantData = {};
     let currentFilter = 'ALL';
-    let currentLayout = 'grid'; // 'grid' atau 'list'
+    let currentLayout = 'grid';
     let cart = [];
+    let heroSlideIndex = 0;
+    let heroTimer = null;
 
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('adminPortalLink').href = `admin.html?tenant=${TENANT_ID}`;
 
+      // Ambil data dokumen tenant dari Firestore terlebih dahulu
       db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
         if (doc.exists) {
           tenantData = doc.data();
-          initStoreBranding();
-          renderHeroSection();
-          renderCategoryPills();
-          renderMenuContentBox();
+          
+          // Cek apakah ada konfigurasi file .js tenant di repositori (jsAssetUrl)
+          const profile = tenantData.profile || {};
+          const jsPath = profile.jsAssetUrl;
+
+          if (jsPath) {
+            loadTenantJsAsset(jsPath, () => {
+              initializeStoreUI();
+            });
+          } else {
+            initializeStoreUI();
+          }
         } else {
-          document.getElementById('heroItemTitle').innerText = "Tenant Not Found";
-          document.getElementById('heroItemDesc').innerText = `Tenant ID [${TENANT_ID}] does not exist in Firebase.`;
+          console.error("Tenant not found in Firestore.");
         }
       }, (error) => {
         console.error("Firestore error:", error);
       });
     });
 
+    function loadTenantJsAsset(jsPath, callback) {
+      // Mencegah pemuatan berulang jika script sudah ada
+      if (document.querySelector(`script[src="${jsPath}"]`)) {
+        if (typeof callback === 'function') callback();
+        return;
+      }
+
+      const scriptTag = document.createElement('script');
+      scriptTag.src = jsPath;
+      scriptTag.onload = function() {
+        console.log(`Successfully loaded tenant JS asset: ${jsPath}`);
+        if (typeof callback === 'function') callback();
+      };
+      scriptTag.onerror = function() {
+        console.warn(`Failed to load tenant JS asset from ${jsPath}. Falling back to Firestore data only.`);
+        if (typeof callback === 'function') callback();
+      };
+      document.head.appendChild(scriptTag);
+    }
+
+    function initializeStoreUI() {
+      initStoreBranding();
+      initHeroSlider();
+      renderCategoryPills();
+      renderMenuContentBox();
+    }
+
     function initStoreBranding() {
       const profile = tenantData.profile || {};
       const ui = profile.uiStyles || {};
       const config = tenantData.config || {};
       
-      const storeName = profile.tenantName || config.store?.name || TENANT_ID;
-      const address = profile.address || config.store?.address || '';
-      const phone = profile.phone || config.store?.phone || '';
-      const logoUrl = profile.logoUrl || config.branding?.logo || '';
+      const storeName = profile.tenantName || config.store?.name || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.name : TENANT_ID);
+      const address = profile.address || config.store?.address || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.address : '');
+      const phone = profile.phone || config.store?.phone || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.phone : '');
+      const logoUrl = profile.logoUrl || config.branding?.logo || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.logo : '');
 
       // 1. Header Styling & Additional Text
       const headerEl = document.getElementById('mainHeader');
@@ -166,11 +198,6 @@
         headerEl.style.borderBottom = `${ui.headerBorderSize} solid ${ui.headerBorderColor}`;
       }
 
-      const headerStoreNameEl = document.getElementById('headerStoreName');
-      headerStoreNameEl.innerText = storeName;
-      if (ui.headerTextColor) headerStoreNameEl.style.color = ui.headerTextColor;
-
-      // Additional Header Text (Hanya menampilkan teks tambahan tanpa menggabungkan Nama Toko)
       const extraTextEl = document.getElementById('headerExtraText');
       if (ui.headerExtraText) {
         extraTextEl.innerText = ui.headerExtraText;
@@ -197,49 +224,75 @@
       document.getElementById('footerPhone').innerText = phone;
       document.getElementById('footerPhone').href = `tel:${phone}`;
 
-      const op = tenantData.officeHours || config.operatingHours || {};
+      const op = tenantData.officeHours || config.operatingHours || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.operatingHours : {});
       const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-      const hoursHtml = days.map(day => {
-        const val = op[day] || op[day.toLowerCase()] || 'Closed';
+      const shortDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+      
+      const hoursHtml = days.map((day, idx) => {
+        const val = op[day] || op[day.toLowerCase()] || op[shortDays[idx]] || 'Closed';
         return `<div class="flex justify-between"><span>${day}:</span><span class="text-stone-200 font-mono">${val}</span></div>`;
       }).join('');
       document.getElementById('footerOperatingHours').innerHTML = hoursHtml || '<p>Hours not set</p>';
     }
 
-    function renderHeroSection() {
-      const items = getActiveMenuItems();
-      // Cari menu yang dicentang (ticked) untuk hero banner (misalnya isHeroBanner / ticked / isFeatured)
-      const heroItem = items.find(i => i.isHeroBanner === true || i.isHeroBanner === 'true' || i.isFeatured === true);
-
+    function initHeroSlider() {
       const profile = tenantData.profile || {};
-      const defaultHeroImg = profile.heroImage1 || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80';
+      const ui = profile.uiStyles || {};
+      const config = tenantData.config || {};
+      
+      const images = [
+        profile.heroImage1 || config.branding?.heroImages?.[0] || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.heroImages?.[0] : null),
+        profile.heroImage2 || config.branding?.heroImages?.[1] || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.heroImages?.[1] : null),
+        profile.heroImage3 || config.branding?.heroImages?.[2] || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.heroImages?.[2] : null)
+      ].filter(img => img && img.trim() !== '');
 
-      if (heroItem) {
-        document.getElementById('heroImgMain').src = heroItem.image || defaultHeroImg;
-        document.getElementById('heroBadge').style.display = 'inline-block';
-        document.getElementById('heroItemTitle').innerText = heroItem.name;
-        document.getElementById('heroItemDesc').innerText = heroItem.description || '';
-        
-        const priceBox = document.getElementById('heroItemPriceBox');
-        const priceVal = document.getElementById('heroItemPrice');
-        const hasPromo = heroItem.promoPrice && Number(heroItem.promoPrice) < Number(heroItem.price);
-        
-        priceVal.innerHTML = hasPromo 
-          ? `<span class="line-through text-zinc-500 text-xs mr-2">$${Number(heroItem.price).toFixed(2)}</span><span>$${Number(heroItem.promoPrice).toFixed(2)}</span>`
-          : `$${Number(heroItem.price || 0).toFixed(2)}`;
-        priceBox.style.display = 'flex';
+      if (images.length === 0) {
+        images.push('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');
+      }
+
+      const container = document.getElementById('heroSlidesContainer');
+      container.innerHTML = images.map((img, idx) => `
+        <div class="hero-slide ${idx === 0 ? 'active' : ''}">
+          <img src="${img}" class="w-full h-full object-cover">
+        </div>
+      `).join('');
+
+      if (ui.heroOverlayColor) {
+        document.getElementById('heroOverlay').style.backgroundColor = ui.heroOverlayColor;
+      }
+
+      const flyingEnabled = ui.heroFlyingLogoEnabled === 'yes' || profile.heroFlyingLogoEnabled === 'yes';
+      const logoUrl = profile.logoUrl || config.branding?.logo || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.logo : '');
+      const flyingLogoEl = document.getElementById('heroFlyingLogo');
+      
+      if (flyingEnabled && logoUrl) {
+        flyingLogoEl.src = logoUrl;
+        flyingLogoEl.style.display = 'block';
       } else {
-        // Fallback jika tidak ada menu yang dicentang
-        document.getElementById('heroImgMain').src = defaultHeroImg;
-        document.getElementById('heroBadge').style.display = 'none';
-        document.getElementById('heroItemTitle').innerText = profile.tenantName || TENANT_ID;
-        document.getElementById('heroItemDesc').innerText = profile.tagline || 'Authentic flavours cooked fresh.';
-        document.getElementById('heroItemPriceBox').style.display = 'none';
+        flyingLogoEl.style.display = 'none';
+      }
+
+      const textBelow = ui.heroFlyingLogoText || profile.heroFlyingLogoText || '';
+      document.getElementById('heroTextBelowLogo').innerText = textBelow;
+
+      if (heroTimer) clearInterval(heroTimer);
+      if (images.length > 1) {
+        heroSlideIndex = 0;
+        heroTimer = setInterval(() => {
+          const slides = document.querySelectorAll('.hero-slide');
+          if (slides.length === 0) return;
+          slides[heroSlideIndex].classList.remove('active');
+          heroSlideIndex = (heroSlideIndex + 1) % slides.length;
+          slides[heroSlideIndex].classList.add('active');
+        }, 4500);
       }
     }
 
     function getActiveMenuItems() {
-      const items = tenantData.menuItems || tenantData.config?.menuItems || [];
+      let items = tenantData.menuItems || tenantData.config?.menuItems || [];
+      if (items.length === 0 && typeof RESTOSYNC_CONFIG !== 'undefined' && RESTOSYNC_CONFIG.menuItems) {
+        items = RESTOSYNC_CONFIG.menuItems;
+      }
       return items.filter(i => i.isAvailable !== false && i.isHidden !== true);
     }
 
@@ -278,7 +331,6 @@
         return;
       }
 
-      // Helper untuk stiker atribut menu (Cabai untuk Kepedasan, Bintang untuk Favorite, Api untuk Promo)
       const renderBadges = (item) => {
         let badgesHtml = '';
         const spice = Number(item.spiceLevel || 0);
@@ -296,7 +348,6 @@
       };
 
       if (currentLayout === 'grid') {
-        // GRID VIEW
         document.getElementById('menuContentBox').innerHTML = `
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             ${items.map((item, idx) => {
@@ -323,7 +374,6 @@
           </div>
         `;
       } else {
-        // LIST VIEW (Classic Menu Book Layout)
         document.getElementById('menuContentBox').innerHTML = `
           <div class="bg-zinc-800/60 rounded-3xl p-6 border border-zinc-700/60 shadow-xl space-y-4 max-w-4xl mx-auto">
             <h3 class="text-amber-400 font-bold text-xs uppercase tracking-widest border-b border-zinc-700 pb-2 mb-4"><i class="fa-solid fa-book-open mr-2"></i>Classic Menu Book &bull; [${currentFilter}]</h3>
@@ -332,11 +382,9 @@
                 const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
                 const itemId = item.id || 'item_' + idx;
                 return `
-                  py-4 flex justify-between items-start gap-4 hover:bg-zinc-800/40 px-3 rounded-xl transition">
+                  <div class="py-4 flex justify-between items-start gap-4 hover:bg-zinc-800/40 px-3 rounded-xl transition">
                     <div class="space-y-1 flex-grow">
-                      <div class="flex items-center space-x-2">
-                        <h4 class="font-bold text-stone-100 text-sm">${item.name}</h4>
-                      </div>
+                      <h4 class="font-bold text-stone-100 text-sm">${item.name}</h4>
                       <p class="text-xs text-stone-400 leading-relaxed max-w-xl">${item.description || ''}</p>
                       ${renderBadges(item)}
                     </div>
@@ -378,7 +426,7 @@
 
     function updateCartUI() {
       const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-      const subtotal = total / 1.15; // Kalkulasi standar NZ GST 15%
+      const subtotal = total / 1.15;
       const gst = total - subtotal;
 
       document.getElementById('cartSubtotal').innerText = `$${subtotal.toFixed(2)}`;

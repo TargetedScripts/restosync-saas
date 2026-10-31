@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestoSync - Visual & Template Settings</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <!-- Tailwind Custom Palette untuk Nuansa Pastel Hangat & Editorial -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        editorial: {
+                            bg: '#FAF8F5',       // Krem lembut / Putih Gading
+                            card: '#FFFFFF',     // Putih bersih untuk card
+                            dark: '#2D2A26',     // Arang untuk teks utama
+                            accent: '#E6CCB2',   // Warm Peach / Pastel Brown
+                            hover: '#D5BDA0',    // Aksen hover
+                            border: '#EBE5DE'    // Garis batas lembut
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-editorial-bg text-editorial-dark font-sans min-h-screen pb-12">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-editorial-card border-b border-editorial-border sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-sm">
+        <div class="flex items-center space-x-3">
+            <span class="bg-editorial-accent/20 text-editorial-dark p-2 rounded-lg text-sm font-semibold">
+                <i class="fa-solid fa-palette mr-1"></i> TEMPLATE STUDIO
+            </span>
+            <h1 id="tenantTitle" class="text-sm font-medium tracking-wide">Tenant: Memuat...</h1>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button onclick="goBackToHub()" class="text-xs text-stone-600 hover:text-stone-900 px-3 py-1.5 rounded border border-editorial-border transition">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Back to Hub
+            </button>
+            <button onclick="saveTemplateSettings()" id="saveBtn" class="bg-editorial-dark text-editorial-bg hover:bg-stone-800 px-4 py-2 rounded-lg text-xs font-medium transition shadow-sm flex items-center space-x-1.5">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>Save Changes</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-6 mt-8 space-y-6">
+
+        <!-- Status Notifikasi -->
+        <div id="alertBox" class="hidden p-4 rounded-xl text-xs font-medium border transition-all"></div>
+
+        <!-- Kartu Pengaturan Visual & Layout -->
+        <div class="bg-editorial-card border border-editorial-border rounded-2xl p-6 shadow-sm space-y-6">
+            <div class="border-b border-editorial-border pb-4">
+                <h2 class="text-base font-semibold text-stone-800 flex items-center">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-2 text-stone-500"></i> Visual & Brand Identity
+                </h2>
+                <p class="text-xs text-stone-500 mt-1">Kelola logo, identitas nama, dan latar belakang visual untuk tata letak tenant Anda.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Tenant Name -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-medium text-stone-700">Nama Toko / Brand Name</label>
+                    <input type="text" id="tenantNameInput" class="w-full bg-editorial-bg border border-editorial-border rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-stone-500 transition" placeholder="Contoh: Bolu Halus">
+                </div>
+
+                <!-- Template Type Selector -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-medium text-stone-700">Tipe Layout Template</label>
+                    <select id="templateTypeInput" class="w-full bg-editorial-bg border border-editorial-border rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-stone-500 transition">
+                        <option value="blog">Editorial Blog / Storytelling (Bolu Halus)</option>
+                        <option value="shop">Standard Store / POS Shop</option>
+                    </select>
+                </div>
+
+                <!-- Logo URL -->
+                <div class="space-y-1.5 md:col-span-2">
+                    <label class="text-xs font-medium text-stone-700">Logo Image URL</label>
+                    <input type="text" id="logoUrlInput" class="w-full bg-editorial-bg border border-editorial-border rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-stone-500 transition" placeholder="https://firebasestorage.googleapis.com/...">
+                </div>
+
+                <!-- Hero / Background Image URL -->
+                <div class="space-y-1.5 md:col-span-2">
+                    <label class="text-xs font-medium text-stone-700">Hero / Background Cover URL</label>
+                    <input type="text" id="heroImageInput" class="w-full bg-editorial-bg border border-editorial-border rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-stone-500 transition" placeholder="URL gambar latar atau banner utama">
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Card Ringkas -->
+        <div class="bg-editorial-card border border-editorial-border rounded-2xl p-6 shadow-sm space-y-4">
+            <h3 class="text-xs font-semibold tracking-wider uppercase text-stone-500">Live Preview Konsep Tampilan</h3>
+            <div class="p-4 rounded-xl bg-editorial-bg border border-editorial-border flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-full bg-editorial-accent flex items-center justify-center font-bold text-stone-800 text-lg shadow-inner">
+                    BH
+                </div>
+                <div>
+                    <h4 id="previewName" class="text-sm font-bold text-stone-800">Bolu Halus</h4>
+                    <p class="text-xs text-stone-500">Template Mode: <span id="previewType" class="font-medium text-stone-700">blog</span></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Script Koneksi & Firestore Logic -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
+            authDomain: "restosync-saas.firebaseapp.com",
+            projectId: "restosync-saas",
+            storageBucket: "restosync-saas.firebasestorage.app",
+            messagingSenderId: "780544019719",
+            appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let TENANT_ID = urlParams.get('tenant');
+        if (TENANT_ID) TENANT_ID = TENANT_ID.trim().toLowerCase();
+
+        // Elemen DOM
+        const tenantTitle = document.getElementById('tenantTitle');
+        const tenantNameInput = document.getElementById('tenantNameInput');
+        const templateTypeInput = document.getElementById('templateTypeInput');
+        const logoUrlInput = document.getElementById('logoUrlInput');
+        const heroImageInput = document.getElementById('heroImageInput');
+        const previewName = document.getElementById('previewName');
+        const previewType = document.getElementById('previewType');
+        const alertBox = document.getElementById('alertBox');
+
+        // Muat Data saat Halaman Dibuka
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!TENANT_ID) {
+                showAlert('Error: Parameter tenant tidak ditemukan di URL.', 'error');
+                return;
+            }
+
+            tenantTitle.innerText = `Tenant: ${TENANT_ID}`;
+
+            db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    tenantNameInput.value = data.tenantName || '';
+                    templateTypeInput.value = data.templateType || 'blog';
+                    logoUrlInput.value = data.logoUrl || '';
+                    heroImageInput.value = data.heroImage || '';
+
+                    previewName.innerText = data.tenantName || TENANT_ID;
+                    previewType.innerText = data.templateType || 'blog';
+                } else {
+                    showAlert('Data tenant tidak ditemukan di database.', 'error');
+                }
+            }).catch((err) => {
+                showAlert(`Gagal memuat data: ${err.message}`, 'error');
+            });
+        });
+
+        // Update Live Preview saat diketik
+        tenantNameInput.addEventListener('input', (e) => { previewName.innerText = e.target.value || TENANT_ID; });
+        templateTypeInput.addEventListener('change', (e) => { previewType.innerText = e.target.value; });
+
+        // Fungsi Simpan ke Firestore
+        function saveTemplateSettings() {
+            if (!TENANT_ID) return;
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i><span>Saving...</span>`;
+            saveBtn.disabled = true;
+
+            const updatedData = {
+                tenantName: tenantNameInput.value.trim(),
+                templateType: templateTypeInput.value.trim(),
+                logoUrl: logoUrlInput.value.trim(),
+                heroImage: heroImageInput.value.trim(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            db.collection("tenants").doc(TENANT_ID).update(updatedData)
+                .then(() => {
+                    showAlert('Pengaturan visual & template berhasil disimpan ke database!', 'success');
+                    saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i><span>Save Changes</span>`;
+                    saveBtn.disabled = false;
+                })
+                .catch((error) => {
+                    showAlert(`Gagal menyimpan: ${error.message}`, 'error');
+                    saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i><span>Save Changes</span>`;
+                    saveBtn.disabled = false;
+                });
+        }
+
+        // Helper Alert Notification
+        function showAlert(message, type) {
+            alertBox.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-400', 'bg-red-500/10', 'border-red-500/20', 'text-red-400');
+            if (type === 'success') {
+                alertBox.classList.add('bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-600');
+            } else {
+                alertBox.classList.add('bg-red-500/10', 'border-red-500/20', 'text-red-600');
+            }
+            alertBox.innerText = message;
+        }
+
+        function goBackToHub() {
+            window.location.href = `hub.html?tenant=${TENANT_ID}`;
+        }
+    </script>
+</body>
+</html>

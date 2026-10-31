@@ -1,231 +1,227 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>__microcakery | Limited Weekly Batch</title>
+    <title id="pageTitle">RestoSync - Artisanal Journal</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        stone: { 850: '#1c1917', 950: '#0c0a09' }
-                    },
-                    fontFamily: {
-                        serif: ['Playfair Display', 'Georgia', 'serif'],
-                        sans: ['Inter', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDKs (Compat / Modular CDN) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <!-- Google Fonts: Cormorant Garamond & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-        // Konfigurasi Firebase Anda (Ganti dengan kredensial proyek Firebase Anda)
-        const firebaseConfig = {
-            apiKey: "YOUR_FIREBASE_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Fungsi untuk mengambil Data Weekly Drop aktif dari Firestore
-        async function loadActiveDrop() {
-            try {
-                const dropsRef = collection(db, "tenants", "demo-cakery", "drops");
-                const q = query(dropsRef, where("is_active", "==", true));
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    const docData = querySnapshot.docs[0].data();
-                    
-                    // Render data ke elemen HTML
-                    document.getElementById('drop-tag').innerText = `Active Drop • ${docData.drop_id.toUpperCase()}`;
-                    document.getElementById('drop-title').innerHTML = docData.title.replace('&', '<br><span class="italic">') + '</span>';
-                    document.getElementById('drop-story').innerHTML = `<p class="first-letter:text-5xl first-letter:font-serif first-letter:mr-3 first-letter:float-left">${docData.story}</p>`;
-                    
-                    // Render Gallery Images
-                    const galleryContainer = document.getElementById('drop-gallery');
-                    galleryContainer.innerHTML = '';
-                    if (docData.gallery && docData.gallery.length > 0) {
-                        docData.gallery.forEach(img => {
-                            galleryContainer.innerHTML += `
-                                <div class="aspect-[4/5] bg-stone-200 overflow-hidden rounded-sm group">
-                                    <img src="${img.url}" alt="${img.caption}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
-                                </div>`;
-                        });
-                    }
-
-                    // Render Menu Items ke Dropdown Form
-                    const selectEl = document.getElementById('menu-item-select');
-                    selectEl.innerHTML = '';
-                    if (docData.menu_items && docData.menu_items.length > 0) {
-                        docData.menu_items.forEach((item, index) => {
-                            selectEl.innerHTML += `<option value="${item.name}" ${item.remaining_quota <= 0 ? 'disabled' : ''}>${item.name} — $${item.price_nzd.toFixed(2)} (${item.remaining_quota} slots remaining)</option>`;
-                        });
-                    }
-                } else {
-                    document.getElementById('current-drop-container').innerHTML = `<div class="py-12 text-center text-stone-500 font-serif italic text-xl">No active drop this week. Please check back soon.</div>`;
-                }
-            } catch (error) {
-                console.error("Error loading active drop from Firestore:", error);
-            }
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--theme-bg, #FAF8F5);
+            color: var(--theme-text, #2D2A26);
         }
-
-        // Jalankan saat halaman dimuat
-        window.addEventListener('DOMContentLoaded', loadActiveDrop);
-
-        // Tangani Submit Formulir Pesanan ke Firestore (RestoSync Backend)
-        window.handleRestoSyncOrder = async function(e) {
-            e.preventDefault();
-            
-            const submitBtn = document.getElementById('submit-order-btn');
-            submitBtn.innerText = "Processing Reservation...";
-            submitBtn.disabled = true;
-
-            const trackingCode = 'RS-' + Math.floor(1000 + Math.random() * 9000);
-
-            const orderData = {
-                order_id: trackingCode,
-                tenant_id: "demo-cakery",
-                item: document.getElementById('menu-item-select').value,
-                customer_name: document.getElementById('cust-name').value,
-                customer_email: document.getElementById('cust-email').value,
-                customer_phone: document.getElementById('cust-phone').value,
-                status: "PENDING",
-                created_at: serverTimestamp()
-            };
-
-            try {
-                // Simpan ke koleksi orders RestoSync di Firestore
-                await addDoc(collection(db, "tenants", "demo-cakery", "orders"), orderData);
-                
-                // Tampilkan sukses & arahkan ke halaman tracking simulasi
-                alert(`Reservasi Berhasil! Kode Pelacakan Anda: ${trackingCode}. Status pesanan dapat dipantau secara real-time.`);
-                document.getElementById('restosync-order-form').reset();
-                submitBtn.innerText = "Submit Reservation Request";
-                submitBtn.disabled = false;
-            } catch (error) {
-                console.error("Error submitting order:", error);
-                alert("Terjadi kesalahan koneksi saat memproses pesanan. Silakan coba lagi.");
-                submitBtn.innerText = "Submit Reservation Request";
-                submitBtn.disabled = false;
-            }
+        .font-serif-editorial {
+            font-family: 'Cormorant Garamond', serif;
         }
-    </script>
+    </style>
 </head>
-<body class="bg-[#FAFAF9] text-stone-800 font-sans antialiased selection:bg-stone-200">
+<body class="min-h-screen flex flex-col justify-between selection:bg-stone-200">
 
-    <!-- Header / Nav -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-[#FAFAF9]/80 backdrop-blur-md border-b border-stone-200/60">
-        <div class="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
-            <span class="font-serif italic text-xl tracking-wide">__microcakery</span>
-            <nav class="space-x-8 text-sm font-medium tracking-wider uppercase text-stone-600">
-                <a href="#current-drop" class="hover:text-stone-900 transition">Current Drop</a>
-                <a href="#archive" class="hover:text-stone-900 transition">Archive</a>
-                <a href="#order" class="text-stone-900 border-b border-stone-900 pb-0.5">Reserve</a>
-            </nav>
+    <!-- Top Navigation Bar (Wix Harmony Minimalist Style) -->
+    <header class="w-full border-b border-stone-200/60 bg-white/70 backdrop-blur-md sticky top-0 z-50 px-8 py-4 flex justify-between items-center transition-all">
+        <nav class="hidden md:flex space-x-8 text-xs tracking-widest uppercase font-medium text-stone-600">
+            <a href="#menu" class="hover:text-stone-900 transition">Menu</a>
+            <a href="#story" class="hover:text-stone-900 transition">Our Story</a>
+            <a href="#journal" class="hover:text-stone-900 transition">Journal</a>
+        </nav>
+
+        <!-- Brand Logo & Name Center -->
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.reload()">
+            <div id="logoContainer" class="w-10 h-10 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center overflow-hidden shadow-sm flex-shrink-0">
+                <img id="navLogoImg" src="" alt="Logo" class="hidden object-contain">
+                <span id="navLogoFallback" class="font-serif-editorial font-bold text-sm text-stone-800">BH</span>
+            </div>
+            <div class="text-center">
+                <h1 id="brandTitle" class="font-serif-editorial text-lg font-bold tracking-wide text-stone-900 leading-none">Bolu Halus</h1>
+                <span class="text-[9px] tracking-widest uppercase text-stone-500 font-medium">Artisanal Bakery</span>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-6 text-xs tracking-widest uppercase font-medium text-stone-600">
+            <a href="#search" class="hover:text-stone-900 transition"><i class="fa-solid fa-magnifying-glass mr-1"></i> Search</a>
+            <a href="#cart" class="hover:text-stone-900 transition"><i class="fa-solid fa-bag-shopping mr-1"></i> Cart (0)</a>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-3xl mx-auto px-6 pt-32 pb-24">
+    <!-- Hero Section (Opsi 1: The Artisanal Journal Immersive Hero) -->
+    <main class="flex-1">
+        <section id="heroSection" class="relative w-full h-[75vh] bg-stone-900 bg-cover bg-center flex items-center justify-center text-center px-6 transition-all">
+            <!-- Dark Editorial Gradient Overlay -->
+            <div class="absolute inset-0 bg-black/35 backdrop-blur-[2px]"></div>
 
-        <!-- Hero / Current Drop Story Container -->
-        <div id="current-drop-container">
-            <section id="current-drop" class="mb-20">
-                <div id="drop-tag" class="mb-6 text-xs uppercase tracking-widest text-stone-500 font-medium">
-                    Loading Active Drop...
+            <div class="relative z-10 max-w-2xl mx-auto space-y-6 text-white drop-shadow-md">
+                <span class="bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] tracking-widest uppercase font-semibold border border-white/30">
+                    Weekly Artisanal Drop
+                </span>
+                <h2 id="heroHeadline" class="font-serif-editorial text-4xl md:text-6xl font-bold tracking-tight leading-tight">
+                    The Art of Softness
+                </h2>
+                <p id="heroSubtext" class="text-xs md:text-sm text-stone-100 font-light max-w-lg mx-auto leading-relaxed opacity-95">
+                    Experience the perfect balance of airy chiffon and delicate flavor, baked fresh daily with premium traditional ingredients.
+                </p>
+                <div class="pt-2">
+                    <a href="#menu" id="heroButton" class="inline-block bg-white text-stone-900 hover:bg-stone-100 px-8 py-3.5 rounded-full text-xs font-semibold tracking-wider uppercase transition shadow-lg">
+                        Discover Our Cakes
+                    </a>
                 </div>
-                <h1 id="drop-title" class="font-serif text-4xl sm:text-5xl font-normal leading-tight tracking-tight mb-8 text-stone-900">
-                    Loading Batch Details...
-                </h1>
-                
-                <!-- Gallery Grid -->
-                <div id="drop-gallery" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                    <!-- Dynamic Gallery Images will load here -->
-                </div>
-
-                <!-- Story / Journal Text -->
-                <div id="drop-story" class="prose prose-stone text-stone-700 leading-relaxed space-y-6 font-light text-lg">
-                    <p>Memuat cerita jurnal mingguan...</p>
-                </div>
-            </section>
-        </div>
-
-        <hr class="border-stone-200 my-16">
-
-        <!-- Order & Quota Form (RestoSync Integrated) -->
-        <section id="order" class="bg-white p-8 sm:p-12 border border-stone-200 shadow-sm rounded-sm">
-            <div class="mb-8">
-                <h2 class="font-serif text-2xl text-stone-900 mb-2">Reserve Your Batch</h2>
-                <p class="text-sm text-stone-500">Pilih menu dan amankan kuota pesanan mingguan Anda secara real-time.</p>
-            </div>
-
-            <form id="restosync-order-form" onsubmit="handleRestoSyncOrder(event)" class="space-y-6">
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-600 mb-2 font-medium">Selected Item & Quota</label>
-                    <select id="menu-item-select" class="w-full bg-stone-50 border border-stone-300 p-3 rounded-sm text-sm focus:outline-none focus:border-stone-900">
-                        <option>Memuat menu...</option>
-                    </select>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs uppercase tracking-wider text-stone-600 mb-2 font-medium">Full Name</label>
-                        <input type="text" id="cust-name" required class="w-full bg-stone-50 border border-stone-300 p-3 rounded-sm text-sm focus:outline-none focus:border-stone-900" placeholder="Jane Doe">
-                    </div>
-                    <div>
-                        <label class="block text-xs uppercase tracking-wider text-stone-600 mb-2 font-medium">Email Address</label>
-                        <input type="email" id="cust-email" required class="w-full bg-stone-50 border border-stone-300 p-3 rounded-sm text-sm focus:outline-none focus:border-stone-900" placeholder="jane@example.com">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-600 mb-2 font-medium">Mobile Number (untuk konfirmasi pickup)</label>
-                    <input type="tel" id="cust-phone" required class="w-full bg-stone-50 border border-stone-300 p-3 rounded-sm text-sm focus:outline-none focus:border-stone-900" placeholder="021 123 4567">
-                </div>
-
-                <button type="submit" id="submit-order-btn" class="w-full bg-stone-900 text-white py-4 text-xs uppercase tracking-widest font-medium hover:bg-stone-800 transition">
-                    Submit Reservation Request
-                </button>
-                <p class="text-center text-xs text-stone-400 mt-4">Pesanan terhubung otomatis ke RestoSync KDS &bull; Kepatuhan Food Control Plan.</p>
-            </form>
-        </section>
-
-        <!-- Archive Section Preview -->
-        <section id="archive" class="mt-24">
-            <h3 class="font-serif text-2xl text-stone-900 mb-8">Previous Drops</h3>
-            <div class="space-y-6">
-                <a href="#" class="group flex items-center justify-between p-4 border border-stone-200 hover:border-stone-400 transition bg-white">
-                    <div>
-                        <span class="text-xs text-stone-400 uppercase tracking-widest block mb-1">Week 43 &bull; October 2026</span>
-                        <span class="font-serif text-lg text-stone-900 group-hover:text-stone-600 transition">Brown Butter Earl Grey Chiffon</span>
-                    </div>
-                    <span class="text-xs uppercase tracking-wider text-stone-500">View Archive &rarr;</span>
-                </a>
             </div>
         </section>
 
+        <!-- Bestsellers / Products Grid Section -->
+        <section id="menu" class="max-w-6xl mx-auto px-6 py-20">
+            <div class="text-center space-y-2 mb-12">
+                <h3 class="font-serif-editorial text-3xl font-bold text-stone-900">Our Bestsellers</h3>
+                <p class="text-xs text-stone-500 tracking-wide uppercase">Dibuat terbatas setiap hari demi menjaga kualitas rasa</p>
+            </div>
+
+            <!-- Grid Kartu Produk Asimetris Halus -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Produk 1 -->
+                <div class="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-sm hover:shadow-md transition group">
+                    <div class="h-60 rounded-xl overflow-hidden bg-stone-100 mb-4 relative">
+                        <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80" alt="Classic Chiffon" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-serif-editorial text-lg font-bold text-stone-900">Classic Vanilla Chiffon</h4>
+                        <p class="text-xs text-stone-500">Lembut, ringan, beraroma vanila murni.</p>
+                        <div class="flex justify-between items-center pt-3">
+                            <span class="text-xs font-semibold text-stone-900">$28.00</span>
+                            <button class="text-xs font-medium text-stone-800 bg-stone-100 hover:bg-stone-200 px-3.5 py-2 rounded-xl transition">Shop Now &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Produk 2 -->
+                <div class="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-sm hover:shadow-md transition group">
+                    <div class="h-60 rounded-xl overflow-hidden bg-stone-100 mb-4 relative">
+                        <img src="https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=600&q=80" alt="Matcha Swirl" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-serif-editorial text-lg font-bold text-stone-900">Uji Matcha Swirl</h4>
+                        <p class="text-xs text-stone-500">Khas Jepang dengan sentuhan rasa pahit manis autentik.</p>
+                        <div class="flex justify-between items-center pt-3">
+                            <span class="text-xs font-semibold text-stone-900">$32.00</span>
+                            <button class="text-xs font-medium text-stone-800 bg-stone-100 hover:bg-stone-200 px-3.5 py-2 rounded-xl transition">Shop Now &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Produk 3 -->
+                <div class="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-sm hover:shadow-md transition group">
+                    <div class="h-60 rounded-xl overflow-hidden bg-stone-100 mb-4 relative">
+                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80" alt="Mocha Nut" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-serif-editorial text-lg font-bold text-stone-900">Mocha Almond Nut</h4>
+                        <p class="text-xs text-stone-500">Perpaduan kopi mokka pilihan dan taburan badam renyah.</p>
+                        <div class="flex justify-between items-center pt-3">
+                            <span class="text-xs font-semibold text-stone-900">$30.00</span>
+                            <button class="text-xs font-medium text-stone-800 bg-stone-100 hover:bg-stone-200 px-3.5 py-2 rounded-xl transition">Shop Now &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-stone-200 py-12 text-center text-xs text-stone-500">
-        <p>&copy; 2026 Micro-Cakery. Powered by TargetedScripts &amp; RestoSync SaaS.</p>
+    <!-- Footer Minimalis -->
+    <footer class="bg-white border-t border-stone-200/80 py-10 px-8 text-xs text-stone-500">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div id="footerBrand" class="font-serif-editorial font-bold text-stone-900 text-sm">Bolu Halus Artisanal</div>
+            <div class="flex space-x-6">
+                <a href="#" class="hover:text-stone-900 transition"><i class="fa-brands fa-instagram text-sm"></i></a>
+                <a href="#" class="hover:text-stone-900 transition"><i class="fa-brands fa-facebook text-sm"></i></a>
+            </div>
+            <div>&copy; 2026 RestoSync SaaS. All rights reserved.</div>
+        </div>
     </footer>
 
+    <!-- Script Koneksi Firebase & Multi-Tenant Data Fetcher -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
+            authDomain: "restosync-saas.firebaseapp.com",
+            projectId: "restosync-saas",
+            storageBucket: "restosync-saas.firebasestorage.app",
+            messagingSenderId: "780544019719",
+            appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Ambil parameter tenant dari URL, default ke 'boluhalus' jika kosong
+        const urlParams = new URLSearchParams(window.location.search);
+        let TENANT_ID = urlParams.get('tenant') || 'boluhalus';
+        TENANT_ID = TENANT_ID.trim().toLowerCase();
+
+        // Elemen DOM
+        const brandTitle = document.getElementById('brandTitle');
+        const pageTitle = document.getElementById('pageTitle');
+        const navLogoImg = document.getElementById('navLogoImg');
+        const navLogoFallback = document.getElementById('navLogoFallback');
+        const logoContainer = document.getElementById('logoContainer');
+        const heroSection = document.getElementById('heroSection');
+        const footerBrand = document.getElementById('footerBrand');
+
+        // Muat Data Tenant dari Firestore secara Real-time / On Load
+        window.addEventListener('DOMContentLoaded', () => {
+            db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    const name = data.tenantName || 'Bolu Halus';
+                    
+                    // Update Teks Nama Brand
+                    brandTitle.innerText = name;
+                    pageTitle.innerText = `${name} - Artisanal Journal`;
+                    footerBrand.innerText = `${name} Artisanal`;
+
+                    // Update Logo & Skala Proporsional dari Admin Template Studio
+                    if (data.logoUrl) {
+                        navLogoImg.src = data.logoUrl;
+                        navLogoImg.classList.remove('hidden');
+                        navLogoFallback.classList.add('hidden');
+
+                        const scale = data.logoScale ? Number(data.logoScale) : 100;
+                        const computedSize = (scale / 100) * 36; // basis 36px di navbar
+                        navLogoImg.style.width = `${computedSize}px`;
+                        navLogoImg.style.height = `${computedSize}px`;
+                    }
+
+                    // Update Latar Belakang Hero Cover
+                    if (data.heroImage) {
+                        heroSection.style.backgroundImage = `url('${data.heroImage}')`;
+                    } else {
+                        // Default gambar estetik jika belum diset
+                        heroSection.style.backgroundImage = `url('https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=1600&q=80')`;
+                    }
+
+                    // Terapkan Palet Warna Kustom jika ada
+                    if (data.textColor) {
+                        document.documentElement.style.setProperty('--theme-text', data.textColor);
+                    }
+                    if (data.accentColor) {
+                        document.documentElement.style.setProperty('--theme-accent', data.accentColor);
+                    }
+
+                } else {
+                    console.warn(`Tenant ID '${TENANT_ID}' tidak ditemukan di database. Menggunakan data default.`);
+                }
+            }).catch((err) => {
+                console.error("Gagal memuat konfigurasi tenant:", err);
+            });
+        });
+    </script>
 </body>
 </html>

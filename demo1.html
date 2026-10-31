@@ -623,14 +623,21 @@
             customerPhone: customerPhone,
             items: cart,
             totalAmount: totalAmount,
-            status: "PENDING", // Status awal masuk KDS dapur
+            status: "PENDING", // Status awal sesuai kesepakatan KDS
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
         // Mengirim data ke sub-koleksi orders tenant di Firestore
         db.collection("tenants").doc(TENANT_ID).collection("orders").add(orderData)
           .then((docRef) => {
-              alert(`Success! Order placed with ID: ${docRef.id}. Sent to Kitchen KDS!`);
+              const orderId = docRef.id;
+              const trackingUrl = `track.html?tenant=${TENANT_ID}&orderId=${orderId}`;
+
+              // Konfirmasi sukses dengan opsi langsung membuka halaman live tracking
+              if (confirm(`Success! Order placed with ID: ${orderId}\n\nClick OK to open Live Order Tracking window.`)) {
+                  window.open(trackingUrl, '_blank');
+              }
+
               cart = []; // Kosongkan keranjang
               document.getElementById('cartCount').innerText = '0';
               document.getElementById('customerName').value = '';

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync - Visual & Template Settings</title>
+    <title>RestoSync - Visual & Template Studio</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,6 +11,7 @@
     <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <!-- Tailwind Custom Palette untuk Nuansa Pastel Hangat & Editorial -->
     <script>
@@ -19,12 +20,12 @@
                 extend: {
                     colors: {
                         editorial: {
-                            bg: '#FAF8F5',       // Krem lembut / Putih Gading
-                            card: '#FFFFFF',     // Putih bersih untuk card
-                            dark: '#2D2A26',     // Arang untuk teks utama
-                            accent: '#E6CCB2',   // Warm Peach / Pastel Brown
-                            hover: '#D5BDA0',    // Aksen hover
-                            border: '#EBE5DE'    // Garis batas lembut
+                            bg: '#FAF8F5',       
+                            card: '#FFFFFF',     
+                            dark: '#2D2A26',     
+                            accent: '#E6CCB2',   
+                            hover: '#D5BDA0',    
+                            border: '#EBE5DE'    
                         }
                     }
                 }
@@ -59,13 +60,13 @@
         <!-- Status Notifikasi -->
         <div id="alertBox" class="hidden p-4 rounded-xl text-xs font-medium border transition-all"></div>
 
-        <!-- Kartu Pengaturan Visual & Layout -->
+        <!-- Kartu Pengaturan Visual & Brand Identity -->
         <div class="bg-editorial-card border border-editorial-border rounded-2xl p-6 shadow-sm space-y-6">
             <div class="border-b border-editorial-border pb-4">
                 <h2 class="text-base font-semibold text-stone-800 flex items-center">
                     <i class="fa-solid fa-wand-magic-sparkles mr-2 text-stone-500"></i> Visual & Brand Identity
                 </h2>
-                <p class="text-xs text-stone-500 mt-1">Kelola logo, identitas nama, dan latar belakang visual untuk tata letak tenant Anda.</p>
+                <p class="text-xs text-stone-500 mt-1">Kelola nama merek, tipe template, logo, dan penyesuaian ukurannya secara presisi.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -84,36 +85,68 @@
                     </select>
                 </div>
 
-                <!-- Logo URL -->
-                <div class="space-y-1.5 md:col-span-2">
-                    <label class="text-xs font-medium text-stone-700">Logo Image URL</label>
-                    <input type="text" id="logoUrlInput" class="w-full bg-editorial-bg border border-editorial-border rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-stone-500 transition" placeholder="https://firebasestorage.googleapis.com/...">
+                <!-- Logo Section -->
+                <div class="space-y-2 md:col-span-2 p-4 bg-editorial-bg/50 border border-editorial-border rounded-xl">
+                    <label class="text-xs font-semibold text-stone-800 flex items-center justify-between">
+                        <span>Logo Image (URL / Upload Firebase)</span>
+                        <span id="uploadStatusLogo" class="text-[10px] text-stone-500"></span>
+                    </label>
+                    <div class="flex gap-3">
+                        <input type="text" id="logoUrlInput" class="flex-1 bg-editorial-card border border-editorial-border rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-stone-500 transition" placeholder="https://firebasestorage.googleapis.com/...">
+                        <label class="bg-editorial-accent hover:bg-editorial-hover text-stone-900 px-4 py-2 rounded-xl text-xs font-medium cursor-pointer transition flex items-center shadow-sm">
+                            <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Upload Logo
+                            <input type="file" id="logoFileInput" class="hidden" accept="image/*" onchange="uploadImageFile(this, 'logo')">
+                        </label>
+                    </div>
+
+                    <!-- Pengaturan Skala Persentase Ukuran Logo (+ / -) -->
+                    <div class="flex items-center justify-between pt-2 mt-2 border-t border-editorial-border">
+                        <span class="text-xs text-stone-600 font-medium">Ukuran Tampilan Logo di Website:</span>
+                        <div class="flex items-center space-x-2">
+                            <button type="button" onclick="adjustLogoScale(-10)" class="w-7 h-7 bg-editorial-card border border-editorial-border rounded-lg text-xs font-bold hover:bg-stone-100 transition">-</button>
+                            <span id="logoScaleDisplay" class="text-xs font-semibold w-12 text-center">100%</span>
+                            <button type="button" onclick="adjustLogoScale(10)" class="w-7 h-7 bg-editorial-card border border-editorial-border rounded-lg text-xs font-bold hover:bg-stone-100 transition">+</button>
+                            <button type="button" onclick="resetLogoScale()" class="text-[10px] text-stone-500 underline ml-2 hover:text-stone-800">Reset</button>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Hero / Background Image URL -->
-                <div class="space-y-1.5 md:col-span-2">
-                    <label class="text-xs font-medium text-stone-700">Hero / Background Cover URL</label>
-                    <input type="text" id="heroImageInput" class="w-full bg-editorial-bg border border-editorial-border rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-stone-500 transition" placeholder="URL gambar latar atau banner utama">
+                <!-- Hero / Background Cover URL -->
+                <div class="space-y-2 md:col-span-2 p-4 bg-editorial-bg/50 border border-editorial-border rounded-xl">
+                    <label class="text-xs font-semibold text-stone-800 flex items-center justify-between">
+                        <span>Hero / Background Cover Image</span>
+                        <span id="uploadStatusHero" class="text-[10px] text-stone-500"></span>
+                    </label>
+                    <div class="flex gap-3">
+                        <input type="text" id="heroImageInput" class="flex-1 bg-editorial-card border border-editorial-border rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-stone-500 transition" placeholder="URL gambar latar atau banner utama">
+                        <label class="bg-editorial-accent hover:bg-editorial-hover text-stone-900 px-4 py-2 rounded-xl text-xs font-medium cursor-pointer transition flex items-center shadow-sm">
+                            <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Upload Cover
+                            <input type="file" id="heroFileInput" class="hidden" accept="image/*" onchange="uploadImageFile(this, 'hero')">
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Preview Card Ringkas -->
+        <!-- Live Preview Card -->
         <div class="bg-editorial-card border border-editorial-border rounded-2xl p-6 shadow-sm space-y-4">
             <h3 class="text-xs font-semibold tracking-wider uppercase text-stone-500">Live Preview Konsep Tampilan</h3>
-            <div class="p-4 rounded-xl bg-editorial-bg border border-editorial-border flex items-center space-x-4">
-                <div class="w-12 h-12 rounded-full bg-editorial-accent flex items-center justify-center font-bold text-stone-800 text-lg shadow-inner">
-                    BH
+            <div id="heroPreviewBox" class="p-6 rounded-xl bg-editorial-bg border border-editorial-border bg-cover bg-center transition-all relative overflow-hidden flex items-center space-x-4">
+                <div class="absolute inset-0 bg-black/10 backdrop-blur-[1px]"></div>
+                <!-- Logo Preview dengan Skala Persentase -->
+                <div class="relative z-10 w-16 h-16 rounded-full bg-editorial-card border border-editorial-border flex items-center justify-center overflow-hidden shadow-md">
+                    <img id="previewLogoImg" src="" alt="Logo" class="object-contain transition-all hidden">
+                    <span id="previewLogoFallback" class="font-bold text-stone-800 text-sm">BH</span>
                 </div>
-                <div>
+                <div class="relative z-10">
                     <h4 id="previewName" class="text-sm font-bold text-stone-800">Bolu Halus</h4>
-                    <p class="text-xs text-stone-500">Template Mode: <span id="previewType" class="font-medium text-stone-700">blog</span></p>
+                    <p class="text-xs text-stone-600">Template Mode: <span id="previewType" class="font-medium">blog</span> | Scale: <span id="previewScaleText">100%</span></p>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Script Koneksi & Firestore Logic -->
+    <!-- Script Koneksi & Firestore & Storage Logic -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
@@ -126,10 +159,14 @@
 
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const storage = firebase.storage();
 
         const urlParams = new URLSearchParams(window.location.search);
         let TENANT_ID = urlParams.get('tenant');
         if (TENANT_ID) TENANT_ID = TENANT_ID.trim().toLowerCase();
+
+        // State variabel untuk skala logo
+        let currentLogoScale = 100;
 
         // Elemen DOM
         const tenantTitle = document.getElementById('tenantTitle');
@@ -139,7 +176,12 @@
         const heroImageInput = document.getElementById('heroImageInput');
         const previewName = document.getElementById('previewName');
         const previewType = document.getElementById('previewType');
+        const previewLogoImg = document.getElementById('previewLogoImg');
+        const previewLogoFallback = document.getElementById('previewLogoFallback');
+        const previewScaleText = document.getElementById('previewScaleText');
+        const heroPreviewBox = document.getElementById('heroPreviewBox');
         const alertBox = document.getElementById('alertBox');
+        const logoScaleDisplay = document.getElementById('logoScaleDisplay');
 
         // Muat Data saat Halaman Dibuka
         window.addEventListener('DOMContentLoaded', () => {
@@ -157,22 +199,115 @@
                     templateTypeInput.value = data.templateType || 'blog';
                     logoUrlInput.value = data.logoUrl || '';
                     heroImageInput.value = data.heroImage || '';
+                    currentLogoScale = data.logoScale ? Number(data.logoScale) : 100;
 
-                    previewName.innerText = data.tenantName || TENANT_ID;
-                    previewType.innerText = data.templateType || 'blog';
+                    updatePreviewUI(data.tenantName, data.templateType, data.logoUrl, data.heroImage, currentLogoScale);
                 } else {
-                    showAlert('Data tenant tidak ditemukan di database.', 'error');
+                    showAlert('Data tenant belum ada di database, silakan buat dan simpan konfigurasi.', 'success');
                 }
             }).catch((err) => {
                 showAlert(`Gagal memuat data: ${err.message}`, 'error');
             });
         });
 
-        // Update Live Preview saat diketik
+        // Update Live Preview saat diketik manual
         tenantNameInput.addEventListener('input', (e) => { previewName.innerText = e.target.value || TENANT_ID; });
         templateTypeInput.addEventListener('change', (e) => { previewType.innerText = e.target.value; });
+        logoUrlInput.addEventListener('input', (e) => { updateLogoPreviewImage(e.target.value); });
+        heroImageInput.addEventListener('input', (e) => {
+            if(e.target.value) heroPreviewBox.style.backgroundImage = `url('${e.target.value}')`;
+        });
 
-        // Fungsi Simpan ke Firestore
+        function updatePreviewUI(name, type, logo, hero, scale) {
+            previewName.innerText = name || TENANT_ID;
+            previewType.innerText = type || 'blog';
+            logoScaleDisplay.innerText = `${scale}%`;
+            previewScaleText.innerText = `${scale}%`;
+
+            if (logo) {
+                logoUrlInput.value = logo;
+                updateLogoPreviewImage(logo);
+            }
+            if (hero) {
+                heroImageInput.value = hero;
+                heroPreviewBox.style.backgroundImage = `url('${hero}')`;
+            }
+        }
+
+        function updateLogoPreviewImage(url) {
+            if (url && url.trim() !== '') {
+                previewLogoImg.src = url;
+                previewLogoImg.classList.remove('hidden');
+                previewLogoFallback.classList.add('hidden');
+                // Terapkan skala persentase ke elemen gambar pratinjau
+                previewLogoImg.style.width = `${currentLogoScale}%`;
+                previewLogoImg.style.height = `${currentLogoScale}%`;
+            } else {
+                previewLogoImg.classList.add('hidden');
+                previewLogoFallback.classList.remove('hidden');
+            }
+        }
+
+        // Pengatur Skala Persentase Logo (+ / -)
+        function adjustLogoScale(amount) {
+            currentLogoScale += amount;
+            if (currentLogoScale < 30) currentLogoScale = 30; // Batas minimal 30%
+            if (currentLogoScale > 200) currentLogoScale = 200; // Batas maksimal 200%
+            
+            logoScaleDisplay.innerText = `${currentLogoScale}%`;
+            previewScaleText.innerText = `${currentLogoScale}%`;
+            if(logoUrlInput.value) {
+                previewLogoImg.style.width = `${currentLogoScale}%`;
+                previewLogoImg.style.height = `${currentLogoScale}%`;
+            }
+        }
+
+        function resetLogoScale() {
+            currentLogoScale = 100;
+            logoScaleDisplay.innerText = `100%`;
+            previewScaleText.innerText = `100%`;
+            if(logoUrlInput.value) {
+                previewLogoImg.style.width = `100%`;
+                previewLogoImg.style.height = `100%`;
+            }
+        }
+
+        // Fungsi Upload Gambar ke Firebase Storage
+        function uploadImageFile(inputElement, targetType) {
+            const file = inputElement.files[0];
+            if (!file) return;
+
+            const statusLabel = document.getElementById(targetType === 'logo' ? 'uploadStatusLogo' : 'uploadStatusHero');
+            statusLabel.innerText = "Uploading (0%)...";
+
+            const storageRef = storage.ref(`tenants/${TENANT_ID}/${targetType}_${Date.now()}_${file.name}`);
+            const uploadTask = storageRef.put(file);
+
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    statusLabel.innerText = `Uploading (${progress}%)...`;
+                }, 
+                (error) => {
+                    statusLabel.innerText = "Gagal upload!";
+                    showAlert(`Upload error: ${error.message}`, 'error');
+                }, 
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        statusLabel.innerText = "Upload Berhasil!";
+                        if (targetType === 'logo') {
+                            logoUrlInput.value = downloadURL;
+                            updateLogoPreviewImage(downloadURL);
+                        } else {
+                            heroImageInput.value = downloadURL;
+                            heroPreviewBox.style.backgroundImage = `url('${downloadURL}')`;
+                        }
+                    });
+                }
+            );
+        }
+
+        // Fungsi Simpan ke Firestore (Menggunakan set dengan merge: true)
         function saveTemplateSettings() {
             if (!TENANT_ID) return;
 
@@ -185,12 +320,13 @@
                 templateType: templateTypeInput.value.trim(),
                 logoUrl: logoUrlInput.value.trim(),
                 heroImage: heroImageInput.value.trim(),
+                logoScale: currentLogoScale,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            db.collection("tenants").doc(TENANT_ID).update(updatedData)
+            db.collection("tenants").doc(TENANT_ID).set(updatedData, { merge: true })
                 .then(() => {
-                    showAlert('Pengaturan visual & template berhasil disimpan ke database!', 'success');
+                    showAlert('Pengaturan visual, logo, & skala berhasil disimpan ke database!', 'success');
                     saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i><span>Save Changes</span>`;
                     saveBtn.disabled = false;
                 })
@@ -203,7 +339,7 @@
 
         // Helper Alert Notification
         function showAlert(message, type) {
-            alertBox.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-400', 'bg-red-500/10', 'border-red-500/20', 'text-red-400');
+            alertBox.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-600', 'bg-red-500/10', 'border-red-500/20', 'text-red-600');
             if (type === 'success') {
                 alertBox.classList.add('bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-600');
             } else {

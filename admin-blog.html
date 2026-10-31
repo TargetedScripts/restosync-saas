@@ -1,93 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync SaaS - Blog / Micro-Cakery Admin Console</title>
+    <title>RestoSync SaaS - Post & Media Manager (Admin)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-</head>
-<body class="bg-zinc-950 text-stone-200 min-h-screen flex flex-col">
 
-    <!-- HEADER ADMIN -->
-    <header class="bg-zinc-900 border-b border-zinc-800 px-6 py-4 flex justify-between items-center">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-stone-50 min-h-screen text-stone-800">
+
+    <!-- Top Bar Admin -->
+    <header class="bg-white border-b border-stone-200 px-8 py-4 flex justify-between items-center sticky top-0 z-50">
         <div class="flex items-center space-x-3">
-            <span class="bg-amber-500 text-zinc-950 font-black px-2.5 py-1 rounded text-xs">BLOG ADMIN</span>
-            <h1 id="tenantTitle" class="font-bold text-sm text-white">Loading Tenant...</h1>
+            <span class="bg-stone-900 text-white text-xs px-2.5 py-1 rounded-md font-mono uppercase tracking-wider">RestoSync Admin</span>
+            <h1 class="font-bold text-base text-stone-900">Post, Journal & Media Manager</h1>
         </div>
-        <div class="flex items-center space-x-4 text-xs">
-            <a href="hub.html" class="text-stone-400 hover:text-white transition"><i class="fa-solid fa-arrow-left mr-1"></i> Back to Hub</a>
-            <button onclick="logout()" class="bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded text-stone-300 transition">Logout</button>
+        <div class="flex items-center space-x-4">
+            <span id="blogStatus" class="text-xs text-stone-500 italic">Siap mengelola artikel</span>
+            <button onclick="saveBlogPost()" class="bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow-sm">
+                <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Publikasikan Artikel
+            </button>
         </div>
     </header>
 
-    <!-- MAIN CONTENT CONTAINER -->
-    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full space-y-8">
-
-        <!-- SECTION 1: KONTROL MINGGUAN (WEEKLY DROP & JURNAL) -->
-        <section class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-4 mb-6">
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Sidebar Tenant & Post List -->
+        <div class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm space-y-4">
+                <h2 class="font-semibold text-sm text-stone-900 uppercase tracking-wider">Konfigurasi Tenant</h2>
                 <div>
-                    <h2 class="font-bold text-base text-white flex items-center space-x-2">
-                        <i class="fa-solid fa-pen-nib text-amber-400"></i>
-                        <span>Weekly Drop & Editorial Journal Control</span>
-                    </h2>
-                    <p class="text-xs text-stone-400 mt-0.5">Kelola cerita narasi, status drop aktif, dan galeri mingguan untuk halaman depan.</p>
+                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Tenant ID</label>
+                    <input type="text" id="tenantIdInput" value="boluhalus" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-xs font-mono text-stone-800 focus:outline-none focus:border-stone-400">
                 </div>
-                <button onclick="saveEditorialContent()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-4 py-2 rounded-xl text-xs shadow transition">
-                    <i class="fa-solid fa-floppy-disk mr-1"></i> Save Changes
+                <button onclick="loadTenantPosts()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold py-2 rounded-xl transition">
+                    Muat Daftar Post
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-stone-400 mb-1 font-semibold">Drop ID / Edisi Minggu Ini</label>
-                        <input type="text" id="dropIdInput" placeholder="e.g. 2026-w44" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+            <div class="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm space-y-3">
+                <h2 class="font-semibold text-sm text-stone-900 uppercase tracking-wider">Daftar Artikel Tersimpan</h2>
+                <div id="postListContainer" class="space-y-2 max-h-60 overflow-y-auto text-xs text-stone-600">
+                    <p class="text-stone-400 italic">Klik 'Muat Daftar Post' untuk melihat artikel.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Editor Post & Penempatan Gambar (2 Kolom) -->
+        <div class="md:col-span-2 space-y-6">
+            
+            <div class="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm space-y-4">
+                <h2 class="font-semibold text-sm text-stone-900 uppercase tracking-wider border-b border-stone-100 pb-3">Detail Artikel & Jurnal</h2>
+                
+                <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Judul Artikel (Title)</label>
+                    <input type="text" id="postTitle" placeholder="Contoh: The Philosophy Behind Our Chiffon" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-stone-400">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1.5">URL Gambar Utama (Featured Image)</label>
+                    <input type="text" id="postImage" placeholder="https://images.unsplash.com/..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-stone-400">
+                </div>
+
+                <!-- Bagian Kontrol Penempatan Gambar (Baru) -->
+                <div class="bg-stone-50 border border-stone-200/80 p-4 rounded-xl space-y-3">
+                    <label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider">Opsi Penempatan Visual (Frontend Binding)</label>
+                    
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="displayAsHero" class="w-4 h-4 accent-stone-900 rounded cursor-pointer">
+                        <label for="displayAsHero" class="text-xs text-stone-700 cursor-pointer">
+                            <strong>Jadikan Hero Background</strong> (Gunakan gambar ini sebagai latar belakang utama di halaman depan)
+                        </label>
                     </div>
-                    <div>
-                        <label class="block text-stone-400 mb-1 font-semibold">Judul Drop / Artikel</label>
-                        <input type="text" id="dropTitleInput" placeholder="e.g. Smoked Vanilla & Blackberry Rustica" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
-                    </div>
-                    <div>
-                        <label class="block text-stone-400 mb-1 font-semibold">Status Drop</label>
-                        <select id="dropActiveSelect" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
-                            <option value="true">Active (Tampil di Website Utama)</option>
-                            <option value="false">Archived / Selesai</option>
-                        </select>
+
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="displayAsSlider" class="w-4 h-4 accent-stone-900 rounded cursor-pointer">
+                        <label for="displayAsSlider" class="text-xs text-stone-700 cursor-pointer">
+                            <strong>Masukkan ke Slider Banner Atas</strong> (Tampilkan dalam rotasi gambar bagian atas)
+                        </label>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-stone-400 mb-1 font-semibold">Cerita Jurnal / Catatan Pembuat (Story)</label>
-                    <textarea id="dropStoryInput" rows="7" placeholder="Tulis cerita narasi di balik pembuatan kue minggu ini..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-white focus:outline-none focus:border-amber-500 leading-relaxed"></textarea>
+                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Isi Artikel / Ringkasan Cerita</label>
+                    <textarea id="postContent" rows="6" placeholder="Tulis cerita atau deskripsi jurnal di sini..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-stone-400 leading-relaxed"></textarea>
                 </div>
             </div>
-        </section>
 
-        <!-- SECTION 2: PEMANTAUAN PESANAN MASUK (KDS / INCOMING ORDERS) -->
-        <section class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl">
-            <div class="border-b border-zinc-800 pb-4 mb-6">
-                <h2 class="font-bold text-base text-white flex items-center space-x-2">
-                    <i class="fa-solid fa-list-check text-amber-400"></i>
-                    <span>Live Reservation Orders (KDS Integration)</span>
-                </h2>
-                <p class="text-xs text-stone-400 mt-0.5">Daftar reservasi kue dari pelanggan yang masuk secara real-time.</p>
-            </div>
-
-            <div id="ordersContainer" class="space-y-3 text-xs">
-                <p class="text-stone-500 font-mono italic">Memuat data pesanan...</p>
-            </div>
-        </section>
-
+        </div>
     </main>
 
-    <!-- FIREBASE & ADMIN LOGIC SCRIPT -->
+    <!-- Script Firebase & Logic Blog Editor -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
@@ -101,90 +115,77 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const TENANT_ID = urlParams.get('tenant') || 'BoluHalus';
+        function loadTenantPosts() {
+            const tenantId = document.getElementById('tenantIdInput').value.trim().toLowerCase();
+            if (!tenantId) return alert('Masukkan Tenant ID terlebih dahulu!');
 
-        document.getElementById('tenantTitle').innerText = `Admin Panel • Tenant: ${TENANT_ID}`;
+            const container = document.getElementById('postListContainer');
+            container.innerHTML = '<p class="text-stone-400 italic">Memuat data...</p>';
 
-        // Load data tenant & drops saat halaman dimuat
-        window.addEventListener('DOMContentLoaded', () => {
-            loadTenantEditorialData();
-            loadTenantOrders();
-        });
+            db.collection("tenants").doc(tenantId).collection("posts").orderBy("createdAt", "desc").get().then((snapshot) => {
+                container.innerHTML = '';
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-stone-400 italic">Belum ada artikel.</p>';
+                    return;
+                }
 
-        function loadTenantEditorialData() {
-            db.collection("tenants").doc(TENANT_ID).collection("drops").where("is_active", "==", true).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        const doc = querySnapshot.docs[0];
-                        const data = doc.data();
-                        
-                        document.getElementById('dropIdInput').value = data.drop_id || '';
-                        document.getElementById('dropTitleInput').value = data.title || '';
-                        document.getElementById('dropStoryInput').value = data.story || '';
-                        document.getElementById('dropActiveSelect').value = data.is_active ? "true" : "false";
-                    }
-                })
-                .catch(err => console.error("Error loading drops:", err));
+                snapshot.forEach((doc) => {
+                    const post = doc.data();
+                    const item = document.createElement('div');
+                    item.className = "p-3 bg-stone-50 border border-stone-200 rounded-xl cursor-pointer hover:bg-stone-100 transition";
+                    item.innerHTML = `<p class="font-semibold text-stone-900">${post.title || 'Tanpa Judul'}</p>`;
+                    item.onclick = () => {
+                        document.getElementById('postTitle').value = post.title || '';
+                        document.getElementById('postImage').value = post.imageUrl || '';
+                        document.getElementById('postContent').value = post.content || '';
+                        document.getElementById('displayAsHero').checked = !!post.displayAsHero;
+                        document.getElementById('displayAsSlider').checked = !!post.displayAsSlider;
+                    };
+                    container.appendChild(item);
+                });
+            }).catch(err => {
+                console.error(err);
+                container.innerHTML = '<p class="text-red-500">Gagal memuat post.</p>';
+            });
         }
 
-        function saveEditorialContent() {
-            const dropId = document.getElementById('dropIdInput').value;
-            const title = document.getElementById('dropTitleInput').value;
-            const story = document.getElementById('dropStoryInput').value;
-            const isActive = document.getElementById('dropActiveSelect').value === "true";
+        function saveBlogPost() {
+            const tenantId = document.getElementById('tenantIdInput').value.trim().toLowerCase();
+            if (!tenantId) return alert('Tenant ID wajib diisi!');
+
+            const title = document.getElementById('postTitle').value.trim();
+            if (!title) return alert('Judul artikel wajib diisi!');
 
             const payload = {
-                drop_id: dropId,
                 title: title,
-                story: story,
-                is_active: isActive,
-                updated_at: firebase.firestore.FieldValue.serverTimestamp()
+                imageUrl: document.getElementById('postImage').value,
+                displayAsHero: document.getElementById('displayAsHero').checked,
+                displayAsSlider: document.getElementById('displayAsSlider').checked,
+                content: document.getElementById('postContent').value,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            db.collection("tenants").doc(TENANT_ID).collection("drops").doc(dropId).set(payload, { merge: true })
-                .then(() => {
-                    alert("Konten editorial mingguan berhasil diperbarui!");
-                })
-                .catch(error => {
-                    alert("Gagal menyimpan: " + error.message);
-                });
+            const docId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            document.getElementById('blogStatus').innerText = "Menyimpan artikel...";
+
+            db.collection("tenants").doc(tenantId).collection("posts").doc(docId).set(payload, { merge: true }).then(() => {
+                document.getElementById('blogStatus').innerText = "Artikel berhasil dipublikasikan!";
+                document.getElementById('blogStatus').className = "text-xs text-emerald-600 font-semibold";
+                loadTenantPosts();
+                setTimeout(() => {
+                    document.getElementById('blogStatus').innerText = "Siap mengelola artikel";
+                    document.getElementById('blogStatus').className = "text-xs text-stone-500 italic";
+                }, 3000);
+            }).catch(err => {
+                console.error(err);
+                alert('Gagal menyimpan artikel.');
+                document.getElementById('blogStatus').innerText = "Gagal menyimpan";
+            });
         }
 
-        function loadTenantOrders() {
-            db.collection("tenants").doc(TENANT_ID).collection("orders")
-                .orderBy("created_at", "desc")
-                .onSnapshot((snapshot) => {
-                    const container = document.getElementById('ordersContainer');
-                    if (snapshot.empty) {
-                        container.innerHTML = `<p class="text-stone-500 font-mono italic">Belum ada pesanan masuk.</p>`;
-                        return;
-                    }
-
-                    let html = `<div class="divide-y divide-zinc-800">`;
-                    snapshot.forEach((doc) => {
-                        const order = doc.data();
-                        html += `
-                            py-3 flex justify-between items-center">
-                                <div>
-                                    <span class="font-bold text-white">${order.customer_name}</span> (${order.customer_phone})<br>
-                                    <span class="text-stone-400">Item: <strong class="text-amber-400">${order.item}</strong></span>
-                                </div>
-                                <div class="text-right">
-                                    <span class="px-2 py-1 bg-amber-500/10 text-amber-400 rounded font-mono font-bold">${order.status}</span>
-                                    <span class="block text-[10px] text-stone-500 mt-1">${order.order_id || doc.id}</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    html += `</div>`;
-                    container.innerHTML = html;
-                });
-        }
-
-        function logout() {
-            window.location.href = `hub.html?tenant=${TENANT_ID}`;
-        }
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTenantPosts();
+        });
     </script>
 </body>
 </html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestoSync SaaS - Live Order Tracking</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #090d16; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+
+    <div class="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl space-y-6 text-center">
+        
+        <div class="w-16 h-16 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-inner">
+            <i class="fa-solid fa-receipt"></i>
+        </div>
+
+        <div>
+            <h1 class="text-xl font-black text-white">Live Order Tracking</h1>
+            <p id="tenantTitle" class="text-xs text-stone-400 mt-1">Tenant ID: Loading...</p>
+        </div>
+
+        <!-- Status Badge Box -->
+        <div class="bg-zinc-950 p-5 rounded-2xl border border-zinc-800 space-y-3">
+            <span class="text-[11px] uppercase tracking-wider text-stone-500 font-bold block">Current Order Status</span>
+            <div id="statusBadge" class="inline-block px-4 py-1.5 rounded-full text-xs font-black tracking-wide bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse">
+                CONNECTING...
+            </div>
+            <p id="statusDescription" class="text-xs text-stone-400">Fetching latest update from kitchen...</p>
+        </div>
+
+        <!-- Order Summary Details -->
+        <div class="text-left space-y-3 bg-zinc-950 p-4 rounded-2xl border border-zinc-800 text-xs">
+            <div class="flex justify-between border-b border-zinc-800 pb-2">
+                <span class="text-stone-400">Order ID:</span>
+                <span id="displayOrderId" class="font-mono text-amber-400">--</span>
+            </div>
+            <div class="flex justify-between border-b border-zinc-800 pb-2">
+                <span class="text-stone-400">Customer Name:</span>
+                <span id="displayName" class="font-bold text-stone-200">--</span>
+            </div>
+            <div>
+                <span class="text-stone-400 block mb-1">Ordered Items:</span>
+                <div id="displayItems" class="space-y-1 font-mono text-stone-300">Loading items...</div>
+            </div>
+            <div class="flex justify-between pt-2 border-t border-zinc-800 font-bold text-sm text-amber-400">
+                <span>Total Amount:</span>
+                <span id="displayTotal" class="font-mono">$0.00</span>
+            </div>
+        </div>
+
+        <a href="javascript:window.close();" class="block w-full bg-zinc-800 hover:bg-zinc-700 text-stone-300 py-3 rounded-xl font-bold text-xs transition">
+            Close Tracking Window
+        </a>
+
+    </div>
+
+    <!-- FIREBASE SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
+            authDomain: "restosync-saas.firebaseapp.com",
+            projectId: "restosync-saas",
+            storageBucket: "restosync-saas.firebasestorage.app",
+            messagingSenderId: "780544019719",
+            appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const tenantId = urlParams.get('tenant') || 'bangkokthaipalmy';
+        const orderId = urlParams.get('orderId');
+
+        document.getElementById('tenantTitle').innerText = `Store: ${tenantId.toUpperCase()}`;
+        document.getElementById('displayOrderId').innerText = orderId || 'None';
+
+        if (!orderId) {
+            alert("No Order ID provided for tracking!");
+        } else {
+            // Real-time listener untuk memantau status pesanan dari Firestore
+            db.collection("tenants").doc(tenantId).collection("orders").doc(orderId)
+              .onSnapshot((doc) => {
+                  if (doc.exists) {
+                      const data = doc.data();
+                      document.getElementById('displayName').innerText = data.customerName || 'Guest';
+                      document.getElementById('displayTotal').innerText = `$${Number(data.totalAmount || 0).toFixed(2)}`;
+
+                      // Render items
+                      const itemsList = data.items || [];
+                      document.getElementById('displayItems').innerHTML = itemsList.map(i => `
+                          <div class="flex justify-between">
+                              <span>${i.qty}x ${i.name}</span>
+                              <span class="text-amber-400">$${(i.price * i.qty).toFixed(2)}</span>
+                          </div>
+                      `).join('');
+
+                      // Update Status Badge & Description
+                      const status = data.status || 'NEW';
+                      const badge = document.getElementById('statusBadge');
+                      const desc = document.getElementById('statusDescription');
+
+                      if (status === 'NEW') {
+                          badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-black tracking-wide bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse";
+                          badge.innerText = "ORDER RECEIVED (NEW)";
+                          desc.innerText = "Your order has been sent to the kitchen queue.";
+                      } else if (status === 'COOKING') {
+                          badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-black tracking-wide bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 animate-pulse";
+                          badge.innerText = "COOKING IN PROGRESS";
+                          desc.innerText = "Our chef is actively preparing your delicious food!";
+                      } else if (status === 'READY') {
+                          badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-black tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                          badge.innerText = "READY TO SERVE / PICKUP";
+                          desc.innerText = "Your order is ready! Please collect or await service.";
+                      } else {
+                          badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-black tracking-wide bg-zinc-800 text-stone-300 border border-zinc-700";
+                          badge.innerText = status;
+                          desc.innerText = "Order status updated.";
+                      }
+
+                  } else {
+                      document.getElementById('statusBadge').innerText = "ORDER NOT FOUND";
+                      document.getElementById('statusDescription').innerText = "Please check your order link.";
+                  }
+              }, (err) => {
+                  console.error("Tracking sync error:", err);
+              });
+        }
+    </script>
+</body>
+</html>

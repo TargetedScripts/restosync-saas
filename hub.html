@@ -39,9 +39,12 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Ambil parameter tenant dari URL, misal: hub.html?tenant=BoluHalus
+        // Ambil parameter tenant dari URL dan ubah menjadi huruf kecil (lowercase) secara otomatis
         const urlParams = new URLSearchParams(window.location.search);
-        const TENANT_ID = urlParams.get('tenant');
+        let TENANT_ID = urlParams.get('tenant');
+        if (TENANT_ID) {
+            TENANT_ID = TENANT_ID.trim().toLowerCase();
+        }
 
         const statusText = document.getElementById('statusText');
 

@@ -159,12 +159,12 @@
                     <input type="text" id="inputJsAssetUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-cyan-300 font-mono" placeholder="assets/js/tenant-id.js">
                 </div>
                 
-                <!-- TAMBAHAN: PILIHAN FORMAT LAYOUT WEBSITE (TEMPLATE TYPE) -->
+                <!-- TEMPLATE LAYOUT DROPDOWN (SHOP & BLOG) -->
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400">Template Layout (templateType)</label>
                     <select id="inputTemplateType" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-amber-300 font-mono">
-                        <option value="standard-grid">standard-grid (Restoran / Cafe / Grid Standar)</option>
-                        <option value="micro-cakery-blog">micro-cakery-blog (Toko Kue / Jurnal / Blog Editorial)</option>
+                        <option value="shop">Shop (Model Toko / Restoran Standar)</option>
+                        <option value="blog">Blog (Model Micro-Cakery / Jurnal / Editorial)</option>
                     </select>
                 </div>
 
@@ -501,7 +501,6 @@
                     if (!firstTenant) firstTenant = tid;
                     const opt = document.createElement('option');
                     opt.value = tid;
-                    // Ditambahkan info template layout ringkas pada dropdown daftar tenant jika ada
                     const dData = doc.data();
                     const tLayout = dData.profile && dData.profile.templateType ? ` [${dData.profile.templateType}]` : '';
                     opt.innerText = tid.toUpperCase() + tLayout;
@@ -530,14 +529,13 @@
             document.getElementById('inputTenantId').disabled = true;
 
             db.collection("tenants").doc(tenantId).get().then((doc) => {
-                // Reset input fields
                 document.getElementById('inputStoreName').value = '';
                 document.getElementById('inputClientName').value = '';
                 document.getElementById('inputClientPhone').value = '';
                 document.getElementById('inputClientEmail').value = '';
                 document.getElementById('inputAdminPassword').value = 'admin';
                 document.getElementById('inputJsAssetUrl').value = '';
-                document.getElementById('inputTemplateType').value = 'standard-grid'; // Default
+                document.getElementById('inputTemplateType').value = 'shop'; // Default ke shop
                 document.getElementById('inputLogoUrl').value = '';
                 document.getElementById('inputHeroImage1').value = '';
                 document.getElementById('inputHeroImage2').value = '';
@@ -561,7 +559,7 @@
                     document.getElementById('inputClientEmail').value = profile.email || '';
                     document.getElementById('inputAdminPassword').value = profile.adminPassword || 'admin';
                     document.getElementById('inputJsAssetUrl').value = profile.jsAssetUrl || `assets/js/${tenantId}.js`;
-                    document.getElementById('inputTemplateType').value = profile.templateType || 'standard-grid';
+                    document.getElementById('inputTemplateType').value = profile.templateType || 'shop';
                     document.getElementById('inputLogoUrl').value = profile.logoUrl || '';
                     document.getElementById('inputHeroImage1').value = profile.heroImage1 || '';
                     document.getElementById('inputHeroImage2').value = profile.heroImage2 || '';
@@ -608,7 +606,7 @@
             document.getElementById('inputClientEmail').value = '';
             document.getElementById('inputAdminPassword').value = 'admin';
             document.getElementById('inputJsAssetUrl').value = '';
-            document.getElementById('inputTemplateType').value = 'standard-grid';
+            document.getElementById('inputTemplateType').value = 'shop'; // Default ke shop
             document.getElementById('inputLogoUrl').value = '';
             document.getElementById('inputHeroImage1').value = '';
             document.getElementById('inputHeroImage2').value = '';
@@ -621,7 +619,6 @@
             
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
 
-            // Auto-naming JS path listener
             tenantIdInput.oninput = function() {
                 const currentSlug = this.value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');
                 document.getElementById('inputJsAssetUrl').value = currentSlug ? `assets/js/${currentSlug}.js` : '';
@@ -695,7 +692,7 @@
                 email: document.getElementById('inputClientEmail').value,
                 adminPassword: document.getElementById('inputAdminPassword').value || 'admin',
                 jsAssetUrl: document.getElementById('inputJsAssetUrl').value,
-                templateType: document.getElementById('inputTemplateType').value, // Disimpan ke Firestore
+                templateType: document.getElementById('inputTemplateType').value, // Menyimpan nilai 'shop' atau 'blog'
                 logoUrl: document.getElementById('inputLogoUrl').value,
                 heroImage1: document.getElementById('inputHeroImage1').value,
                 heroImage2: document.getElementById('inputHeroImage2').value,

@@ -26,7 +26,6 @@
     </div>
 
     <script>
-        // Konfigurasi Firebase Anda (Sesuai dengan sistem pusat RestoSync)
         const firebaseConfig = {
             apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
             authDomain: "restosync-saas.firebaseapp.com",
@@ -39,7 +38,6 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Ambil parameter tenant dari URL dan ubah menjadi huruf kecil (lowercase) secara otomatis
         const urlParams = new URLSearchParams(window.location.search);
         let TENANT_ID = urlParams.get('tenant');
         if (TENANT_ID) {
@@ -53,21 +51,18 @@
         } else {
             statusText.innerText = `Memeriksa profil tenant [${TENANT_ID}]...`;
 
-            // Ambil data tenant dari Firestore
             db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    const templateType = data.templateType || 'standard-grid';
+                    const templateType = (data.templateType || 'shop').toLowerCase();
 
                     statusText.innerText = `Layout terdeteksi: ${templateType}. Mengalihkan...`;
 
-                    // Routing otomatis berdasarkan templateType
                     setTimeout(() => {
-                        if (templateType.includes('micro-cakery-blog') || templateType.includes('blog')) {
-                            // Arahkan ke panel admin khusus blog/jurnal
+                        // Jika tipenya 'blog' atau mengandung kata cakery/blog, arahkan ke admin-blog.html
+                        if (templateType === 'blog' || templateType.includes('cakery') || templateType.includes('blog')) {
                             window.location.href = `admin-blog.html?tenant=${TENANT_ID}`;
                         } else {
-                            // Arahkan ke panel admin standar toko/restoran
                             window.location.href = `admin.html?tenant=${TENANT_ID}`;
                         }
                     }, 800);

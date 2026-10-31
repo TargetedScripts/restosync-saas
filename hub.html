@@ -26,6 +26,7 @@
     </div>
 
     <script>
+        // Konfigurasi Firebase Pusat RestoSync SaaS
         const firebaseConfig = {
             apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
             authDomain: "restosync-saas.firebaseapp.com",
@@ -38,6 +39,7 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // Ambil parameter tenant dari URL dan ubah menjadi huruf kecil (lowercase)
         const urlParams = new URLSearchParams(window.location.search);
         let TENANT_ID = urlParams.get('tenant');
         if (TENANT_ID) {
@@ -51,6 +53,7 @@
         } else {
             statusText.innerText = `Memeriksa profil tenant [${TENANT_ID}]...`;
 
+            // Ambil data dari koleksi Firestore 'tenants'
             db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
@@ -59,18 +62,13 @@
                     statusText.innerText = `Layout terdeteksi: ${templateType}. Mengalihkan...`;
 
                     setTimeout(() => {
-                        // Jika tipenya 'blog' atau mengandung kata cakery/blog, arahkan ke admin-blog.html
-//                        if (templateType === 'blog' || templateType.includes('cakery') || templateType.includes('blog')) {
-//                            window.location.href = `admin-blog.html?tenant=${TENANT_ID}`;
-//                        } else {
-//                            window.location.href = `admin.html?tenant=${TENANT_ID}`;
-//                        }
-                        if (templateType === 'shop') {
+                        // Jika tipenya mengandung kata 'shop', arahkan ke admin.html
+                        // Selain itu (seperti 'blog'), arahkan ke admin-blog.html
+                        if (templateType.includes('shop')) {
                             window.location.href = `admin.html?tenant=${TENANT_ID}`;
                         } else {
                             window.location.href = `admin-blog.html?tenant=${TENANT_ID}`;
                         }
-
                     }, 800);
 
                 } else {

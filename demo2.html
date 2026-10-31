@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>__microcakery | Limited Weekly Batch</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        stone: { 850: '#1c1917', 950: '#0c0a09' }
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'Georgia', 'serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs (Compat / Modular CDN) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Konfigurasi Firebase Anda (Ganti dengan kredensial proyek Firebase Anda)
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Fungsi untuk mengambil Data Weekly Drop aktif dari Firestore
+        async function loadActiveDrop() {
+            try {
+                const dropsRef = collection(db, "tenants", "demo-cakery", "drops");
+                const q = query(dropsRef, where("is_active", "==", true));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    const docData = querySnapshot.docs[0].data();
+                    
+                    // Render data ke elemen HTML
+                    document.getElementById('drop-tag').innerText = `Active Drop • ${docData.drop_id.toUpperCase()}`;
+                    document.getElementById('drop-title').innerHTML = docData.title.replace('&', '<br><span class="italic">') + '</span>';
+                    document.getElementById('drop-story').innerHTML = `<p class="first-letter:text-5xl first-letter:font-serif first-letter:mr-3 first-letter:float-left">${docData.story}</p>`;
+                    
+                    // Render Gallery Images
+                    const galleryContainer = document.getElementById('drop-gallery');
+                    galleryContainer.innerHTML = '';
+                    if (docData.gallery && docData.gallery.length > 0) {
+                        docData.gallery.forEach(img => {
+                            galleryContainer.innerHTML += `
+                                <div class="aspect-[4/5] bg-stone-200 overflow-hidden rounded-sm group">
+                                    <img src="${img.url}" alt="${img.caption}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                                </div>`;
+                        });
+                    }
+
+                    // Render Menu Items ke Dropdown Form
+                    const selectEl = document.getElementById('menu-item-select');
+                    selectEl.innerHTML = '';
+                    if (docData.menu_items && docData.menu_items.length > 0) {
+                        docData.menu_items.forEach((item, index) => {
+                            selectEl.innerHTML += `<option value="${item.name}" ${item.remaining_quota <= 0 ? 'disabled' : ''}>${item.name} — $${item.price_nzd.toFixed(2)} (${item.remaining_quota} slots remaining)</option>`;
+                        });
+                    }
+                } else {
+                    document.getElementById('current-drop-container').innerHTML = `<div class="py-12 text-center text-stone-500 font-serif italic text-xl">No active drop this week. Please check back soon.</div>`;
+                }
+            } catch (error) {
+                console.error("Error loading active drop from Firestore:", error);
+            }
+        }
+
+        // Jalankan saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', loadActiveDrop);
+
+        // Tangani Submit Formulir Pesanan ke Firestore (RestoSync Backend)
+        window.handleRestoSyncOrder = async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-order-btn');
+            submitBtn.innerText = "Processing Reservation...";
+            submitBtn.disabled = true;
+
+            const trackingCode = 'RS-' + Math.floor(1000 + Math.random() * 9000);
+
+            const orderData = {
+                order_id: trackingCode,
+                tenant_id: "demo-cakery",
+                item: document.getElementById('menu-item-select').value,
+                customer_name: document.getElementById('cust-name').value,
+                customer_email: document.getElementById('cust-email').value,
+                customer_phone: document.getElementById('cust-phone').value,
+                status: "PENDING",
+                created_at: serverTimestamp()
+            };
+
+            try {
+                // Simpan ke koleksi orders RestoSync di Firestore
+                await addDoc(collection(db, "tenants", "demo-cakery", "orders"), orderData);
+                
+                // Tampilkan sukses & arahkan ke halaman tracking simulasi
+                alert(`Reservasi Berhasil! Kode Pelacakan Anda: ${trackingCode}. Status pesanan dapat dipantau secara real-time.`);
+                document.getElementById('restosync-order-form').reset();
+                submitBtn.innerText = "Submit Reservation Request";
+                submitBtn.disabled = false;
+            } catch (error) {
+                console.error("Error submitting order:", error);
+                alert("Terjadi kesalahan koneksi saat memproses pesanan. Silakan coba lagi.");
+                submitBtn.innerText = "Submit Reservation Request";
+                submitBtn.disabled = false;
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#FAFAF9] text-stone-800 font-sans antialiased selection:bg-stone-200">
+
+    <!-- Header / Nav -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-[#FAFAF9]/80 backdrop-blur-md border-b border-stone-200/60">
+        <div class="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
+            <span class="font-serif italic text-xl tracking-wide">__microcakery</span>
+            <nav class="space-x-8 text-sm font-medium tracking-wider uppercase text-stone-600">
+                <a href="#current-drop" class="hover:text-stone-900 transition">Current Drop</a>
+                <a href="#archive" class="hover:text-stone-900 transition">Archive</a>
+                <a href="#order" class="text-stone-900 border-b border-stone-900 pb-0.5">Reserve</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto px-6 pt-32 pb-24">
+
+        <!-- Hero / Current Drop Story Container -->
+        <div id="current-drop-container">
+            <section id="current-drop" class="mb-20">
+                <div id="drop-tag" class="mb-6 text-xs uppercase tracking-widest text-stone-500 font-medium">
+                    Loading Active Drop...
+                </div>
+                <h1 id="drop-title" class="font-serif text-4xl sm:text-5xl font-normal leading-tight tracking-tight mb-8 text-stone-900">
+                    Loading Batch Details...
+                </h1>
+                
+                <!-- Gallery Grid -->
+                <div id="drop-gallery" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                    <!-- Dynamic Gallery Images will load here -->
+                </div>
+
+                <!-- Story / Journal Text -->
+                <div id="drop-story" class="prose prose-stone text-stone-700 leading-relaxed space-y-6 font-light text-lg">
+                    <p>Memuat cerita jurnal mingguan...</p>
+                </div>
+            </section>
+        </div>
+
+        <hr class="border-stone-200 my-16">
+
+        <!-- Order & Quota Form (RestoSync Integrated) -->
+        <section id="order" class="bg-white p-8 sm:p-12 border border-stone-200 shadow-sm rounded-sm">
+            <div class="mb-8">
+                <h2 class="font-serif text-2xl text-stone-900 mb-2">Reserve Your Batch</h2>
+                <p class="text-sm text-stone-500">Pilih menu dan amankan kuota pesanan mingguan Anda secara real-time.</p>
+            </div>
+
+            <form id="restosync-order-form" onsubmit="handleRestoSyncOrder(event)" class="space-y-6">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-600 mb-2 font-medium">Selected Item & Quota</label>
+                    <select id="menu-item-select" class="w-full bg-stone-50 border border-stone-300 p-3 rounded-sm text-sm focus:outline-none focus:border-stone-900">
+                        <option>Memuat menu...</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-600 mb-2 font-medium">Full Name</label>
+                        <input type="text" id="cust-name" required class="w-full bg-stone-50 border border-stone-300 p-3 rounded-sm text-sm focus:outline-none focus:border-stone-900" placeholder="Jane Doe">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-600 mb-2 font-medium">Email Address</label>
+                        <input type="email" id="cust-email" required class="w-full bg-stone-50 border border-stone-300 p-3 rounded-sm text-sm focus:outline-none focus:border-stone-900" placeholder="jane@example.com">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-600 mb-2 font-medium">Mobile Number (untuk konfirmasi pickup)</label>
+                    <input type="tel" id="cust-phone" required class="w-full bg-stone-50 border border-stone-300 p-3 rounded-sm text-sm focus:outline-none focus:border-stone-900" placeholder="021 123 4567">
+                </div>
+
+                <button type="submit" id="submit-order-btn" class="w-full bg-stone-900 text-white py-4 text-xs uppercase tracking-widest font-medium hover:bg-stone-800 transition">
+                    Submit Reservation Request
+                </button>
+                <p class="text-center text-xs text-stone-400 mt-4">Pesanan terhubung otomatis ke RestoSync KDS &bull; Kepatuhan Food Control Plan.</p>
+            </form>
+        </section>
+
+        <!-- Archive Section Preview -->
+        <section id="archive" class="mt-24">
+            <h3 class="font-serif text-2xl text-stone-900 mb-8">Previous Drops</h3>
+            <div class="space-y-6">
+                <a href="#" class="group flex items-center justify-between p-4 border border-stone-200 hover:border-stone-400 transition bg-white">
+                    <div>
+                        <span class="text-xs text-stone-400 uppercase tracking-widest block mb-1">Week 43 &bull; October 2026</span>
+                        <span class="font-serif text-lg text-stone-900 group-hover:text-stone-600 transition">Brown Butter Earl Grey Chiffon</span>
+                    </div>
+                    <span class="text-xs uppercase tracking-wider text-stone-500">View Archive &rarr;</span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-stone-200 py-12 text-center text-xs text-stone-500">
+        <p>&copy; 2026 Micro-Cakery. Powered by TargetedScripts &amp; RestoSync SaaS.</p>
+    </footer>
+
+</body>
+</html>

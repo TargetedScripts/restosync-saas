@@ -537,19 +537,45 @@
     });
 }
 
-        function prepareNewTenant() {
+function prepareNewTenant() {
     isNewTenantMode = true;
     document.getElementById('modeIndicator').innerText = "Mode: Creating New Tenant Entry";
-    document.getElementById('inputTenantId').value = "";
-    document.getElementById('inputTenantId').disabled = false;
     
-    // ... (reset field lainnya) ...
+    // 1. Reset Dropdown Selector agar tidak terpaku pada tenant lama
+    const select = document.getElementById('tenantSelect');
+    select.value = "";
 
-    // Listener otomatis saat admin mengetik Tenant ID / Slug baru
+    // 2. Aktifkan dan kosongkan Input Tenant ID / Slug
     const tenantIdInput = document.getElementById('inputTenantId');
+    tenantIdInput.value = "";
+    tenantIdInput.disabled = false;
+    tenantIdInput.focus();
+
+    // 3. Kosongkan SEMUA field profil dan tautan repositori secara menyeluruh
+    document.getElementById('inputStoreName').value = '';
+    document.getElementById('inputClientName').value = '';
+    document.getElementById('inputClientPhone').value = '';
+    document.getElementById('inputClientEmail').value = '';
+    document.getElementById('inputAdminPassword').value = 'admin';
+    document.getElementById('inputJsAssetUrl').value = '';
+    document.getElementById('inputLogoUrl').value = '';
+    document.getElementById('inputHeroImage1').value = '';
+    document.getElementById('inputHeroImage2').value = '';
+    document.getElementById('inputHeroImage3').value = '';
+    document.getElementById('inputStoreAddress').value = '';
+    document.getElementById('inputContractNo').value = '';
+    document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
+    document.getElementById('inputExpiryDate').value = '';
+    
+    // 4. Reset Viewer JSON
+    document.getElementById('rawFirestoreViewer').innerText = "New Tenant Draft Mode (Ready for entry. Type Tenant ID above.)";
+    
+    // 5. Centang semua hak akses & modul secara default untuk tenant baru
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+
+    // 6. Pasang kembali event listener auto-naming untuk JS Asset Path
     tenantIdInput.oninput = function() {
         const currentSlug = this.value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');
-        // Otomatis isi path JS asset mengikuti slug yang diketik
         document.getElementById('inputJsAssetUrl').value = currentSlug ? `assets/js/${currentSlug}.js` : '';
     };
 

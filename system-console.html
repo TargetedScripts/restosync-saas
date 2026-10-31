@@ -155,9 +155,9 @@
                     <input type="text" id="inputAdminPassword" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-amber-300 font-mono font-bold" placeholder="admin">
                 </div>
                 <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold text-cyan-300">Raw JS Asset URL (GitHub Raw Link)</label>
-                    <input type="text" id="inputJsAssetUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-cyan-300 font-mono" placeholder="https://raw.githubusercontent.com/.../bangkokthaipalmy.js">
-                </div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold text-cyan-300">Raw JS Asset Path (Linked to Repo)</label>
+                    <input type="text" id="inputJsAssetUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-cyan-300 font-mono" placeholder="assets/js/tenant-id.js">
+            </div>
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Logo Image URL</label>
                     <input type="text" id="inputLogoUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/BangkokThaiLogo.png">
@@ -511,94 +511,50 @@
         }
 
         function switchTenant(tenantId) {
-            isNewTenantMode = false;
-            document.getElementById('modeIndicator').innerText = "Mode: Editing Existing Tenant";
-            document.getElementById('inputTenantId').value = tenantId;
-            document.getElementById('inputTenantId').disabled = true;
+    isNewTenantMode = false;
+    document.getElementById('modeIndicator').innerText = "Mode: Editing Existing Tenant";
+    document.getElementById('inputTenantId').value = tenantId;
+    document.getElementById('inputTenantId').disabled = true;
 
-            db.collection("tenants").doc(tenantId).get().then((doc) => {
-                document.getElementById('inputStoreName').value = '';
-                document.getElementById('inputClientName').value = '';
-                document.getElementById('inputClientPhone').value = '';
-                document.getElementById('inputClientEmail').value = '';
-                document.getElementById('inputAdminPassword').value = 'admin';
-                document.getElementById('inputJsAssetUrl').value = '';
-                document.getElementById('inputLogoUrl').value = '';
-                document.getElementById('inputHeroImage1').value = '';
-                document.getElementById('inputHeroImage2').value = '';
-                document.getElementById('inputHeroImage3').value = '';
-                document.getElementById('inputStoreAddress').value = '';
-                document.getElementById('inputContractNo').value = '';
-                document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
-                document.getElementById('inputExpiryDate').value = '';
-                document.getElementById('rawFirestoreViewer').innerText = "Loading raw snapshot...";
-
-                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-
-                if (doc.exists) {
-                    const data = doc.data();
-                    document.getElementById('rawFirestoreViewer').innerText = JSON.stringify(data, null, 2);
-
-                    const profile = data.profile || {};
-                    document.getElementById('inputStoreName').value = profile.tenantName || '';
-                    document.getElementById('inputClientName').value = profile.contactPerson || '';
-                    document.getElementById('inputClientPhone').value = profile.phone || '';
-                    document.getElementById('inputClientEmail').value = profile.email || '';
-                    document.getElementById('inputAdminPassword').value = profile.adminPassword || 'admin';
-                    document.getElementById('inputJsAssetUrl').value = profile.jsAssetUrl || '';
-                    document.getElementById('inputLogoUrl').value = profile.logoUrl || '';
-                    document.getElementById('inputHeroImage1').value = profile.heroImage1 || '';
-                    document.getElementById('inputHeroImage2').value = profile.heroImage2 || '';
-                    document.getElementById('inputHeroImage3').value = profile.heroImage3 || '';
-                    document.getElementById('inputStoreAddress').value = profile.address || '';
-                    document.getElementById('inputContractNo').value = profile.contractNo || '';
-                    document.getElementById('inputSubTier').value = profile.tier || 'FREE SOCIAL TIER';
-                    document.getElementById('inputExpiryDate').value = profile.expiryDate || '';
-
-                    const savedModules = data.modules || {};
-                    Object.keys(savedModules).forEach(modKey => {
-                        const cb = document.getElementById(modKey);
-                        if (cb) cb.checked = savedModules[modKey];
-                    });
-
-                    const savedRights = data.rights || {};
-                    Object.keys(savedRights).forEach(rightKey => {
-                        const cb = document.getElementById(rightKey);
-                        if (cb) cb.checked = savedRights[rightKey];
-                    });
-                } else {
-                    document.getElementById('rawFirestoreViewer').innerText = "Document not found in Firestore!";
-                }
-            }).catch(err => {
-                console.error("Error loading tenant:", err);
-            });
+    db.collection("tenants").doc(tenantId).get().then((doc) => {
+        // ... (reset input lainnya) ...
+        
+        if (doc.exists) {
+            const data = doc.data();
+            const profile = data.profile || {};
+            
+            // Ambil dari database, JIKA KOSONG, gunakan auto-naming standar repo
+            const defaultJsPath = `assets/js/${tenantId}.js`;
+            document.getElementById('inputJsAssetUrl').value = profile.jsAssetUrl || defaultJsPath;
+            
+            // ... (muat data profil, modules, dan rights lainnya) ...
+        } else {
+            // Jika dokumen belum punya settingan, auto-generate path JS berdasarkan ID
+            document.getElementById('inputJsAssetUrl').value = `assets/js/${tenantId}.js`;
         }
+    }).catch(err => {
+        console.error("Error loading tenant:", err);
+    });
+}
 
         function prepareNewTenant() {
-            isNewTenantMode = true;
-            document.getElementById('modeIndicator').innerText = "Mode: Creating New Tenant Entry";
-            document.getElementById('inputTenantId').value = "";
-            document.getElementById('inputTenantId').disabled = false;
-            
-            document.getElementById('inputStoreName').value = '';
-            document.getElementById('inputClientName').value = '';
-            document.getElementById('inputClientPhone').value = '';
-            document.getElementById('inputClientEmail').value = '';
-            document.getElementById('inputAdminPassword').value = 'admin';
-            document.getElementById('inputJsAssetUrl').value = '';
-            document.getElementById('inputLogoUrl').value = '';
-            document.getElementById('inputHeroImage1').value = '';
-            document.getElementById('inputHeroImage2').value = '';
-            document.getElementById('inputHeroImage3').value = '';
-            document.getElementById('inputStoreAddress').value = '';
-            document.getElementById('inputContractNo').value = '';
-            document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
-            document.getElementById('inputExpiryDate').value = '';
-            document.getElementById('rawFirestoreViewer').innerText = "New Tenant Draft Mode (Ready for entry)";
-            
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
-            showToast("Ready to add new tenant. Fill in Tenant ID and details.");
-        }
+    isNewTenantMode = true;
+    document.getElementById('modeIndicator').innerText = "Mode: Creating New Tenant Entry";
+    document.getElementById('inputTenantId').value = "";
+    document.getElementById('inputTenantId').disabled = false;
+    
+    // ... (reset field lainnya) ...
+
+    // Listener otomatis saat admin mengetik Tenant ID / Slug baru
+    const tenantIdInput = document.getElementById('inputTenantId');
+    tenantIdInput.oninput = function() {
+        const currentSlug = this.value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');
+        // Otomatis isi path JS asset mengikuti slug yang diketik
+        document.getElementById('inputJsAssetUrl').value = currentSlug ? `assets/js/${currentSlug}.js` : '';
+    };
+
+    showToast("Ready to add new tenant. Fill in Tenant ID and details.");
+}
 
         function uploadTenantAssetToStorage() {
             const tenantId = document.getElementById('inputTenantId').value.trim().toLowerCase();

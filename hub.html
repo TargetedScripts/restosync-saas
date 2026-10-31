@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RestoSync SaaS - Central Hub Router</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
@@ -26,7 +23,6 @@
     </div>
 
     <script>
-        // Konfigurasi Firebase Pusat RestoSync SaaS
         const firebaseConfig = {
             apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
             authDomain: "restosync-saas.firebaseapp.com",
@@ -39,7 +35,6 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Ambil parameter tenant dari URL dan ubah menjadi huruf kecil (lowercase)
         const urlParams = new URLSearchParams(window.location.search);
         let TENANT_ID = urlParams.get('tenant');
         if (TENANT_ID) {
@@ -53,23 +48,24 @@
         } else {
             statusText.innerText = `Memeriksa profil tenant [${TENANT_ID}]...`;
 
-            // Ambil data dari koleksi Firestore 'tenants'
             db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    const templateType = (data.templateType || 'shop').toLowerCase();
+                    
+                    // Ambil nilai asli dari Firestore
+                    const templateType = data.templateType ? data.templateType.trim().toLowerCase() : 'kosong';
 
-                    statusText.innerText = `Layout terdeteksi: ${templateType}. Mengalihkan...`;
+                    // Tampilkan nilai aslinya di layar untuk memastikan
+                    statusText.innerText = `Layout database terdeteksi: [${templateType}]. Mengalihkan...`;
 
                     setTimeout(() => {
-                        // Jika tipenya mengandung kata 'shop', arahkan ke admin.html
-                        // Selain itu (seperti 'blog'), arahkan ke admin-blog.html
-                        if (templateType.includes('shop')) {
+                        // Jika nilainya 'shop', ke admin.html. Selain itu ke admin-blog.html
+                        if (templateType === 'shop') {
                             window.location.href = `admin.html?tenant=${TENANT_ID}`;
                         } else {
                             window.location.href = `admin-blog.html?tenant=${TENANT_ID}`;
                         }
-                    }, 800);
+                    }, 1500);
 
                 } else {
                     statusText.innerHTML = `<span class="text-red-400">Tenant [${TENANT_ID}] tidak terdaftar di database.</span>`;

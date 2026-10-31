@@ -105,26 +105,30 @@
                       `).join('');
 
                       // Update Status Badge & Description
-                      const status = data.status || 'NEW';
+                      const status = data.status || 'PENDING';
                       const badge = document.getElementById('statusBadge');
                       const desc = document.getElementById('statusDescription');
 
-                      if (status === 'NEW') {
+                      if (status === 'PENDING') {
                           badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-black tracking-wide bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse";
-                          badge.innerText = "ORDER RECEIVED (NEW)";
-                          desc.innerText = "Your order has been sent to the kitchen queue.";
-                      } else if (status === 'COOKING') {
+                          badge.innerText = "PENDING (RECEIVED)";
+                          desc.innerText = "Your order has been sent and is awaiting kitchen confirmation.";
+                      } else if (status === 'PREPARING') {
                           badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-black tracking-wide bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 animate-pulse";
-                          badge.innerText = "COOKING IN PROGRESS";
-                          desc.innerText = "Our chef is actively preparing your delicious food!";
+                          badge.innerText = "PREPARING";
+                          desc.innerText = "Our chef is actively preparing your food in the kitchen!";
                       } else if (status === 'READY') {
                           badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-black tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-                          badge.innerText = "READY TO SERVE / PICKUP";
+                          badge.innerText = "READY TO SERVE";
                           desc.innerText = "Your order is ready! Please collect or await service.";
+                      } else if (status === 'COMPLETED') {
+                          badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-black tracking-wide bg-zinc-800 text-stone-300 border border-zinc-700";
+                          badge.innerText = "COMPLETED";
+                          desc.innerText = "This order has been completed. Thank you for dining with us!";
                       } else {
                           badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-black tracking-wide bg-zinc-800 text-stone-300 border border-zinc-700";
                           badge.innerText = status;
-                          desc.innerText = "Order status updated.";
+                          desc.innerText = "Order status has been updated.";
                       }
 
                   } else {

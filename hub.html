@@ -60,11 +60,17 @@
 
                     setTimeout(() => {
                         // Jika tipenya 'blog' atau mengandung kata cakery/blog, arahkan ke admin-blog.html
-                        if (templateType === 'blog' || templateType.includes('cakery') || templateType.includes('blog')) {
-                            window.location.href = `admin-blog.html?tenant=${TENANT_ID}`;
-                        } else {
+//                        if (templateType === 'blog' || templateType.includes('cakery') || templateType.includes('blog')) {
+//                            window.location.href = `admin-blog.html?tenant=${TENANT_ID}`;
+//                        } else {
+//                            window.location.href = `admin.html?tenant=${TENANT_ID}`;
+//                        }
+                        if (templateType === 'shop') {
                             window.location.href = `admin.html?tenant=${TENANT_ID}`;
+                        } else {
+                            window.location.href = `admin-blog.html?tenant=${TENANT_ID}`;
                         }
+
                     }, 800);
 
                 } else {

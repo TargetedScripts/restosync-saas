@@ -83,7 +83,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">Tenant ID / Slug (Unique)</label>
-                    <input type="text" id="inputTenantId" class="custom-input rounded-xl px-4 py-2 text-xs font-mono w-56 text-amber-300 font-bold" placeholder="e.g. bangkokthaipalmy">
+                    <input type="text" id="inputTenantId" class="custom-input rounded-xl px-4 py-2 text-xs font-mono w-56 text-amber-300 font-bold" placeholder="e.g. boluhalus">
                 </div>
             </div>
             <div class="text-right">
@@ -157,7 +157,17 @@
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold text-cyan-300">Raw JS Asset Path (Linked to Repo)</label>
                     <input type="text" id="inputJsAssetUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-cyan-300 font-mono" placeholder="assets/js/tenant-id.js">
-            </div>
+                </div>
+                
+                <!-- TAMBAHAN: PILIHAN FORMAT LAYOUT WEBSITE (TEMPLATE TYPE) -->
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400">Template Layout (templateType)</label>
+                    <select id="inputTemplateType" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-amber-300 font-mono">
+                        <option value="standard-grid">standard-grid (Restoran / Cafe / Grid Standar)</option>
+                        <option value="micro-cakery-blog">micro-cakery-blog (Toko Kue / Jurnal / Blog Editorial)</option>
+                    </select>
+                </div>
+
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold">Logo Image URL</label>
                     <input type="text" id="inputLogoUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/BangkokThaiLogo.png">
@@ -491,7 +501,10 @@
                     if (!firstTenant) firstTenant = tid;
                     const opt = document.createElement('option');
                     opt.value = tid;
-                    opt.innerText = tid.toUpperCase();
+                    // Ditambahkan info template layout ringkas pada dropdown daftar tenant jika ada
+                    const dData = doc.data();
+                    const tLayout = dData.profile && dData.profile.templateType ? ` [${dData.profile.templateType}]` : '';
+                    opt.innerText = tid.toUpperCase() + tLayout;
                     select.appendChild(opt);
                 });
                 if (defaultSelect && document.querySelector(`#tenantSelect option[value="${defaultSelect}"]`)) {
@@ -511,76 +524,111 @@
         }
 
         function switchTenant(tenantId) {
-    isNewTenantMode = false;
-    document.getElementById('modeIndicator').innerText = "Mode: Editing Existing Tenant";
-    document.getElementById('inputTenantId').value = tenantId;
-    document.getElementById('inputTenantId').disabled = true;
+            isNewTenantMode = false;
+            document.getElementById('modeIndicator').innerText = "Mode: Editing Existing Tenant";
+            document.getElementById('inputTenantId').value = tenantId;
+            document.getElementById('inputTenantId').disabled = true;
 
-    db.collection("tenants").doc(tenantId).get().then((doc) => {
-        // ... (reset input lainnya) ...
-        
-        if (doc.exists) {
-            const data = doc.data();
-            const profile = data.profile || {};
-            
-            // Ambil dari database, JIKA KOSONG, gunakan auto-naming standar repo
-            const defaultJsPath = `assets/js/${tenantId}.js`;
-            document.getElementById('inputJsAssetUrl').value = profile.jsAssetUrl || defaultJsPath;
-            
-            // ... (muat data profil, modules, dan rights lainnya) ...
-        } else {
-            // Jika dokumen belum punya settingan, auto-generate path JS berdasarkan ID
-            document.getElementById('inputJsAssetUrl').value = `assets/js/${tenantId}.js`;
+            db.collection("tenants").doc(tenantId).get().then((doc) => {
+                // Reset input fields
+                document.getElementById('inputStoreName').value = '';
+                document.getElementById('inputClientName').value = '';
+                document.getElementById('inputClientPhone').value = '';
+                document.getElementById('inputClientEmail').value = '';
+                document.getElementById('inputAdminPassword').value = 'admin';
+                document.getElementById('inputJsAssetUrl').value = '';
+                document.getElementById('inputTemplateType').value = 'standard-grid'; // Default
+                document.getElementById('inputLogoUrl').value = '';
+                document.getElementById('inputHeroImage1').value = '';
+                document.getElementById('inputHeroImage2').value = '';
+                document.getElementById('inputHeroImage3').value = '';
+                document.getElementById('inputStoreAddress').value = '';
+                document.getElementById('inputContractNo').value = '';
+                document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
+                document.getElementById('inputExpiryDate').value = '';
+                document.getElementById('rawFirestoreViewer').innerText = "Loading raw snapshot...";
+
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('rawFirestoreViewer').innerText = JSON.stringify(data, null, 2);
+
+                    const profile = data.profile || {};
+                    document.getElementById('inputStoreName').value = profile.tenantName || '';
+                    document.getElementById('inputClientName').value = profile.contactPerson || '';
+                    document.getElementById('inputClientPhone').value = profile.phone || '';
+                    document.getElementById('inputClientEmail').value = profile.email || '';
+                    document.getElementById('inputAdminPassword').value = profile.adminPassword || 'admin';
+                    document.getElementById('inputJsAssetUrl').value = profile.jsAssetUrl || `assets/js/${tenantId}.js`;
+                    document.getElementById('inputTemplateType').value = profile.templateType || 'standard-grid';
+                    document.getElementById('inputLogoUrl').value = profile.logoUrl || '';
+                    document.getElementById('inputHeroImage1').value = profile.heroImage1 || '';
+                    document.getElementById('inputHeroImage2').value = profile.heroImage2 || '';
+                    document.getElementById('inputHeroImage3').value = profile.heroImage3 || '';
+                    document.getElementById('inputStoreAddress').value = profile.address || '';
+                    document.getElementById('inputContractNo').value = profile.contractNo || '';
+                    document.getElementById('inputSubTier').value = profile.tier || 'FREE SOCIAL TIER';
+                    document.getElementById('inputExpiryDate').value = profile.expiryDate || '';
+
+                    const savedModules = data.modules || {};
+                    Object.keys(savedModules).forEach(modKey => {
+                        const cb = document.getElementById(modKey);
+                        if (cb) cb.checked = savedModules[modKey];
+                    });
+
+                    const savedRights = data.rights || {};
+                    Object.keys(savedRights).forEach(rightKey => {
+                        const cb = document.getElementById(rightKey);
+                        if (cb) cb.checked = savedRights[rightKey];
+                    });
+                } else {
+                    document.getElementById('rawFirestoreViewer').innerText = "Document not found in Firestore!";
+                }
+            }).catch(err => {
+                console.error("Error loading tenant:", err);
+            });
         }
-    }).catch(err => {
-        console.error("Error loading tenant:", err);
-    });
-}
 
-function prepareNewTenant() {
-    isNewTenantMode = true;
-    document.getElementById('modeIndicator').innerText = "Mode: Creating New Tenant Entry";
-    
-    // 1. Reset Dropdown Selector agar tidak terpaku pada tenant lama
-    const select = document.getElementById('tenantSelect');
-    select.value = "";
+        function prepareNewTenant() {
+            isNewTenantMode = true;
+            document.getElementById('modeIndicator').innerText = "Mode: Creating New Tenant Entry";
+            
+            const select = document.getElementById('tenantSelect');
+            select.value = "";
 
-    // 2. Aktifkan dan kosongkan Input Tenant ID / Slug
-    const tenantIdInput = document.getElementById('inputTenantId');
-    tenantIdInput.value = "";
-    tenantIdInput.disabled = false;
-    tenantIdInput.focus();
+            const tenantIdInput = document.getElementById('inputTenantId');
+            tenantIdInput.value = "";
+            tenantIdInput.disabled = false;
+            tenantIdInput.focus();
+            
+            document.getElementById('inputStoreName').value = '';
+            document.getElementById('inputClientName').value = '';
+            document.getElementById('inputClientPhone').value = '';
+            document.getElementById('inputClientEmail').value = '';
+            document.getElementById('inputAdminPassword').value = 'admin';
+            document.getElementById('inputJsAssetUrl').value = '';
+            document.getElementById('inputTemplateType').value = 'standard-grid';
+            document.getElementById('inputLogoUrl').value = '';
+            document.getElementById('inputHeroImage1').value = '';
+            document.getElementById('inputHeroImage2').value = '';
+            document.getElementById('inputHeroImage3').value = '';
+            document.getElementById('inputStoreAddress').value = '';
+            document.getElementById('inputContractNo').value = '';
+            document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
+            document.getElementById('inputExpiryDate').value = '';
+            document.getElementById('rawFirestoreViewer').innerText = "New Tenant Draft Mode (Ready for entry. Type Tenant ID above.)";
+            
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
 
-    // 3. Kosongkan SEMUA field profil dan tautan repositori secara menyeluruh
-    document.getElementById('inputStoreName').value = '';
-    document.getElementById('inputClientName').value = '';
-    document.getElementById('inputClientPhone').value = '';
-    document.getElementById('inputClientEmail').value = '';
-    document.getElementById('inputAdminPassword').value = 'admin';
-    document.getElementById('inputJsAssetUrl').value = '';
-    document.getElementById('inputLogoUrl').value = '';
-    document.getElementById('inputHeroImage1').value = '';
-    document.getElementById('inputHeroImage2').value = '';
-    document.getElementById('inputHeroImage3').value = '';
-    document.getElementById('inputStoreAddress').value = '';
-    document.getElementById('inputContractNo').value = '';
-    document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
-    document.getElementById('inputExpiryDate').value = '';
-    
-    // 4. Reset Viewer JSON
-    document.getElementById('rawFirestoreViewer').innerText = "New Tenant Draft Mode (Ready for entry. Type Tenant ID above.)";
-    
-    // 5. Centang semua hak akses & modul secara default untuk tenant baru
-    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            // Auto-naming JS path listener
+            tenantIdInput.oninput = function() {
+                const currentSlug = this.value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');
+                document.getElementById('inputJsAssetUrl').value = currentSlug ? `assets/js/${currentSlug}.js` : '';
+            };
 
-    // 6. Pasang kembali event listener auto-naming untuk JS Asset Path
-    tenantIdInput.oninput = function() {
-        const currentSlug = this.value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');
-        document.getElementById('inputJsAssetUrl').value = currentSlug ? `assets/js/${currentSlug}.js` : '';
-    };
-
-    showToast("Ready to add new tenant. Fill in Tenant ID and details.");
-}
+            showToast("Ready to add new tenant. Fill in Tenant ID and details.");
+        }
 
         function uploadTenantAssetToStorage() {
             const tenantId = document.getElementById('inputTenantId').value.trim().toLowerCase();
@@ -647,6 +695,7 @@ function prepareNewTenant() {
                 email: document.getElementById('inputClientEmail').value,
                 adminPassword: document.getElementById('inputAdminPassword').value || 'admin',
                 jsAssetUrl: document.getElementById('inputJsAssetUrl').value,
+                templateType: document.getElementById('inputTemplateType').value, // Disimpan ke Firestore
                 logoUrl: document.getElementById('inputLogoUrl').value,
                 heroImage1: document.getElementById('inputHeroImage1').value,
                 heroImage2: document.getElementById('inputHeroImage2').value,

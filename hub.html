@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync SaaS - Tenant Comparison Debugger</title>
+    <title>RestoSync SaaS - Central Hub Router</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -11,15 +11,14 @@
 </head>
 <body class="bg-zinc-950 text-stone-200 flex items-center justify-center min-h-screen p-4">
 
-    <div id="mainContainer" class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-2xl max-w-4xl w-full text-center space-y-4">
-        <div class="inline-block p-3 bg-amber-500/10 text-amber-400 rounded-full text-2xl mb-1">
-            <i class="fa-solid fa-table-columns"></i>
+    <div class="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl shadow-2xl max-w-md w-full text-center space-y-4">
+        <div class="inline-block p-3 bg-amber-500/10 text-amber-400 rounded-full text-2xl mb-2">
+            <i class="fa-solid fa-route"></i>
         </div>
-        <h1 id="pageTitle" class="font-bold text-lg text-white">Tenant Field Comparison Dashboard</h1>
-        <p id="statusText" class="text-xs text-stone-400">Memuat data perbandingan dari Firestore...</p>
-        
-        <div id="progressWrapper" class="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-            <div id="progressBar" class="bg-amber-500 h-full w-2/3 animate-pulse"></div>
+        <h1 class="font-bold text-lg text-white">Routing Tenant Dashboard</h1>
+        <p id="statusText" class="text-xs text-stone-400">Mendeteksi konfigurasi layout tenant...</p>
+        <div class="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+            <div id="progressBar" class="bg-amber-500 h-full w-1/3 animate-pulse"></div>
         </div>
     </div>
 
@@ -36,30 +35,45 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // Tangkap parameter tenant dan normalisasikan ke huruf kecil
         const urlParams = new URLSearchParams(window.location.search);
-        const SPECIFIC_TENANT = urlParams.get('tenant');
+        let TENANT_ID = urlParams.get('tenant');
+        
         const statusText = document.getElementById('statusText');
 
-        if (SPECIFIC_TENANT) {
-            // Ubah ke lowercase agar selalu cocok dengan Document ID di Firestore yang huruf kecil semua
-            let TENANT_ID = SPECIFIC_TENANT.trim().toLowerCase();
+        if (!TENANT_ID) {
+            statusText.innerHTML = `<span class="text-red-400">Error: Parameter tenant tidak ditemukan di URL. (Contoh: hub.html?tenant=boluhalus)</span>`;
+        } else {
+            TENANT_ID = TENANT_ID.trim().toLowerCase();
             statusText.innerText = `Memeriksa profil tenant [${TENANT_ID}]...`;
 
             db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    const templateType = data.templateType ? String(data.templateType).trim().toLowerCase() : '';
+                    
+                    // Cari field templateType secara fleksibel (mengatasi masalah beda huruf besar/kecil atau spasi)
+                    let rawType = "";
+                    for (let key in data) {
+                        if (key.trim().toLowerCase() === "templatetype") {
+                            rawType = data[key];
+                            break;
+                        }
+                    }
 
+                    const templateType = rawType ? String(rawType).trim().toLowerCase() : '';
+
+                    // Tampilkan informasi diagnostik visual langsung di layar
                     statusText.innerHTML = `
                         <div style="font-family: monospace; font-size: 11px; text-align: left; background: #18181b; padding: 12px; border-radius: 8px; border: 1px solid #27272a; color: #f4f4f5;">
                             <p style="margin-bottom: 4px;"><span style="color: #a1a1aa;">Tenant ID:</span> <b>${TENANT_ID}</b></p>
-                            <p style="margin-bottom: 4px;"><span style="color: #a1a1aa;">TemplateType DB:</span> <b style="color: #fbbf24;">"${templateType}"</b></p>
+                            <p style="margin-bottom: 4px;"><span style="color: #a1a1aa;">TemplateType DB:</span> <b style="color: #fbbf24;">"${templateType || 'KOSONG'}"</b></p>
                             <p style="color: ${templateType === 'shop' ? '#34d399' : '#f87171'}; margin: 0;">
                                 <b>Arah:</b> ${templateType === 'shop' ? 'admin.html (Shop)' : 'admin-template.html (Blog/Lainnya)'}
                             </p>
                         </div>
                     `;
 
+                    // Jeda 3 detik agar Anda sempat melihat status di layar sebelum dialihkan
                     setTimeout(() => {
                         if (templateType === 'shop') {
                             window.location.href = `admin.html?tenant=${TENANT_ID}`;
@@ -72,71 +86,7 @@
                     statusText.innerHTML = `<span class="text-red-400">Tenant [${TENANT_ID}] tidak terdaftar di database.</span>`;
                 }
             }).catch((error) => {
-                statusText.innerHTML = `<span class="text-red-400">Error: ${error.message}</span>`;
-            });
-
-        } else {
-            Promise.all([
-                db.collection("tenants").doc("boluhalus").get(),
-                db.collection("tenants").doc("bangkokthaipalmy").get()
-            ]).then(([docBolu, docBangkok]) => {
-                const dataBolu = docBolu.exists ? docBolu.data() : {};
-                const dataBangkok = docBangkok.exists ? docBangkok.data() : {};
-
-                const allKeys = Array.from(new Set([
-                    ...Object.keys(dataBolu),
-                    ...Object.keys(dataBangkok)
-                ])).sort();
-
-                let tableRows = '';
-                allKeys.forEach(key => {
-                    let valBolu = dataBolu[key] !== undefined ? JSON.stringify(dataBolu[key], null, 2) : '<span class="text-zinc-600 italic">tidak ada field</span>';
-                    let valBangkok = dataBangkok[key] !== undefined ? JSON.stringify(dataBangkok[key], null, 2) : '<span class="text-zinc-600 italic">tidak ada field</span>';
-                    
-                    let isDiff = JSON.stringify(dataBolu[key]) !== JSON.stringify(dataBangkok[key]);
-                    let rowBg = isDiff ? 'bg-amber-500/5 border-amber-500/20' : 'border-zinc-800';
-
-                    tableRows += `
-                        <tr class="border-b ${rowBg}">
-                            <td class="p-2.5 font-mono text-amber-400 font-bold text-left text-xs align-top">${key}</td>
-                            <td class="p-2.5 font-mono text-stone-300 text-left text-xs align-top bg-zinc-950/40 whitespace-pre-wrap break-all">${valBolu}</td>
-                            <td class="p-2.5 font-mono text-stone-300 text-left text-xs align-top bg-zinc-950/40 whitespace-pre-wrap break-all">${valBangkok}</td>
-                        </tr>
-                    `;
-                });
-
-                document.getElementById('progressWrapper').style.display = 'none';
-                statusText.innerHTML = `
-                    <div class="space-y-4">
-                        <p class="text-xs text-stone-400 text-left">Perbandingan seluruh field dokumen <code class="text-amber-400">boluhalus</code> vs <code class="text-amber-400">bangkokthaipalmy</code>:</p>
-                        
-                        <div class="overflow-x-auto max-h-[60vh] border border-zinc-800 rounded-xl">
-                            <table class="w-full border-collapse">
-                                <thead class="bg-zinc-950 sticky top-0 border-b border-zinc-800 text-stone-300 text-xs">
-                                    <tr>
-                                        <th class="p-2.5 text-left w-1/4">Field Name</th>
-                                        <th class="p-2.5 text-left w-3/8 text-amber-400">boluhalus</th>
-                                        <th class="p-2.5 text-left w-3/8 text-blue-400">bangkokthaipalmy</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${tableRows}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="flex flex-wrap gap-3 justify-center pt-2">
-                            <a href="hub.html?tenant=boluhalus" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-semibold transition">
-                                Test Hub: boluhalus
-                            </a>
-                            <a href="hub.html?tenant=bangkokthaipalmy" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold transition">
-                                Test Hub: bangkokthaipalmy
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }).catch(error => {
-                statusText.innerHTML = `<span class="text-red-400">Gagal mengambil data perbandingan: ${error.message}</span>`;
+                statusText.innerHTML = `<span class="text-red-400">Koneksi database gagal: ${error.message}</span>`;
             });
         }
     </script>

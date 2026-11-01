@@ -11,7 +11,6 @@
 </head>
 <body class="bg-zinc-950 text-stone-200 flex items-center justify-center min-h-screen p-4">
 
-    <!-- Container diperlebar agar tabel perbandingan muat -->
     <div id="mainContainer" class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-2xl max-w-4xl w-full text-center space-y-4">
         <div class="inline-block p-3 bg-amber-500/10 text-amber-400 rounded-full text-2xl mb-1">
             <i class="fa-solid fa-table-columns"></i>
@@ -41,9 +40,9 @@
         const SPECIFIC_TENANT = urlParams.get('tenant');
         const statusText = document.getElementById('statusText');
 
-        // Jika user mengakses dengan membawa parameter tenant (misal: hub.html?tenant=boluhalus), jalankan normal router
         if (SPECIFIC_TENANT) {
-            let TENANT_ID = SPECIFIC_TENANT.trim();
+            // Ubah ke lowercase agar selalu cocok dengan Document ID di Firestore yang huruf kecil semua
+            let TENANT_ID = SPECIFIC_TENANT.trim().toLowerCase();
             statusText.innerText = `Memeriksa profil tenant [${TENANT_ID}]...`;
 
             db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
@@ -77,7 +76,6 @@
             });
 
         } else {
-            // Jika diakses tanpa parameter (hanya hub.html), tampilkan TABEL PERBANDINGAN BERSEBELAHAN
             Promise.all([
                 db.collection("tenants").doc("boluhalus").get(),
                 db.collection("tenants").doc("bangkokthaipalmy").get()
@@ -85,7 +83,6 @@
                 const dataBolu = docBolu.exists ? docBolu.data() : {};
                 const dataBangkok = docBangkok.exists ? docBangkok.data() : {};
 
-                // Gabungkan seluruh kunci/field unik dari kedua dokumen
                 const allKeys = Array.from(new Set([
                     ...Object.keys(dataBolu),
                     ...Object.keys(dataBangkok)
@@ -96,7 +93,6 @@
                     let valBolu = dataBolu[key] !== undefined ? JSON.stringify(dataBolu[key], null, 2) : '<span class="text-zinc-600 italic">tidak ada field</span>';
                     let valBangkok = dataBangkok[key] !== undefined ? JSON.stringify(dataBangkok[key], null, 2) : '<span class="text-zinc-600 italic">tidak ada field</span>';
                     
-                    // Highlight baris jika nilainya berbeda
                     let isDiff = JSON.stringify(dataBolu[key]) !== JSON.stringify(dataBangkok[key]);
                     let rowBg = isDiff ? 'bg-amber-500/5 border-amber-500/20' : 'border-zinc-800';
 
@@ -109,11 +105,10 @@
                     `;
                 });
 
-                // Render tabel ke dalam halaman
                 document.getElementById('progressWrapper').style.display = 'none';
                 statusText.innerHTML = `
                     <div class="space-y-4">
-                        <p class="text-xs text-stone-400 text-left">Menampilkan perbandingan seluruh field dokumen <code class="text-amber-400">boluhalus</code> vs <code class="text-amber-400">bangkokthaipalmy</code> di Firestore:</p>
+                        <p class="text-xs text-stone-400 text-left">Perbandingan seluruh field dokumen <code class="text-amber-400">boluhalus</code> vs <code class="text-amber-400">bangkokthaipalmy</code>:</p>
                         
                         <div class="overflow-x-auto max-h-[60vh] border border-zinc-800 rounded-xl">
                             <table class="w-full border-collapse">

@@ -52,14 +52,17 @@
                 if (doc.exists) {
                     const data = doc.data();
                     
-                    // Ambil nilai asli dari Firestore
-                    const templateType = data.templateType ? data.templateType.trim().toLowerCase() : 'kosong';
+                    // Debugging untuk memastikan data terbaca dengan benar di console
+                    console.log("Data Tenant Firestore:", data);
+                    console.log("Nilai templateType:", data.templateType);
 
-                    // Tampilkan nilai aslinya di layar untuk memastikan
+                    // Ambil nilai dan pastikan dikonversi menjadi string bersih huruf kecil
+                    const templateType = data.templateType ? String(data.templateType).trim().toLowerCase() : 'kosong';
+
                     statusText.innerText = `Layout database terdeteksi: [${templateType}]. Mengalihkan...`;
 
                     setTimeout(() => {
-                        // Jika nilainya 'shop', ke admin.html. Selain itu ke admin-blog.html
+                        // Jika nilainya 'shop', ke admin.html. Selain itu ke admin-template.html
                         if (templateType === 'shop') {
                             window.location.href = `admin.html?tenant=${TENANT_ID}`;
                         } else {

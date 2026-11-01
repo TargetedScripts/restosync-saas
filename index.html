@@ -6,7 +6,7 @@
     <title>RestoSync - Smart F&B Management SaaS | TargetedScripts.com</title>
     <!-- Global Configuration -->
     <script src="assets/js/config.js"></script>
-    <!-- FontAwesome Icons for Admin Lock Icon -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Blue Theme & Inverted Logo Styling -->
     <style>
@@ -14,28 +14,25 @@
         header, footer { background-color: #1e293b; border-color: #334155; border-style: solid; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
         header { border-bottom-width: 1px; }
         footer { border-top-width: 1px; text-align: center; font-size: 0.75rem; color: #94a3b8; justify-content: center; flex-direction: column; gap: 0.5rem; }
-        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); max-width: 62rem; width: 100%; margin: auto; text-align: center; }
-        .grid-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .menu-btn { background-color: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; text-decoration: none; color: white; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
-        .menu-btn:hover { border-color: #f59e0b; background-color: #1e293b; }
-        .badge { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; font-size: 0.75rem; font-weight: bold; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); max-width: 68rem; width: 100%; margin: auto; text-align: center; }
+        
+        /* Client Launchpad Grid Styling */
+        .grid-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; text-align: left; }
+        .menu-btn { background-color: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; text-decoration: none; color: white; display: flex; flex-direction: column; transition: 0.2s; position: relative; overflow: hidden; }
+        .menu-btn:hover { border-color: #f59e0b; background-color: #1e293b; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.1); }
+        
+        .badge { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; font-size: 0.75rem; font-weight: bold; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; }
         .btn-live { background-color: #059669; color: white; font-size: 0.75rem; padding: 0.375rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.375rem; font-weight: 500; }
         .dot { width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; }
         .logo-inverted { height: 38px; width: auto; object-fit: contain; filter: invert(1) brightness(2); }
+        
         .pricing-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; text-align: left; margin-top: 2rem; margin-bottom: 2rem; }
         .price-card { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; }
-        .skins-showcase { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.5rem; text-align: left; margin-bottom: 2rem; }
-        .skin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem; }
-        .skin-item { background: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; padding: 1rem; }
         .faq-section { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; text-align: left; margin-top: 2rem; font-size: 0.85rem; color: #94a3b8; }
         
-        /* Header Demo Button Styling */
-        .header-demo-btn { background-color: #334155; color: #cbd5e1; font-size: 0.75rem; padding: 0.375rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.375rem; font-weight: 500; border: 1px solid #475569; cursor: pointer; transition: 0.2s; text-decoration: none; }
-        .header-demo-btn:hover { background-color: #475569; color: white; border-color: #64748b; }
-
-        /* Admin Button Styling */
-        .admin-btn { background-color: #334155; color: #cbd5e1; font-size: 0.75rem; padding: 0.375rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.375rem; font-weight: 500; border: 1px solid #475569; cursor: pointer; transition: 0.2s; text-decoration: none; }
-        .admin-btn:hover { background-color: #475569; color: white; border-color: #64748b; }
+        /* Header Buttons Styling */
+        .header-demo-btn, .admin-btn { background-color: #334155; color: #cbd5e1; font-size: 0.75rem; padding: 0.375rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.375rem; font-weight: 500; border: 1px solid #475569; cursor: pointer; transition: 0.2s; text-decoration: none; }
+        .header-demo-btn:hover, .admin-btn:hover { background-color: #475569; color: white; border-color: #64748b; }
     </style>
 </head>
 <body>
@@ -47,11 +44,9 @@
             <span style="font-size: 0.75rem; color: #94a3b8; border-left: 1px solid #334155; padding-left: 1rem;">TargetedScripts.com Ecosystem</span>
         </div>
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <!-- Demo 1 Button in Header -->
             <a href="demo1.html" class="header-demo-btn">
                 <i class="fa-solid fa-rocket text-amber-400"></i> Demo 1
             </a>
-            <!-- Protected Admin Console Shortcut Button -->
             <button onclick="requestAdminAccess()" class="admin-btn">
                 <i class="fa-solid fa-lock text-amber-400"></i> Admin Console
             </button>
@@ -64,62 +59,65 @@
     <!-- Main Content -->
     <main style="flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1.5rem;">
         <div class="card">
-            <span class="badge">New Zealand Hospitality Standard</span>
-            <h2 style="font-size: 1.875rem; font-weight: 800; margin-top: 1rem; margin-bottom: 0.75rem;">Smart F&B Management System</h2>
-            <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 40rem; margin-left: auto; margin-right: auto; line-height: 1.5; font-size: 0.875rem;">
-                A comprehensive cloud-ready SaaS solution tailored for New Zealand restaurants, featuring 15% NZ GST calculations, bilingual menus, and staff rostering.
+            <span class="badge" id="tenant-badge">New Zealand Hospitality Standard</span>
+            <h2 style="font-size: 1.875rem; font-weight: 800; margin-top: 1rem; margin-bottom: 0.75rem;" id="tenant-title">Client Launchpad</h2>
+            <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 42rem; margin-left: auto; margin-right: auto; line-height: 1.5; font-size: 0.875rem;">
+                Welcome to your centralized F&B management control center. Access your live operations, kitchen displays, inventory catalog, compliance logs, and brand settings below.
             </p>
 
-            <!-- Navigation Buttons to Modules -->
+            <!-- Client Launchpad Grid Menu -->
             <div class="grid-menu">
+                <!-- 1. Live Orders & POS -->
                 <a href="cashier.html" class="menu-btn">
-                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🏷️</div>
-                    <strong style="font-size: 1rem; color: white;">POS Cashier</strong>
-                    <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Orders & 15% NZ GST</span>
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-cash-register text-amber-400"></i></div>
+                    <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Live Orders & POS</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Real-time orders & 15% NZ GST</span>
                 </a>
 
+                <!-- 2. Kitchen Display System (KDS) -->
+                <a href="kds.html" class="menu-btn">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-utensils text-amber-400"></i></div>
+                    <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Kitchen Display (KDS)</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Live kitchen kanban board</span>
+                </a>
+
+                <!-- 3. Company Profile (Admin) -->
+                <a href="admin-profile.html" class="menu-btn">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-building text-amber-400"></i></div>
+                    <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Company Profile</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Restaurant info, contacts & settings</span>
+                </a>
+
+                <!-- 4. Theme & Branding Studio -->
+                <a href="branding.html" class="menu-btn">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-palette text-amber-400"></i></div>
+                    <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Theme & Branding</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Colors, logos & layout skins</span>
+                </a>
+
+                <!-- 5. Menu & Catalog Manager -->
                 <a href="menu.html" class="menu-btn">
-                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📖</div>
-                    <strong style="font-size: 1rem; color: white;">Menu Catalog</strong>
-                    <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Bilingual EN / 中文</span>
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-book-open text-amber-400"></i></div>
+                    <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Menu Catalog</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Categories, items & pricing</span>
                 </a>
 
-                <a href="staff.html" class="menu-btn">
-                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👥</div>
-                    <strong style="font-size: 1rem; color: white;">Staff Roster</strong>
-                    <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Shifts & NZ Standards</span>
+                <!-- 6. Food Safety & HACCP -->
+                <a href="fcp.html" class="menu-btn">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-shield-halved text-amber-400"></i></div>
+                    <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Food Safety Compliance</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Temperature logs & hygiene audits</span>
                 </a>
 
-                <a href="system_architecture_flow.html" class="menu-btn">
-                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚙️</div>
-                    <strong style="font-size: 1rem; color: white;">Architecture</strong>
-                    <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">System Flow & Tiers</span>
+                <!-- 7. Business Analytics -->
+                <a href="analytics.html" class="menu-btn">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-chart-line text-amber-400"></i></div>
+                    <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Business Analytics</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Sales reports & performance metrics</span>
                 </a>
             </div>
 
-            <!-- Free Digital Customer Website & Layout Skins Showcase -->
-            <div class="skins-showcase">
-                <div style="font-weight: bold; font-size: 1.1rem; color: white; margin-bottom: 0.5rem;">🌐 Included Free: Digital Customer Website</div>
-                <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 1rem; line-height: 1.4;">
-                    Every RestoSync subscription package includes the creation and hosting of a <strong>Free Digital Customer Website</strong> at no additional cost. You can freely choose from 2 professional layout skins:
-                </p>
-                <div class="skin-grid">
-                    <div class="skin-item">
-                        <div style="font-weight: bold; color: #f59e0b; font-size: 0.9rem; margin-bottom: 0.25rem;">1. Modern Grid Layout</div>
-                        <div style="font-size: 0.78rem; color: #94a3b8; line-height: 1.3;">
-                            Modern card/grid-based visual display. Highly ideal and responsive for <strong>Takeaway Shops, Cafes, and Fast Food</strong> outlets.
-                        </div>
-                    </div>
-                    <div class="skin-item">
-                        <div style="font-weight: bold; color: #f59e0b; font-size: 0.9rem; margin-bottom: 0.25rem;">2. Classic Menu Book Layout</div>
-                        <div style="font-size: 0.78rem; color: #94a3b8; line-height: 1.3;">
-                            Structured layout resembling a physical restaurant menu book. Perfect for <strong>Dine-in Restaurants, Bistros, and Eateries</strong> with diverse menu categories.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Subscription Tiers -->
+            <!-- Subscription Tiers Info -->
             <div style="text-align: left; font-weight: bold; font-size: 1rem; color: white; margin-bottom: 0.5rem; border-top: 1px solid #334155; padding-top: 1.5rem;">
                 Subscription Tiers & Value Package
             </div>
@@ -127,27 +125,27 @@
                 <div class="price-card">
                     <div style="font-weight: bold; color: #f59e0b;">Basic Tier ($150/mo)</div>
                     <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
-                        Includes POS Cashier, Menu Catalog, Staff Roster, plus a <strong>Free Digital Customer Website</strong> (choice of Modern Grid or Classic Menu Book layout).
+                        Includes POS Cashier, Menu Catalog, Staff Roster, plus a <strong>Free Digital Customer Website</strong>.
                     </div>
                 </div>
                 <div class="price-card">
                     <div style="font-weight: bold; color: #f59e0b;">Professional Tier ($250/mo)</div>
                     <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
-                        Includes advanced operational features, priority support, and a customized <strong>Free Digital Customer Website</strong> tailored to your restaurant's branding.
+                        Includes advanced operational features, priority support, and customized branding.
                     </div>
                 </div>
                 <div class="price-card">
                     <div style="font-weight: bold; color: #f59e0b;">Enterprise Tier ($400/mo)</div>
                     <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
-                        Multi-branch capabilities, automated reporting, and advanced <strong>Free Digital Customer Website</strong> solutions for large F&B enterprises.
+                        Multi-branch capabilities, automated reporting, and advanced enterprise solutions.
                     </div>
                 </div>
             </div>
 
-            <!-- FAQ / Product vs Custom Agency Clarification -->
+            <!-- FAQ Section -->
             <div class="faq-section">
-                <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Product SaaS vs. Custom Development Agency</strong>
-                RestoSync's monthly subscription fee ($150 - $400/mo) covers access to the ready-to-use F&B SaaS platform and template-based customer website hosting with a choice of <em>Skin Layouts</em> (Modern Grid / Classic Menu Book). If your restaurant requires specialized custom development outside of standard modules, those services can be directed to the <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">TargetedScripts.com Custom Development</a> division.
+                <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Multi-Tenant Context Active</strong>
+                RestoSync dynamically adapts to your tenant configuration. Custom software developments or integrations can be directed to the <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">TargetedScripts.com</a> division.
             </div>
 
             <div style="font-size: 0.75rem; color: #64748b; margin-top: 1.5rem;">
@@ -162,14 +160,43 @@
         <div style="color: #64748b; font-size: 0.7rem;">Powered & Developed by TargetedScripts.com - Custom Software & Automation NZ</div>
     </footer>
 
-    <!-- Protected Admin Navigation Script -->
+    <!-- Tenant Parameter Injector & Admin Navigation Script -->
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Detect ?tenant=... from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const tenantParam = urlParams.get('tenant');
+
+            if (tenantParam) {
+                // Capitalize tenant name nicely for display
+                const formattedTenant = tenantParam.charAt(0).toUpperCase() + tenantParam.slice(1).replace(/-/g, ' ');
+                document.getElementById('tenant-title').innerText = `${formattedTenant} - Launchpad`;
+                document.getElementById('tenant-badge').innerText = `Tenant ID: ${tenantParam}`;
+
+                // 2. Automatically append ?tenant=... to all module grid links and header demo link
+                const launchpadLinks = document.querySelectorAll('.grid-menu a, .header-demo-btn');
+                launchpadLinks.forEach(link => {
+                    const currentHref = link.getAttribute('href');
+                    if (currentHref && !currentHref.includes('tenant=')) {
+                        const separator = currentHref.includes('?') ? '&' : '?';
+                        link.setAttribute('href', `${currentHref}${separator}tenant=${encodeURIComponent(tenantParam)}`);
+                    }
+                });
+            }
+        });
+
         function requestAdminAccess() {
             const securePin = "1967"; // Your secure PIN
             let userPrompt = prompt("Enter Super Admin Access PIN:");
             
             if (userPrompt === securePin) {
-                window.location.href = "system-console.html";
+                const urlParams = new URLSearchParams(window.location.search);
+                const tenantParam = urlParams.get('tenant');
+                let targetUrl = "system-console.html";
+                if (tenantParam) {
+                    targetUrl += `?tenant=${encodeURIComponent(tenantParam)}`;
+                }
+                window.location.href = targetUrl;
             } else if (userPrompt !== null) {
                 alert("Access Denied! Incorrect PIN.");
             }

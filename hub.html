@@ -35,7 +35,7 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Tangkap parameter tenant dan jadikan lowercase agar cocok dengan Document ID di Firestore
+        // Tangkap parameter tenant dan normalisasikan ke huruf kecil
         const urlParams = new URLSearchParams(window.location.search);
         let TENANT_ID = urlParams.get('tenant');
         if (TENANT_ID) {
@@ -52,20 +52,27 @@
             db.collection("tenants").doc(TENANT_ID).get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    
-                    // Ambil nilai templateType dan bersihkan formatnya
                     const templateType = data.templateType ? String(data.templateType).trim().toLowerCase() : '';
 
-                    statusText.innerText = `Layout terdeteksi: [${templateType}]. Mengalihkan...`;
+                    // Tampilkan informasi diagnostik visual langsung di layar selama 5 detik
+                    statusText.innerHTML = `
+                        <div style="font-family: monospace; font-size: 11px; text-align: left; background: #18181b; padding: 12px; border-radius: 8px; border: 1px solid #27272a; color: #f4f4f5; space-y: 4px;">
+                            <p style="margin-bottom: 4px;"><span style="color: #a1a1aa;">Tenant ID:</span> <b>${TENANT_ID}</b></p>
+                            <p style="margin-bottom: 4px;"><span style="color: #a1a1aa;">TemplateType DB:</span> <b style="color: #fbbf24;">"${templateType}"</b></p>
+                            <p style="color: ${templateType === 'shop' ? '#34d399' : '#f87171'}; margin: 0;">
+                                <b>Arah:</b> ${templateType === 'shop' ? 'admin.html (Shop)' : 'admin-template.html (Blog/Lainnya)'}
+                            </p>
+                        </div>
+                    `;
 
+                    // Jeda 5 detik agar Anda sempat membaca hasil deteksi di layar sebelum dialihkan
                     setTimeout(() => {
-                        // Logika routing: jika 'shop' ke admin.html, selain itu ke admin-template.html
                         if (templateType === 'shop') {
                             window.location.href = `admin.html?tenant=${TENANT_ID}`;
                         } else {
                             window.location.href = `admin-template.html?tenant=${TENANT_ID}`;
                         }
-                    }, 1500);
+                    }, 5000);
 
                 } else {
                     statusText.innerHTML = `<span class="text-red-400">Tenant [${TENANT_ID}] tidak terdaftar di database.</span>`;

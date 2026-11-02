@@ -227,18 +227,21 @@
                         if (tenantSnap.exists()) {
                             const tenantData = tenantSnap.data();
                             
-                            // Check tenant logo field in Firestore (e.g. logoUrl, logoPath, or logo)
-                            const logoPath = tenantData.logoUrl || tenantData.logoPath || tenantData.logo;
+                            // PRINT RAW DATA TO BROWSER CONSOLE FOR EASY INSPECTION
+                            console.log("Firestore Tenant Data retrieved for [" + tenantParam + "]:", tenantData);
+                            
+                            // Check various possible key names for the logo path in Firestore
+                            const logoPath = tenantData.logoUrl || tenantData.logoPath || tenantData.logo || tenantData.logoURL || tenantData.imageUrl || tenantData.image;
 
                             if (logoPath && logoPath.trim() !== "") {
-                                // If logo path exists, display image logo instead of tenant text name
+                                // Display image logo instead of tenant text name
                                 tenantHeadingContainer.innerHTML = `<img src="${logoPath}" alt="${formattedTenant} Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
                                 logoPathDebugEl.innerText = `Logo Source Path: ${logoPath}`;
                             } else {
-                                // Fallback to text if logo path is empty
+                                // Fallback to text if logo path is empty or not found
                                 const displayName = tenantData.restaurantName || formattedTenant;
                                 tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${displayName} - Launchpad</h2>`;
-                                logoPathDebugEl.innerText = `Logo Source Path: [ Empty in Firestore - Using Text Fallback ]`;
+                                logoPathDebugEl.innerText = `Logo Source Path: [ Empty or Field Not Found in Firestore - Using Text Fallback ]`;
                             }
 
                             // Check enabledModules configuration

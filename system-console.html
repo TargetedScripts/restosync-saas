@@ -86,8 +86,12 @@
                     <input type="text" id="inputTenantId" class="custom-input rounded-xl px-4 py-2 text-xs font-mono w-56 text-amber-300 font-bold" placeholder="e.g. boluhalus">
                 </div>
             </div>
-            <div class="text-right">
-                <span id="modeIndicator" class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full font-mono">Mode: Editing Existing Tenant</span>
+            
+            <!-- DYNAMIC PREVIEW LINKS WITH PARAMETER ?tenant= -->
+            <div class="flex items-center space-x-2" id="quickTenantLinks">
+                <a id="linkKds" href="#" target="_blank" class="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1.5 rounded text-xs font-semibold transition">Open KDS</a>
+                <a id="linkAdmin" href="#" target="_blank" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">Store Admin</a>
+                <a id="linkPublic" href="#" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded text-xs font-semibold transition">Public Store</a>
             </div>
         </div>
 
@@ -97,9 +101,35 @@
                 <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
                     <i class="fa-solid fa-database text-sm"></i><span>Live Firestore Raw Data Inspector (Database Proof)</span>
                 </h2>
-                <span class="text-[10px] text-stone-400">Menampilkan JSON mentah apa adanya langsung dari dokumen Firestore</span>
+                <span id="modeIndicator" class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full font-mono">Mode: Editing Existing Tenant</span>
             </div>
             <pre id="rawFirestoreViewer" class="bg-[#030712] border border-[#1f2937] p-4 rounded-xl text-[11px] font-mono text-emerald-400 overflow-x-auto max-h-40">Loading raw database snapshot...</pre>
+        </div>
+
+        <!-- UNIFIED MODULES & LANDING CONFIGURATION -->
+        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl border border-cyan-500/30">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
+                <i class="fa-solid fa-layer-group text-sm"></i><span>Unified Modules Configuration (enabledModules & defaultLanding)</span>
+            </h2>
+            <p class="text-[11px] text-stone-400">Atur modul apa saja yang diaktifkan secara berdampingan dalam satu dokumen tenant beserta halaman utama saat pertama kali dimuat.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-cyan-500/50 transition">
+                    <input type="checkbox" id="module_shop_enabled" class="w-4 h-4 rounded text-cyan-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Enable Shop Module</strong><span class="text-[10px] text-stone-400">shopConfig active</span></div>
+                </label>
+                <label class="flex items-center space-x-3 bg-[#030712] p-4 rounded-2xl border border-zinc-800 cursor-pointer hover:border-cyan-500/50 transition">
+                    <input type="checkbox" id="module_blog_enabled" class="w-4 h-4 rounded text-cyan-500 bg-zinc-900 border-zinc-700">
+                    <div><strong class="block text-stone-200">Enable Blog Module</strong><span class="text-[10px] text-stone-400">blogConfig active</span></div>
+                </label>
+                <div>
+                    <label class="block text-stone-400 mb-1.5 font-semibold text-cyan-300">Default Landing Page</label>
+                    <select id="selectDefaultLanding" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-cyan-300 font-mono">
+                        <option value="shop">shop (Default ke modul toko)</option>
+                        <option value="blog">blog (Default ke modul blog/jurnal)</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <!-- FIREBASE STORAGE ASSET UPLOADER MODULE -->
@@ -157,15 +187,6 @@
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold text-cyan-300">Raw JS Asset Path (Linked to Repo)</label>
                     <input type="text" id="inputJsAssetUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-cyan-300 font-mono" placeholder="assets/js/tenant-id.js">
-                </div>
-                
-                <!-- TEMPLATE LAYOUT DROPDOWN (SHOP & BLOG) -->
-                <div>
-                    <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400">Template Layout (templateType)</label>
-                    <select id="inputTemplateType" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-amber-300 font-mono">
-                        <option value="shop">Shop (Model Toko / Restoran Standar)</option>
-                        <option value="blog">Blog (Model Micro-Cakery / Jurnal / Editorial)</option>
-                    </select>
                 </div>
 
                 <div>
@@ -470,28 +491,17 @@
             }
         }
 
-        function updateConnectionStatus(status, message) {
-            const dot = document.getElementById('dbIndicatorDot');
-            const text = document.getElementById('dbIndicatorText');
-            if (status === 'connected') {
-                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50";
-                text.innerText = message || "Firebase Connected";
-            } else if (status === 'loading') {
-                dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse";
-                text.innerText = message || "Syncing with Cloud...";
-            } else if (status === 'error') {
-                dot.className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-lg shadow-red-500/50";
-                text.innerText = message || "Firebase Disconnected / Error";
-            }
+        function updateQuickLinks(tenantId) {
+            document.getElementById('linkKds').href = `kds.html?tenant=${tenantId}`;
+            document.getElementById('linkAdmin').href = `admin.html?tenant=${tenantId}`;
+            document.getElementById('linkPublic').href = `demo1.html?tenant=${tenantId}`;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            updateConnectionStatus('loading', 'Connecting to Firestore...');
-            loadTenantList('bangkokthaipalmy');
+            loadTenantList('boluhalus');
         });
 
         function loadTenantList(defaultSelect) {
-            updateConnectionStatus('loading', 'Fetching tenants...');
             const select = document.getElementById('tenantSelect');
             db.collection("tenants").get().then((querySnapshot) => {
                 select.innerHTML = "";
@@ -501,9 +511,9 @@
                     if (!firstTenant) firstTenant = tid;
                     const opt = document.createElement('option');
                     opt.value = tid;
-                    const dData = doc.data();
-                    const tLayout = dData.profile && dData.profile.templateType ? ` [${dData.profile.templateType}]` : '';
-                    opt.innerText = tid.toUpperCase() + tLayout;
+                    const data = doc.data();
+                    const landing = data.defaultLanding || 'shop';
+                    opt.innerText = `${tid.toUpperCase()} [Landing: ${landing}]`;
                     select.appendChild(opt);
                 });
                 if (defaultSelect && document.querySelector(`#tenantSelect option[value="${defaultSelect}"]`)) {
@@ -514,10 +524,8 @@
                 if (select.value) {
                     switchTenant(select.value);
                 }
-                updateConnectionStatus('connected', 'Firebase Cloud Connected');
             }).catch(err => {
                 console.error("Error loading tenants:", err);
-                updateConnectionStatus('error', 'Firestore Connection Failed');
                 showToast("Failed to fetch tenants from cloud.", true);
             });
         }
@@ -527,6 +535,7 @@
             document.getElementById('modeIndicator').innerText = "Mode: Editing Existing Tenant";
             document.getElementById('inputTenantId').value = tenantId;
             document.getElementById('inputTenantId').disabled = true;
+            updateQuickLinks(tenantId);
 
             db.collection("tenants").doc(tenantId).get().then((doc) => {
                 document.getElementById('inputStoreName').value = '';
@@ -535,7 +544,6 @@
                 document.getElementById('inputClientEmail').value = '';
                 document.getElementById('inputAdminPassword').value = 'admin';
                 document.getElementById('inputJsAssetUrl').value = '';
-                document.getElementById('inputTemplateType').value = 'shop'; // Default ke shop
                 document.getElementById('inputLogoUrl').value = '';
                 document.getElementById('inputHeroImage1').value = '';
                 document.getElementById('inputHeroImage2').value = '';
@@ -552,6 +560,16 @@
                     const data = doc.data();
                     document.getElementById('rawFirestoreViewer').innerText = JSON.stringify(data, null, 2);
 
+                    // Unified Architecture Mapping
+                    const enabledMods = data.enabledModules || { shop: true, blog: false };
+                    // Jika di database lamanya masih pakai field 'modules' lama, kita fallback
+                    document.getElementById('module_shop_enabled').checked = !!enabledMods.shop;
+                    document.getElementById('module_blog_enabled').checked = !!enabledMods.blog;
+                    
+                    // Jika ada defaultLanding tersimpan, gunakan; jika tidak, fallback ke templateType lama atau 'shop'
+                    const fallbackLanding = (data.profile && data.profile.templateType) ? data.profile.templateType : 'shop';
+                    document.getElementById('selectDefaultLanding').value = data.defaultLanding || fallbackLanding;
+
                     const profile = data.profile || {};
                     document.getElementById('inputStoreName').value = profile.tenantName || '';
                     document.getElementById('inputClientName').value = profile.contactPerson || '';
@@ -559,7 +577,6 @@
                     document.getElementById('inputClientEmail').value = profile.email || '';
                     document.getElementById('inputAdminPassword').value = profile.adminPassword || 'admin';
                     document.getElementById('inputJsAssetUrl').value = profile.jsAssetUrl || `assets/js/${tenantId}.js`;
-                    document.getElementById('inputTemplateType').value = profile.templateType || 'shop';
                     document.getElementById('inputLogoUrl').value = profile.logoUrl || '';
                     document.getElementById('inputHeroImage1').value = profile.heroImage1 || '';
                     document.getElementById('inputHeroImage2').value = profile.heroImage2 || '';
@@ -600,13 +617,16 @@
             tenantIdInput.disabled = false;
             tenantIdInput.focus();
             
+            document.getElementById('module_shop_enabled').checked = true;
+            document.getElementById('module_blog_enabled').checked = false;
+            document.getElementById('selectDefaultLanding').value = 'shop';
+
             document.getElementById('inputStoreName').value = '';
             document.getElementById('inputClientName').value = '';
             document.getElementById('inputClientPhone').value = '';
             document.getElementById('inputClientEmail').value = '';
             document.getElementById('inputAdminPassword').value = 'admin';
             document.getElementById('inputJsAssetUrl').value = '';
-            document.getElementById('inputTemplateType').value = 'shop'; // Default ke shop
             document.getElementById('inputLogoUrl').value = '';
             document.getElementById('inputHeroImage1').value = '';
             document.getElementById('inputHeroImage2').value = '';
@@ -615,16 +635,20 @@
             document.getElementById('inputContractNo').value = '';
             document.getElementById('inputSubTier').value = 'FREE SOCIAL TIER';
             document.getElementById('inputExpiryDate').value = '';
-            document.getElementById('rawFirestoreViewer').innerText = "New Tenant Draft Mode (Ready for entry. Type Tenant ID above.)";
+            document.getElementById('rawFirestoreViewer').innerText = "New Unified Tenant Draft Mode (Ready for entry. Type Tenant ID above.)";
             
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            // Sesuaikan kembali checkbox unified modules sesuai default
+            document.getElementById('module_shop_enabled').checked = true;
+            document.getElementById('module_blog_enabled').checked = false;
 
             tenantIdInput.oninput = function() {
                 const currentSlug = this.value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');
                 document.getElementById('inputJsAssetUrl').value = currentSlug ? `assets/js/${currentSlug}.js` : '';
+                updateQuickLinks(currentSlug || 'new-tenant');
             };
 
-            showToast("Ready to add new tenant. Fill in Tenant ID and details.");
+            showToast("Ready to add new unified tenant. Fill in Tenant ID and details.");
         }
 
         function uploadTenantAssetToStorage() {
@@ -692,7 +716,6 @@
                 email: document.getElementById('inputClientEmail').value,
                 adminPassword: document.getElementById('inputAdminPassword').value || 'admin',
                 jsAssetUrl: document.getElementById('inputJsAssetUrl').value,
-                templateType: document.getElementById('inputTemplateType').value, // Menyimpan nilai 'shop' atau 'blog'
                 logoUrl: document.getElementById('inputLogoUrl').value,
                 heroImage1: document.getElementById('inputHeroImage1').value,
                 heroImage2: document.getElementById('inputHeroImage2').value,
@@ -713,13 +736,29 @@
                 rightsData[cb.id] = cb.checked;
             });
 
-            db.collection("tenants").doc(tenantId).set({
+            // Struktur Unified / Single Document Configuration di Firestore
+            const unifiedTenantData = {
+                enabledModules: {
+                    shop: document.getElementById('module_shop_enabled').checked,
+                    blog: document.getElementById('module_blog_enabled').checked
+                },
+                defaultLanding: document.getElementById('selectDefaultLanding').value,
+                shopConfig: {
+                    theme: "standard-grid",
+                    status: "active"
+                },
+                blogConfig: {
+                    theme: "micro-cakery-editorial",
+                    status: "active"
+                },
                 profile: profileData,
                 modules: modulesData,
                 rights: rightsData,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true }).then(() => {
-                showToast(`Tenant [${tenantId}] successfully saved to Firebase Cloud!`);
+            };
+
+            db.collection("tenants").doc(tenantId).set(unifiedTenantData, { merge: true }).then(() => {
+                showToast(`Tenant [${tenantId}] successfully saved with Unified Configuration!`);
                 loadTenantList(tenantId);
             }).catch(err => {
                 console.error("Error saving tenant:", err);

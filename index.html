@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RestoSync - Smart F&B Management SaaS | TargetedScripts.com</title>
     
-    <!-- Global Core Configuration -->
+    <!-- Global Core Configuration & Firebase SDK (Compat) -->
     <script src="assets/js/config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-    <!-- Dynamic Tenant JS Loader (Root & Relative Fallback) -->
+    <!-- Dynamic Tenant JS Loader -->
     <script>
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -96,7 +98,7 @@
             
             <!-- Debug Path Indicator below Launchpad -->
             <div style="font-size: 0.75rem; color: #f59e0b; margin-bottom: 2rem; font-family: monospace;" id="logo-path-debug">
-                Logo Source Path: [ Initializing... ]
+                Logo Source Path: [ Initializing Firestore Sync... ]
             </div>
 
             <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 44rem; margin-left: auto; margin-right: auto; line-height: 1.5; font-size: 0.875rem;">
@@ -192,8 +194,8 @@
 
             <!-- FAQ Section -->
             <div class="faq-section">
-                <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Multi-Tenant Local JS Architecture Active</strong>
-                RestoSync dynamically loads configurations, branding, and active website templates from centralized local tenant modules. Custom developments can be directed to <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">TargetedScripts.com</a>.
+                <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Pure SaaS Architecture Active</strong>
+                Tenant configs loaded from local JS modules, with dynamic branding & logo paths fetched live from Firebase Firestore. <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">TargetedScripts.com</a>.
             </div>
 
             <div style="font-size: 0.75rem; color: #64748b; margin-top: 1.5rem;">
@@ -208,9 +210,9 @@
         <div style="color: #64748b; font-size: 0.7rem;">Powered & Developed by TargetedScripts.com - Custom Software & Automation NZ</div>
     </footer>
 
-    <!-- Tenant Parameter Injector & Renderer Script -->
+    <!-- Tenant Parameter Injector & Live Firestore Logo Fetcher -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const tenantParam = urlParams.get('tenant');
 
@@ -241,57 +243,73 @@
                     }
                 });
 
-                // Wait for external tenant JS config script to execute
-                setTimeout(() => {
-                    if (window.tenantConfig && window.tenantConfig.tenantId) {
-                        const config = window.tenantConfig;
-                        console.log("Tenant Config loaded successfully:", config);
+                // Tunggu sebentar agar skrip .js tenant lokal selesai dieksekusi
+                await new Promise(resolve => setTimeout(resolve, 250));
 
-                        // Render Logo or Text Fallback
-                        if (config.logoUrl && config.logoUrl.trim() !== "") {
-                            tenantHeadingContainer.innerHTML = `<img src="${config.logoUrl}" alt="${config.restaurantName || formattedTenant} Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
-                            logoPathDebugEl.innerText = `Logo Source Path: ${config.logoUrl}`;
-                        } else {
-                            const displayName = config.restaurantName || formattedTenant;
-                            tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${displayName} - Launchpad</h2>`;
-                            logoPathDebugEl.innerText = `Logo Source Path: [ Tenant Config Loaded - No Logo URL Specified, Using Text Mode ]`;
-                        }
+                let resolvedLogoUrl = "";
+                let restaurantName = formattedTenant;
 
-                        // Render Dynamic Web Templates (Blog / Shop) if defined in config
-                        if (config.templates) {
-                            let templateHtml = "";
-                            let activeCount = 0;
-
-                            for (const [key, tpl] of Object.entries(config.templates)) {
-                                if (tpl.enabled) {
-                                    activeCount++;
-                                    let iconClass = key === 'blog' ? 'fa-blog' : 'fa-store';
-                                    templateHtml += `<a href="${tpl.url}?tenant=${encodeURIComponent(tenantParam)}" style="background: #1e293b; border: 1px solid #475569; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 0.8rem; display: flex; align-items: center; gap: 0.5rem; transition: 0.2s;" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#475569'"><i class="fa-solid ${iconClass} text-amber-400"></i> ${tpl.label} (${key.toUpperCase()})</a>`;
-                                }
-                            }
-
-                            if (activeCount > 0) {
-                                templatesButtonsGrid.innerHTML = templateHtml;
-                                templatesContainer.style.display = "block";
-                            }
-                        }
-
-                        // Apply enabledModules status
-                        if (config.enabledModules) {
-                            document.querySelectorAll('.menu-btn').forEach(btn => {
-                                const moduleKey = btn.getAttribute('data-module');
-                                if (config.enabledModules[moduleKey] === false) {
-                                    btn.classList.add('disabled');
-                                    const subSpan = btn.querySelector('span');
-                                    if (subSpan) subSpan.innerText = "Module Locked / Disabled";
-                                }
-                            });
-                        }
-                    } else {
-                        tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${formattedTenant} - Launchpad</h2>`;
-                        logoPathDebugEl.innerText = `Logo Source Path: [ Tenant JS Config File Not Found or Failed to Load - Using Text Mode ]`;
+                // 1. Ambil data dasar dari window.tenantConfig lokal jika ada
+                if (window.tenantConfig) {
+                    if (window.tenantConfig.restaurantName) {
+                        restaurantName = window.tenantConfig.restaurantName;
                     }
-                }, 200);
+                    if (window.tenantConfig.enabledModules) {
+                        document.querySelectorAll('.menu-btn').forEach(btn => {
+                            const moduleKey = btn.getAttribute('data-module');
+                            if (window.tenantConfig.enabledModules[moduleKey] === false) {
+                                btn.classList.add('disabled');
+                                const subSpan = btn.querySelector('span');
+                                if (subSpan) subSpan.innerText = "Module Locked / Disabled";
+                            }
+                        });
+                    }
+                    // Render Templates Blog & Shop
+                    if (window.tenantConfig.templates) {
+                        let templateHtml = "";
+                        let activeCount = 0;
+                        for (const [key, tpl] of Object.entries(window.tenantConfig.templates)) {
+                            if (tpl.enabled) {
+                                activeCount++;
+                                let iconClass = key === 'blog' ? 'fa-blog' : 'fa-store';
+                                templateHtml += `<a href="${tpl.url}?tenant=${encodeURIComponent(tenantParam)}" style="background: #1e293b; border: 1px solid #475569; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 0.8rem; display: flex; align-items: center; gap: 0.5rem; transition: 0.2s;" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#475569'"><i class="fa-solid ${iconClass} text-amber-400"></i> ${tpl.label} (${key.toUpperCase()})</a>`;
+                            }
+                        }
+                        if (activeCount > 0) {
+                            templatesButtonsGrid.innerHTML = templateHtml;
+                            templatesContainer.style.display = "block";
+                        }
+                    }
+                }
+
+                // 2. Ambil path logo secara LIVE dari Firebase Firestore
+                try {
+                    if (typeof firebase !== 'undefined') {
+                        if (!firebase.apps.length && window.firebaseConfig) {
+                            firebase.initializeApp(window.firebaseConfig);
+                        }
+                        const db = firebase.firestore();
+                        const docRef = await db.collection("tenants").doc(tenantParam.toLowerCase().trim()).get();
+                        
+                        if (docRef.exists) {
+                            const data = docRef.data();
+                            // Mendukung berbagai penamaan field logo di Firestore (logoUrl, logo, imageUrl)
+                            resolvedLogoUrl = data.logoUrl || data.logo || data.imageUrl || "";
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error fetching logo from Firestore:", err);
+                }
+
+                // 3. Render Logo atau Fallback Teks ke Halaman
+                if (resolvedLogoUrl && resolvedLogoUrl.trim() !== "") {
+                    tenantHeadingContainer.innerHTML = `<img src="${resolvedLogoUrl}" alt="${restaurantName} Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
+                    logoPathDebugEl.innerText = `Logo Source Path (Fetched from Firestore): ${resolvedLogoUrl}`;
+                } else {
+                    tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${restaurantName} - Launchpad</h2>`;
+                    logoPathDebugEl.innerText = `Logo Source Path: [ Firestore Document Checked - No Logo URL Field Found, Using Text Mode ]`;
+                }
+
             } else {
                 if (brandLogoLinkEl) brandLogoLinkEl.setAttribute('href', 'index.html');
                 tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">Client Launchpad</h2>`;

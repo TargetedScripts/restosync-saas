@@ -4,14 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RestoSync - Smart F&B Management SaaS | TargetedScripts.com</title>
-    <!-- Firebase SDK (Modular v10 CDN) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        window.FirebaseSDK = { initializeApp, getFirestore, doc, getDoc };
-    </script>
-    <!-- Global Configuration -->
-    <script src="assets/js/config.js"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Modern Dark Theme Styling -->
@@ -81,7 +73,7 @@
             
             <!-- Debug Path Indicator below Launchpad -->
             <div style="font-size: 0.75rem; color: #f59e0b; margin-bottom: 2rem; font-family: monospace;" id="logo-path-debug">
-                Logo Source Path: [ Default Text Mode ]
+                Logo Source Path: [ Initializing... ]
             </div>
 
             <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 44rem; margin-left: auto; margin-right: auto; line-height: 1.5; font-size: 0.875rem;">
@@ -183,8 +175,21 @@
         <div style="color: #64748b; font-size: 0.7rem;">Powered & Developed by TargetedScripts.com - Custom Software & Automation NZ</div>
     </footer>
 
-    <!-- Tenant Parameter Injector & Firestore Single Document Integration Script -->
+    <!-- Tenant Parameter Injector & Firestore Integration Script -->
     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Direct Firebase Configuration fallback if config.js is missing/unloaded
+        const firebaseConfig = window.firebaseConfig || {
+            apiKey: "AIzaSyD-Placeholder-Key",
+            authDomain: "restosync-saas.firebaseapp.com",
+            projectId: "restosync-saas",
+            storageBucket: "restosync-saas.firebasestorage.app",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
         document.addEventListener("DOMContentLoaded", async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const tenantParam = urlParams.get('tenant');
@@ -214,60 +219,50 @@
                     }
                 });
 
-                // Firestore Integration to check tenant logo and modules
+                // Fetch tenant logo & config from Firestore
                 try {
-                    if (window.FirebaseSDK && typeof window.firebaseConfig !== 'undefined') {
-                        const { initializeApp, getFirestore, doc, getDoc } = window.FirebaseSDK;
-                        const app = initializeApp(window.firebaseConfig);
-                        const db = getFirestore(app);
+                    const app = initializeApp(firebaseConfig);
+                    const db = getFirestore(app);
 
-                        const tenantDocRef = doc(db, "tenants", tenantParam);
-                        const tenantSnap = await getDoc(tenantDocRef);
+                    const tenantDocRef = doc(db, "tenants", tenantParam);
+                    const tenantSnap = await getDoc(tenantDocRef);
 
-                        if (tenantSnap.exists()) {
-                            const tenantData = tenantSnap.data();
-                            
-                            // PRINT RAW DATA TO BROWSER CONSOLE FOR EASY INSPECTION
-                            console.log("Firestore Tenant Data retrieved for [" + tenantParam + "]:", tenantData);
-                            
-                            // Check various possible key names for the logo path in Firestore
-                            const logoPath = tenantData.logoUrl || tenantData.logoPath || tenantData.logo || tenantData.logoURL || tenantData.imageUrl || tenantData.image;
+                    if (tenantSnap.exists()) {
+                        const tenantData = tenantSnap.data();
+                        console.log("Firestore Tenant Data retrieved:", tenantData);
+                        
+                        // Check multiple possible key names for logo path/URL
+                        const logoPath = tenantData.logoUrl || tenantData.logoPath || tenantData.logo || tenantData.logoURL || tenantData.imageUrl || tenantData.image;
 
-                            if (logoPath && logoPath.trim() !== "") {
-                                // Display image logo instead of tenant text name
-                                tenantHeadingContainer.innerHTML = `<img src="${logoPath}" alt="${formattedTenant} Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
-                                logoPathDebugEl.innerText = `Logo Source Path: ${logoPath}`;
-                            } else {
-                                // Fallback to text if logo path is empty or not found
-                                const displayName = tenantData.restaurantName || formattedTenant;
-                                tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${displayName} - Launchpad</h2>`;
-                                logoPathDebugEl.innerText = `Logo Source Path: [ Empty or Field Not Found in Firestore - Using Text Fallback ]`;
-                            }
-
-                            // Check enabledModules configuration
-                            if (tenantData.enabledModules) {
-                                const enabledModules = tenantData.enabledModules;
-                                document.querySelectorAll('.menu-btn').forEach(btn => {
-                                    const moduleKey = btn.getAttribute('data-module');
-                                    if (enabledModules[moduleKey] === false) {
-                                        btn.classList.add('disabled');
-                                        const subSpan = btn.querySelector('span');
-                                        if (subSpan) subSpan.innerText = "Module Locked / Disabled";
-                                    }
-                                });
-                            }
+                        if (logoPath && logoPath.trim() !== "") {
+                            tenantHeadingContainer.innerHTML = `<img src="${logoPath}" alt="${formattedTenant} Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
+                            logoPathDebugEl.innerText = `Logo Source Path: ${logoPath}`;
                         } else {
-                            tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${formattedTenant} - Launchpad</h2>`;
-                            logoPathDebugEl.innerText = `Logo Source Path: [ Tenant Document Not Found in Firestore ]`;
+                            const displayName = tenantData.restaurantName || formattedTenant;
+                            tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${displayName} - Launchpad</h2>`;
+                            logoPathDebugEl.innerText = `Logo Source Path: [ Empty Field in Firestore - Using Text Fallback ]`;
+                        }
+
+                        // Check enabledModules configuration
+                        if (tenantData.enabledModules) {
+                            const enabledModules = tenantData.enabledModules;
+                            document.querySelectorAll('.menu-btn').forEach(btn => {
+                                const moduleKey = btn.getAttribute('data-module');
+                                if (enabledModules[moduleKey] === false) {
+                                    btn.classList.add('disabled');
+                                    const subSpan = btn.querySelector('span');
+                                    if (subSpan) subSpan.innerText = "Module Locked / Disabled";
+                                }
+                            });
                         }
                     } else {
                         tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${formattedTenant} - Launchpad</h2>`;
-                        logoPathDebugEl.innerText = `Logo Source Path: [ Firebase SDK / Config Not Loaded ]`;
+                        logoPathDebugEl.innerText = `Logo Source Path: [ Tenant Document Not Found in Firestore ]`;
                     }
                 } catch (error) {
-                    console.log("Firestore tenant sync notice:", error);
+                    console.error("Firestore connection error:", error);
                     tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${formattedTenant} - Launchpad</h2>`;
-                    logoPathDebugEl.innerText = `Logo Source Path: [ Error Fetching Firestore Data ]`;
+                    logoPathDebugEl.innerText = `Logo Source Path: [ Error Connecting to Firestore: ${error.message} ]`;
                 }
             } else {
                 if (brandLogoLinkEl) brandLogoLinkEl.setAttribute('href', 'index.html');
@@ -280,7 +275,7 @@
             const securePin = "1967";
             let userPrompt = prompt("Enter Super Admin Access PIN:");
             
-            if (userPrompt === securePin) {
+            if (userPrompt === securePS = securePin) {
                 const urlParams = new URLSearchParams(window.location.search);
                 const tenantParam = urlParams.get('tenant');
                 let targetUrl = "system-console.html";

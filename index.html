@@ -8,7 +8,7 @@
     <!-- Global Core Configuration -->
     <script src="assets/js/config.js"></script>
 
-    <!-- Dynamic Tenant JS Loader -->
+    <!-- Dynamic Tenant JS Loader (Root & Relative Fallback) -->
     <script>
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -16,9 +16,11 @@
             if (tenantParam) {
                 const tenantKey = tenantParam.toLowerCase().trim();
                 const tenantScript = document.createElement('script');
-                tenantScript.src = `assets/js/tenants/${tenantKey}.js`;
+                tenantScript.src = `/assets/js/tenants/${tenantKey}.js`;
                 tenantScript.onerror = function() {
-                    console.warn(`File konfigurasi JS untuk tenant [${tenantKey}] tidak ditemukan.`);
+                    const fallbackScript = document.createElement('script');
+                    fallbackScript.src = `assets/js/tenants/${tenantKey}.js`;
+                    document.head.appendChild(fallbackScript);
                 };
                 document.head.appendChild(tenantScript);
             }
@@ -270,7 +272,6 @@
 
                             if (activeCount > 0) {
                                 templatesButtonsGrid.innerHTML = templateHtml;
-                        
                                 templatesContainer.style.display = "block";
                             }
                         }
@@ -290,7 +291,7 @@
                         tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${formattedTenant} - Launchpad</h2>`;
                         logoPathDebugEl.innerText = `Logo Source Path: [ Tenant JS Config File Not Found or Failed to Load - Using Text Mode ]`;
                     }
-                }, 150);
+                }, 200);
             } else {
                 if (brandLogoLinkEl) brandLogoLinkEl.setAttribute('href', 'index.html');
                 tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">Client Launchpad</h2>`;

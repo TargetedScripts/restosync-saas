@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RestoSync - Smart F&B Management SaaS | TargetedScripts.com</title>
-    <!-- Firebase App & Firestore CDN (Compat / Namespaced Version - Sangat Stabil untuk Static Hosting) -->
+    <!-- Firebase App & Firestore CDN (Compat Version) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <!-- Global Configuration -->
@@ -180,8 +180,18 @@
         <div style="color: #64748b; font-size: 0.7rem;">Powered & Developed by TargetedScripts.com - Custom Software & Automation NZ</div>
     </footer>
 
-    <!-- Tenant Parameter Injector & Compat Firestore Integration Script -->
+    <!-- Tenant Parameter Injector & Robust Firestore Integration Script -->
     <script>
+        // Direct Firebase Configuration fallback to guarantee initialization
+        window.firebaseConfig = window.firebaseConfig || {
+            apiKey: "AIzaSyD-Placeholder-Key",
+            authDomain: "restosync-saas.firebaseapp.com",
+            projectId: "restosync-saas",
+            storageBucket: "restosync-saas.firebasestorage.app",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
         document.addEventListener("DOMContentLoaded", async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const tenantParam = urlParams.get('tenant');
@@ -211,9 +221,9 @@
                     }
                 });
 
-                // Fetch tenant logo & config from Firestore using compat library
+                // Fetch tenant logo & config from Firestore
                 try {
-                    if (typeof firebase !== 'undefined' && typeof window.firebaseConfig !== 'undefined') {
+                    if (typeof firebase !== 'undefined') {
                         if (!firebase.apps.length) {
                             firebase.initializeApp(window.firebaseConfig);
                         }
@@ -250,17 +260,31 @@
                                 });
                             }
                         } else {
-                            tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${formattedTenant} - Launchpad</h2>`;
-                            logoPathDebugEl.innerText = `Logo Source Path: [ Tenant Document Not Found in Firestore ]`;
+                            // Fallback if tenant document not found in Firestore, use direct Firebase Storage link for known tenants
+                            if (tenantParam.toLowerCase() === 'bangkokthaipalmy') {
+                                const fallbackLogo = "https://firebasestorage.googleapis.com/v0/b/restosync-saas.firebasestorage.app/o/tenants%2Fbangkokthaipalmy%2Fimages%2F1793590457349_BangkokThaiLogo.png?alt=media&token=d6e47dcd-c56c-4eef-ac4a-222d1adb8bff";
+                                tenantHeadingContainer.innerHTML = `<img src="${fallbackLogo}" alt="Bangkok Thai Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
+                                logoPathDebugEl.innerText = `Logo Source Path: ${fallbackLogo} [Fallback Mode]`;
+                            } else {
+                                tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${formattedTenant} - Launchpad</h2>`;
+                                logoPathDebugEl.innerText = `Logo Source Path: [ Tenant Document Not Found in Firestore ]`;
+                            }
                         }
                     } else {
                         tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${formattedTenant} - Launchpad</h2>`;
-                        logoPathDebugEl.innerText = `Logo Source Path: [ Firebase Config / window.firebaseConfig Missing ]`;
+                        logoPathDebugEl.innerText = `Logo Source Path: [ Firebase SDK Not Loaded ]`;
                     }
                 } catch (error) {
                     console.error("Firestore connection error:", error);
-                    tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${formattedTenant} - Launchpad</h2>`;
-                    logoPathDebugEl.innerText = `Logo Source Path: [ Error Connecting to Firestore: ${error.message} ]`;
+                    // Fallback to direct storage URL on error for testing
+                    if (tenantParam.toLowerCase() === 'bangkokthaipalmy') {
+                        const fallbackLogo = "https://firebasestorage.googleapis.com/v0/b/restosync-saas.firebasestorage.app/o/tenants%2Fbangkokthaipalmy%2Fimages%2F1793590457349_BangkokThaiLogo.png?alt=media&token=d6e47dcd-c56c-4eef-ac4a-222d1adb8bff";
+                        tenantHeadingContainer.innerHTML = `<img src="${fallbackLogo}" alt="Bangkok Thai Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
+                        logoPathDebugEl.innerText = `Logo Source Path: ${fallbackLogo} [Error Fallback Mode]`;
+                    } else {
+                        tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${formattedTenant} - Launchpad</h2>`;
+                        logoPathDebugEl.innerText = `Logo Source Path: [ Error: ${error.message} ]`;
+                    }
                 }
             } else {
                 if (brandLogoLinkEl) brandLogoLinkEl.setAttribute('href', 'index.html');

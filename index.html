@@ -22,9 +22,9 @@
         footer { border-top-width: 1px; text-align: center; font-size: 0.75rem; color: #94a3b8; justify-content: center; flex-direction: column; gap: 0.5rem; }
         .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); max-width: 72rem; width: 100%; margin: auto; text-align: center; }
         
-        /* Typography Logo */
-        .brand-logo { font-size: 1.25rem; font-weight: 900; letter-spacing: 0.15em; color: #ffffff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; font-family: monospace; text-transform: uppercase; }
-        .brand-logo span { color: #f59e0b; }
+        /* Logo Styling */
+        .logo-img { height: 38px; width: auto; object-fit: contain; display: block; }
+        .logo-inverted { filter: invert(1) brightness(2); }
 
         /* Client Launchpad Grid Styling */
         .grid-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; text-align: left; }
@@ -47,11 +47,11 @@
 </head>
 <body>
 
-    <!-- Header with Clean Monogram Logo & Ecosystem Badge -->
+    <!-- Header with Image Logo & Ecosystem Badge -->
     <header>
         <div style="display: flex; align-items: center; gap: 1.5rem;">
-            <a href="index.html" class="brand-logo">
-                RESTO<span>SYNC</span>
+            <a href="index.html" id="brand-logo-link">
+                <img src="assets/images/RS.png" alt="RestoSync Logo" class="logo-img logo-inverted">
             </a>
             <span style="font-size: 0.75rem; color: #94a3b8; border-left: 1px solid #334155; padding-left: 1rem;">TargetedScripts.com Ecosystem</span>
         </div>
@@ -179,8 +179,8 @@
             const urlParams = new URLSearchParams(window.location.search);
             const tenantParam = urlParams.get('tenant');
 
-            // Always append ?tenant=... to logo home link and header demo link if present
-            const brandLogoEl = document.querySelector('.brand-logo');
+            // Logo and header link elements
+            const brandLogoLinkEl = document.getElementById('brand-logo-link');
             const demoLinkEl = document.getElementById('header-demo-link');
 
             if (tenantParam) {
@@ -188,7 +188,7 @@
                 document.getElementById('tenant-title').innerText = `${formattedTenant} - Launchpad`;
                 document.getElementById('tenant-badge').innerText = `Tenant ID: ${tenantParam}`;
 
-                if (brandLogoEl) brandLogoEl.setAttribute('href', `index.html?tenant=${encodeURIComponent(tenantParam)}`);
+                if (brandLogoLinkEl) brandLogoLinkEl.setAttribute('href', `index.html?tenant=${encodeURIComponent(tenantParam)}`);
                 if (demoLinkEl) {
                     const href = demoLinkEl.getAttribute('href');
                     demoLinkEl.setAttribute('href', `${href}?tenant=${encodeURIComponent(tenantParam)}`);
@@ -242,8 +242,7 @@
                     console.log("Firestore tenant sync notice: running in local static mode or offline.", error);
                 }
             } else {
-                // If no tenant is provided in query, still allow clicking links normally without parameter
-                if (brandLogoEl) brandLogoEl.setAttribute('href', 'index.html');
+                if (brandLogoLinkEl) brandLogoLinkEl.setAttribute('href', 'index.html');
             }
         });
 

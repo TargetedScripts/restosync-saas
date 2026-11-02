@@ -8,10 +8,17 @@ window.tenantConfig = {
   restaurantName: "Bangkok Thai Takeaway",
   tagline: "Authentic Thai Cuisine in Palmerston North",
   
-  // Standarisasi key logo URL untuk dibaca secara global oleh seluruh modul SaaS
+  // Standarisasi key logo URL
   logoUrl: "https://firebasestorage.googleapis.com/v0/b/restosync-saas.firebasestorage.app/o/tenants%2Fbangkokthaipalmy%2Fimages%2F1793590457349_BangkokThaiLogo.png?alt=media&token=d6e47dcd-c56c-4eef-ac4a-222d1adb8bff",
   
+  // Opsi Akses Template Website (Blog & Shop)
+  templates: {
+    blog: { enabled: true, label: "Chef's Notes & Specials", url: "blog.html" },
+    shop: { enabled: true, label: "Online Order Menu", url: "shop.html" }
+  },
+  
   store: {
+    name: "Bangkok Thai Takeaway",
     phone: "06 222 3375",
     address: "287 Main Street, Palmerston North Central",
     gstNumber: "123-456-789",
@@ -30,7 +37,6 @@ window.tenantConfig = {
     ]
   },
 
-  // Konversi fitur enabled/disabled agar sinkron dengan pengecekan modul launchpad
   enabledModules: {
     pos: true,
     kds: true,
@@ -47,3 +53,5 @@ window.tenantConfig = {
     hotelRoomCharge: false
   }
 };
+
+console.log("BangkokThaiPalmy tenant config loaded successfully!");

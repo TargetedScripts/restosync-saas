@@ -1,13 +1,28 @@
-// assets/js/boluhalus.js untuk tenant BoluHalus
-window.RESTOSYNC_CONFIG = {
+/**
+ * RestoSync SaaS - Store Configuration
+ * Tenant: BoluHalus Micro-Cakery (Palmerston North, NZ)
+ */
+
+window.tenantConfig = {
+    tenantId: "boluhalus",
+    restaurantName: "BoluHalus Micro-Cakery",
+    tagline: "Artisanal Cakes & Sweet Treats in Palmerston North",
+    
+    // Standarisasi key logo URL agar otomatis terbaca oleh sistem utama SaaS
+    logoUrl: "", // Isi dengan URL Firebase Storage Anda jika sudah ada, atau biarkan kosong untuk mode teks
+    
     store: {
         name: "BoluHalus Micro-Cakery",
         address: "Pioneer Highway, Palmerston North",
-        phone: "021 123 4567"
+        phone: "021 123 4567",
+        currency: "NZD",
+        gstRate: 0.15
     },
+    
     branding: {
         logo: "URL_LOGO_ANDA_DI_FIREBASE_STORAGE"
     },
+
     operatingHours: {
         Monday: "Closed",
         Tuesday: "Closed",
@@ -17,6 +32,7 @@ window.RESTOSYNC_CONFIG = {
         Saturday: "9:00 AM - 1:00 PM (Pickup)",
         Sunday: "Closed"
     },
+
     menuItems: [
         {
             id: "bh_01",
@@ -29,6 +45,21 @@ window.RESTOSYNC_CONFIG = {
             isAvailable: true,
             isFav: true
         }
-    ]
+    ],
+
+    // Modul aktif standar untuk tenant BoluHalus
+    enabledModules: {
+        pos: true,
+        kds: true,
+        profile: true,
+        branding: true,
+        menu: true,
+        fcp: true,
+        analytics: true
+    }
 };
+
+// Backward compatibility agar skrip lama yang membaca RESTOSYNC_CONFIG tetap aman
+window.RESTOSYNC_CONFIG = window.tenantConfig;
+
 console.log("BoluHalus custom asset loaded successfully!");

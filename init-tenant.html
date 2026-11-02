@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync SaaS - Init Tenant "boluhalus"</title>
-    <!-- Tailwind CSS untuk styling UI yang bersih -->
+    <title>RestoSync SaaS - Dynamic Tenant Initializer</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
@@ -12,12 +12,27 @@
     <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-6 space-y-6">
         <div>
             <h1 class="text-xl font-bold text-gray-800">RestoSync SaaS</h1>
-            <p class="text-sm text-gray-500">Inisialisasi Dokumen Tenant: <span class="font-mono text-indigo-600 font-semibold">boluhalus</span></p>
+            <p class="text-sm text-gray-500">Inisialisasi & Migrasi Tenant (Unified Architecture)</p>
         </div>
 
         <div class="space-y-4">
+            <!-- Pilihan Tenant -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Pilih Tenant</label>
+                <select id="tenantSelect" onchange="loadTenantPreset()" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm text-gray-800 focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="boluhalus">boluhalus (Bolu Halus Artisan)</option>
+                    <option value="bangkokthaipalmy">bangkokthaipalmy (Bangkok Thai Palmy)</option>
+                </select>
+            </div>
+
+            <!-- Form Ringkas Nama Toko -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Nama Toko / Resto</label>
+                <input type="text" id="storeNameInput" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm text-gray-800 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
             <button id="initBtn" onclick="initializeTenant()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200 shadow-sm cursor-pointer">
-                Jalankan Inisialisasi Tenant
+                Simpan / Perbarui Tenant ke Firestore
             </button>
             
             <div id="statusBox" class="hidden p-4 rounded-lg text-sm border"></div>
@@ -30,7 +45,7 @@
         import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         // ==========================================
-        // KREDENSIAL FIREBASE ANDA
+        // KREDENSIAL FIREBASE ANDA (restosync-saas)
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
@@ -41,12 +56,43 @@
             appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
         };
 
-        // Inisialisasi Firebase & Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Ekspos fungsi ke scope global agar bisa dipanggil dari tombol onclick HTML
+        // Data Preset untuk masing-masing tenant
+        const presets = {
+            boluhalus: {
+                storeName: "Bolu Halus Artisan",
+                defaultLanding: "blog",
+                blogTitle: "Bolu Halus Weekly Drops",
+                blogDesc: "Artisanal cakes NZ"
+            },
+            bangkokthaipalmy: {
+                storeName: "Bangkok Thai Palmy",
+                defaultLanding: "shop",
+                blogTitle: "Bangkok Thai Updates",
+                blogDesc: "Authentic Thai food in Palmerston North"
+            }
+        };
+
+        // Fungsi otomatis mengisi nama toko saat dropdown diganti
+        window.loadTenantPreset = function() {
+            const selectedTenant = document.getElementById('tenantSelect').value;
+            const preset = presets[selectedTenant];
+            if (preset) {
+                document.getElementById('storeNameInput').value = preset.storeName;
+            }
+        };
+
+        // Jalankan saat pertama kali halaman dibuka
+        window.loadTenantPreset();
+
+        // Fungsi utama simpan ke Firestore
         window.initializeTenant = async function() {
+            const tenantId = document.getElementById('tenantSelect').value;
+            const storeName = document.getElementById('storeNameInput').value;
+            const preset = presets[tenantId] || {};
+            
             const btn = document.getElementById('initBtn');
             const statusBox = document.getElementById('statusBox');
 
@@ -57,41 +103,37 @@
             try {
                 // Struktur Data Standar Unified/Single Document Configuration
                 const tenantData = {
-                    tenantId: "boluhalus",
+                    tenantId: tenantId,
                     enabledModules: { 
                         blog: true, 
                         shop: true 
                     },
-                    defaultLanding: "blog",
+                    defaultLanding: preset.defaultLanding || "shop",
                     shopConfig: { 
-                        storeName: "Bolu Halus Artisan", 
+                        storeName: storeName, 
                         currency: "NZD", 
                         taxRate: 0.15 
                     },
                     blogConfig: { 
-                        siteTitle: "Bolu Halus Weekly Drops", 
-                        description: "Artisanal cakes NZ" 
+                        siteTitle: preset.blogTitle || `${storeName} Updates`, 
+                        description: preset.blogDesc || "Catalog & Updates" 
                     },
                     updatedAt: serverTimestamp()
                 };
 
-                // Referensi dokumen ke koleksi "tenants" dengan ID "boluhalus"
-                const tenantRef = doc(db, "tenants", "boluhalus");
-
-                // Menggunakan setDoc dengan { merge: true } sesuai aturan arsitektur baru
+                const tenantRef = doc(db, "tenants", tenantId);
+                // Menggunakan setDoc dengan { merge: true }
                 await setDoc(tenantRef, tenantData, { merge: true });
 
-                // Tampilkan pesan sukses
                 statusBox.className = 'p-4 rounded-lg text-sm bg-green-50 border-green-200 text-green-700 block';
-                statusBox.innerHTML = `<strong>Berhasil!</strong> Dokumen tenant <code>boluhalus</code> telah dibuat/diperbarui di koleksi <code>tenants</code> pada proyek <code>restosync-saas</code>.`;
+                statusBox.innerHTML = `<strong>Berhasil!</strong> Tenant <code>${tenantId}</code> telah diperbarui dengan struktur Unified Configuration.`;
             } catch (error) {
-                console.error("Error initializing tenant:", error);
-                // Tampilkan pesan error
+                console.error("Error:", error);
                 statusBox.className = 'p-4 rounded-lg text-sm bg-red-50 border-red-200 text-red-700 block';
                 statusBox.innerHTML = `<strong>Gagal:</strong> ${error.message}`;
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Jalankan Inisialisasi Tenant';
+                btn.textContent = 'Simpan / Perbarui Tenant ke Firestore';
             }
         };
     </script>

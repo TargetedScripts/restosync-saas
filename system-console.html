@@ -17,7 +17,7 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
 
-    <!-- PASSWORD AUTH GUARD (PENCEGAHAN BACKDOOR & URL BYPASS) -->
+    <!-- PASSWORD AUTH GUARD -->
     <script>
         (function() {
             const AUTH_KEY = "restosync_super_admin_auth";
@@ -41,7 +41,7 @@
         <span>Action successfully executed on Firebase Cloud!</span>
     </div>
 
-    <!-- HEADER DENGAN INDIKATOR STATUS KONEKSI FIREBASE -->
+    <!-- HEADER -->
     <header class="bg-[#111827] border-b border-[#1f2937] px-8 py-4 flex justify-between items-center shadow-md">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 rounded-xl flex items-center justify-center font-black shadow-lg shadow-amber-500/20">
@@ -95,22 +95,14 @@
             </div>
         </div>
 
-        <!-- LIVE FIRESTORE RAW DATA INSPECTOR (PROOF OF LIVE DB SYNC) -->
-        <div class="custom-card rounded-3xl p-6 space-y-3 shadow-xl border border-amber-500/30">
+        <!-- UNIFIED MODULES & LANDING CONFIGURATION -->
+        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl border border-cyan-500/30">
             <div class="flex justify-between items-center">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
-                    <i class="fa-solid fa-database text-sm"></i><span>Live Firestore Raw Data Inspector (Database Proof)</span>
+                <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center space-x-2">
+                    <i class="fa-solid fa-layer-group text-sm"></i><span>Unified Modules Configuration (enabledModules & defaultLanding)</span>
                 </h2>
                 <span id="modeIndicator" class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full font-mono">Mode: Editing Existing Tenant</span>
             </div>
-            <pre id="rawFirestoreViewer" class="bg-[#030712] border border-[#1f2937] p-4 rounded-xl text-[11px] font-mono text-emerald-400 overflow-x-auto max-h-40">Loading raw database snapshot...</pre>
-        </div>
-
-        <!-- UNIFIED MODULES & LANDING CONFIGURATION -->
-        <div class="custom-card rounded-3xl p-6 space-y-6 shadow-xl border border-cyan-500/30">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center space-x-2 border-b border-[#1f2937] pb-3">
-                <i class="fa-solid fa-layer-group text-sm"></i><span>Unified Modules Configuration (enabledModules & defaultLanding)</span>
-            </h2>
             <p class="text-[11px] text-stone-400">Atur modul apa saja yang diaktifkan secara berdampingan dalam satu dokumen tenant beserta halaman utama saat pertama kali dimuat.</p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
@@ -291,7 +283,7 @@
                 <i class="fa-solid fa-layer-group text-sm"></i><span>Master Feature Toggles & Module Access (Categorized Sub-Modules)</span>
             </h2>
 
-            <!-- KELOMPOK 1: POS, TRANSAKSI & PEMBAYARAN -->
+            <!-- KELOMPOK 1 -->
             <div class="space-y-3">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
                     <i class="fa-solid fa-cash-register"></i><span>1. POS, Transactions & Payments</span>
@@ -320,7 +312,7 @@
                 </div>
             </div>
 
-            <!-- KELOMPOK 2: DAPUR, KDS & OPERASIONAL RESTORAN -->
+            <!-- KELOMPOK 2 -->
             <div class="space-y-3 pt-4 border-t border-zinc-800">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
                     <i class="fa-solid fa-utensils"></i><span>2. Kitchen, KDS & Restaurant Operations</span>
@@ -341,7 +333,7 @@
                 </div>
             </div>
 
-            <!-- KELOMPOK 3: INVENTARIS, RESEP & STOK -->
+            <!-- KELOMPOK 3 -->
             <div class="space-y-3 pt-4 border-t border-zinc-800">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
                     <i class="fa-solid fa-boxes-stacked"></i><span>3. Inventory, Recipe & Stock Control</span>
@@ -362,7 +354,7 @@
                 </div>
             </div>
 
-            <!-- KELOMPOK 4: KEUANGAN, PAJAK & LAPORAN -->
+            <!-- KELOMPOK 4 -->
             <div class="space-y-3 pt-4 border-t border-zinc-800">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
                     <i class="fa-solid fa-chart-line"></i><span>4. Finance, Tax & Reporting</span>
@@ -383,7 +375,7 @@
                 </div>
             </div>
 
-            <!-- KELOMPOK 5: HARDWARE, PERIPHERAL & INTEGRASI -->
+            <!-- KELOMPOK 5 -->
             <div class="space-y-3 pt-4 border-t border-zinc-800">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
                     <i class="fa-solid fa-print"></i><span>5. Hardware, Peripherals & Integrations</span>
@@ -416,7 +408,7 @@
                 </div>
             </div>
 
-            <!-- KELOMPOK 6: BRANDING, TEMA & KUSTOMISASI -->
+            <!-- KELOMPOK 6 -->
             <div class="space-y-3 pt-4 border-t border-zinc-800">
                 <h3 class="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center space-x-2">
                     <i class="fa-solid fa-paintbrush"></i><span>6. Branding, Themes & Customization</span>
@@ -435,6 +427,17 @@
 
         </div>
 
+        <!-- LIVE FIRESTORE RAW DATA INSPECTOR (DIPINDAHKAN KE PALING BAWAH UNTUK DEBUGGING) -->
+        <div class="custom-card rounded-3xl p-6 space-y-3 shadow-xl border border-amber-500/30">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-2">
+                    <i class="fa-solid fa-database text-sm"></i><span>Live Firestore Raw Data Inspector (Database Proof & Debug)</span>
+                </h2>
+                <span class="text-[10px] text-stone-400">Menampilkan JSON mentah dokumen Firestore untuk keperluan tracing</span>
+            </div>
+            <pre id="rawFirestoreViewer" class="bg-[#030712] border border-[#1f2937] p-4 rounded-xl text-[11px] font-mono text-emerald-400 overflow-x-auto max-h-40">Loading raw database snapshot...</pre>
+        </div>
+
     </main>
 
     <!-- FOOTER -->
@@ -442,7 +445,7 @@
         RestoSync SaaS System Console &bull; Secured Super Admin Hub
     </footer>
 
-    <!-- FIREBASE SDKs (FIRESTORE & STORAGE COMPATIBILITY) -->
+    <!-- FIREBASE SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
@@ -530,6 +533,7 @@
             });
         }
 
+        // KETIKA PILIH TENANT YANG ADA: MUAT SEMUA DATA KE FORM AGAR MUDAH DIMODIFIKASI
         function switchTenant(tenantId) {
             isNewTenantMode = false;
             document.getElementById('modeIndicator').innerText = "Mode: Editing Existing Tenant";
@@ -538,6 +542,7 @@
             updateQuickLinks(tenantId);
 
             db.collection("tenants").doc(tenantId).get().then((doc) => {
+                // Reset semua field terlebih dahulu
                 document.getElementById('inputStoreName').value = '';
                 document.getElementById('inputClientName').value = '';
                 document.getElementById('inputClientPhone').value = '';
@@ -560,16 +565,13 @@
                     const data = doc.data();
                     document.getElementById('rawFirestoreViewer').innerText = JSON.stringify(data, null, 2);
 
-                    // Unified Architecture Mapping
+                    // Unified Modules & Landing
                     const enabledMods = data.enabledModules || { shop: true, blog: false };
-                    // Jika di database lamanya masih pakai field 'modules' lama, kita fallback
                     document.getElementById('module_shop_enabled').checked = !!enabledMods.shop;
                     document.getElementById('module_blog_enabled').checked = !!enabledMods.blog;
-                    
-                    // Jika ada defaultLanding tersimpan, gunakan; jika tidak, fallback ke templateType lama atau 'shop'
-                    const fallbackLanding = (data.profile && data.profile.templateType) ? data.profile.templateType : 'shop';
-                    document.getElementById('selectDefaultLanding').value = data.defaultLanding || fallbackLanding;
+                    document.getElementById('selectDefaultLanding').value = data.defaultLanding || 'shop';
 
+                    // Profile & Images (Pastikan logoUrl dan heroImages terisi otomatis)
                     const profile = data.profile || {};
                     document.getElementById('inputStoreName').value = profile.tenantName || '';
                     document.getElementById('inputClientName').value = profile.contactPerson || '';
@@ -586,6 +588,7 @@
                     document.getElementById('inputSubTier').value = profile.tier || 'FREE SOCIAL TIER';
                     document.getElementById('inputExpiryDate').value = profile.expiryDate || '';
 
+                    // Modules & Rights Checkboxes
                     const savedModules = data.modules || {};
                     Object.keys(savedModules).forEach(modKey => {
                         const cb = document.getElementById(modKey);
@@ -605,6 +608,7 @@
             });
         }
 
+        // KETIKA KLIK + ADD NEW TENANT: KOSONGKAN SELURUH FIELD FORM AGAR TIDAK BINGUNG
         function prepareNewTenant() {
             isNewTenantMode = true;
             document.getElementById('modeIndicator').innerText = "Mode: Creating New Tenant Entry";
@@ -617,6 +621,7 @@
             tenantIdInput.disabled = false;
             tenantIdInput.focus();
             
+            // Set default bersih untuk tenant baru
             document.getElementById('module_shop_enabled').checked = true;
             document.getElementById('module_blog_enabled').checked = false;
             document.getElementById('selectDefaultLanding').value = 'shop';
@@ -637,10 +642,9 @@
             document.getElementById('inputExpiryDate').value = '';
             document.getElementById('rawFirestoreViewer').innerText = "New Unified Tenant Draft Mode (Ready for entry. Type Tenant ID above.)";
             
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
-            // Sesuaikan kembali checkbox unified modules sesuai default
+            // Kosongkan semua checkbox modul/rights
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
             document.getElementById('module_shop_enabled').checked = true;
-            document.getElementById('module_blog_enabled').checked = false;
 
             tenantIdInput.oninput = function() {
                 const currentSlug = this.value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');
@@ -648,7 +652,7 @@
                 updateQuickLinks(currentSlug || 'new-tenant');
             };
 
-            showToast("Ready to add new unified tenant. Fill in Tenant ID and details.");
+            showToast("Ready to add new tenant. All fields cleared.");
         }
 
         function uploadTenantAssetToStorage() {
@@ -736,7 +740,6 @@
                 rightsData[cb.id] = cb.checked;
             });
 
-            // Struktur Unified / Single Document Configuration di Firestore
             const unifiedTenantData = {
                 enabledModules: {
                     shop: document.getElementById('module_shop_enabled').checked,

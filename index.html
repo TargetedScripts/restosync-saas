@@ -105,7 +105,7 @@
                 Logo Source Path: [ Initializing Diagnostic... ]
             </div>
 
-            <!-- Diagnostic Inspector Panel (Firestore Status & Storage Images List) -->
+            <!-- Diagnostic Inspector Panel -->
             <div class="diagnostic-box" id="diagnostic-panel">
                 <div style="color: #f59e0b; font-weight: bold; margin-bottom: 0.5rem;">
                     <i class="fa-solid fa-terminal"></i> Firebase Diagnostic & Storage Inspector:
@@ -124,55 +124,42 @@
                     <i class="fa-solid fa-globe"></i> Customer Web Templates (Active Tenant Access)
                 </div>
                 <div id="templates-buttons-grid" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                    <!-- Rendered dynamically based on tenantConfig.templates -->
+                    <!-- Rendered dynamically -->
                 </div>
             </div>
 
-            <!-- Client Launchpad Grid Menu (Modular Portal) -->
+            <!-- Client Launchpad Grid Menu -->
             <div class="grid-menu" id="launchpad-grid">
-                <!-- 1. Live Orders & POS -->
                 <a href="cashier.html" class="menu-btn" data-module="pos">
                     <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-cash-register text-amber-400"></i></div>
                     <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Live Orders & POS</strong>
                     <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Real-time orders & 15% NZ GST</span>
                 </a>
-
-                <!-- 2. Kitchen Display System (KDS) -->
                 <a href="kds.html" class="menu-btn" data-module="kds">
                     <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-utensils text-amber-400"></i></div>
                     <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Kitchen Display (KDS)</strong>
                     <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Live kitchen kanban board</span>
                 </a>
-
-                <!-- 3. Company Profile -->
                 <a href="admin-profile.html" class="menu-btn" data-module="profile">
                     <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-building text-amber-400"></i></div>
                     <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Company Profile</strong>
                     <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Restaurant info, contacts & settings</span>
                 </a>
-
-                <!-- 4. Theme & Branding Studio -->
                 <a href="branding.html" class="menu-btn" data-module="branding">
                     <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-palette text-amber-400"></i></div>
                     <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Theme & Branding</strong>
                     <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Colors, logos & layout skins</span>
                 </a>
-
-                <!-- 5. Menu Catalog Manager -->
                 <a href="menu.html" class="menu-btn" data-module="menu">
                     <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-book-open text-amber-400"></i></div>
                     <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Menu Catalog</strong>
                     <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Categories, items & pricing</span>
                 </a>
-
-                <!-- 6. Food Safety & HACCP -->
                 <a href="fcp.html" class="menu-btn" data-module="fcp">
                     <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-shield-halved text-amber-400"></i></div>
                     <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Food Safety Compliance</strong>
                     <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Temperature logs & hygiene audits</span>
                 </a>
-
-                <!-- 7. Business Analytics -->
                 <a href="analytics.html" class="menu-btn" data-module="analytics">
                     <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-chart-line text-amber-400"></i></div>
                     <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Business Analytics</strong>
@@ -205,10 +192,9 @@
                 </div>
             </div>
 
-            <!-- FAQ Section -->
             <div class="faq-section">
                 <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Diagnostic SaaS Inspector Active</strong>
-                Tenant configs loaded from local JS, Firestore queried, and Firebase Storage bucket inspected live. <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">TargetedScripts.com</a>.
+                Tenant configs loaded, Firebase initialized safely, and Storage bucket inspected live. <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">TargetedScripts.com</a>.
             </div>
 
             <div style="font-size: 0.75rem; color: #64748b; margin-top: 1.5rem;">
@@ -223,7 +209,7 @@
         <div style="color: #64748b; font-size: 0.7rem;">Powered & Developed by TargetedScripts.com - Custom Software & Automation NZ</div>
     </footer>
 
-    <!-- Tenant Parameter Injector & Diagnostic Inspector Script -->
+    <!-- Safe Initialization & Diagnostic Script -->
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -249,7 +235,6 @@
                     demoLinkEl.setAttribute('href', `${href}?tenant=${encodeURIComponent(tenantParam)}`);
                 }
 
-                // Append tenant param to module grid links
                 const launchpadLinks = document.querySelectorAll('.grid-menu a');
                 launchpadLinks.forEach(link => {
                     const currentHref = link.getAttribute('href');
@@ -259,12 +244,12 @@
                     }
                 });
 
-                await new Promise(resolve => setTimeout(resolve, 250));
+                await new Promise(resolve => setTimeout(resolve, 300));
 
                 let resolvedLogoUrl = "";
                 let restaurantName = formattedTenant;
 
-                // 1. Ambil data dari window.tenantConfig lokal
+                // 1. Ambil konfigurasi lokal
                 if (window.tenantConfig) {
                     if (window.tenantConfig.restaurantName) restaurantName = window.tenantConfig.restaurantName;
                     if (window.tenantConfig.enabledModules) {
@@ -294,21 +279,26 @@
                     }
                 }
 
-                // 2. Baca Firestore & Inspect Firebase Storage secara Transparan
+                // 2. Inisialisasi Firebase & Inspect Firestore + Storage secara Aman
                 try {
                     if (typeof firebase !== 'undefined') {
-                        if (!firebase.apps.length && window.firebaseConfig) {
-                            firebase.initializeApp(window.firebaseConfig);
+                        if (!firebase.apps.length) {
+                            if (window.firebaseConfig) {
+                                firebase.initializeApp(window.firebaseConfig);
+                            } else {
+                                throw new Error("window.firebaseConfig tidak ditemukan di config.js!");
+                            }
                         }
+
                         const db = firebase.firestore();
                         const storage = firebase.storage();
 
-                        // Cek Firestore Document
+                        // Cek Dokumen Firestore
                         const docRef = await db.collection("tenants").doc(tenantKey).get();
                         
                         if (docRef.exists) {
                             const data = docRef.data();
-                            firestoreStatusLog.innerHTML = `1. Firestore Query: <span style="color: #34d399;">SUCCESS</span> (Document found for ID: <code>${tenantKey}</code>)`;
+                            firestoreStatusLog.innerHTML = `1. Firestore Query: <span style="color: #34d399;">SUCCESS</span> (Found document for <code>${tenantKey}</code>)`;
                             
                             let rawLogo = data.logoUrl || data.logo || data.imageUrl || (data.profile && data.profile.logoUrl) || "";
                             if (rawLogo.startsWith("gs://")) {
@@ -323,32 +313,30 @@
                                 }
                             }
                         } else {
-                            firestoreStatusLog.innerHTML = `1. Firestore Query: <span style="color: #f87171;">FAILED</span> (Document <code>${tenantKey}</code> does not exist in collection <code>tenants</code>)`;
+                            firestoreStatusLog.innerHTML = `1. Firestore Query: <span style="color: #f87171;">FAILED</span> (Document <code>${tenantKey}</code> not found in <code>tenants</code> collection)`;
                         }
 
-                        // Inspeksi & List Semua File di Firebase Storage untuk Tenant Ini
+                        // Cek File di Firebase Storage
                         try {
-                            // Coba list dari folder tenants/[tenantKey]/images/ atau tenants/[tenantKey]/
                             let storageRef = storage.ref().child(`tenants/${tenantKey}/images`);
                             let res = null;
                             try {
                                 res = await storageRef.listAll();
                             } catch (errSub) {
-                                // Fallback ke folder utama tenant jika folder images tidak ada
                                 storageRef = storage.ref().child(`tenants/${tenantKey}`);
                                 res = await storageRef.listAll();
                             }
 
                             let fileListHtml = "";
                             if (res.items.length > 0 || res.prefixes.length > 0) {
-                                fileListHtml = `<span style="color: #34d399;">SUCCESS</span> (${res.items.length} files found in storage):<ul style="margin: 0.25rem 0 0 1rem; padding: 0; list-style-type: disc;">`;
+                                fileListHtml = `<span style="color: #34d399;">SUCCESS</span> (${res.items.length} files found):<ul style="margin: 0.25rem 0 0 1rem; padding: 0; list-style-type: disc;">`;
                                 for (let itemRef of res.items) {
                                     const fileUrl = await itemRef.getDownloadURL();
                                     fileListHtml += `<li style="margin-bottom: 0.2rem;"><a href="${fileUrl}" target="_blank" style="color: #38bdf8; text-decoration: underline;">${itemRef.name}</a></li>`;
                                 }
                                 fileListHtml += `</ul>`;
                             } else {
-                                fileListHtml = `<span style="color: #f87171;">WARNING</span> (Connected to storage, but no files found under <code>tenants/${tenantKey}/</code>)`;
+                                fileListHtml = `<span style="color: #f87171;">WARNING</span> (Connected, but no files in folder <code>tenants/${tenantKey}/</code>)`;
                             }
                             storageListLog.innerHTML = `2. Storage Inspector: ${fileListHtml}`;
                         } catch (storageErr) {
@@ -356,21 +344,21 @@
                         }
 
                     } else {
-                        firestoreStatusLog.innerHTML = `1. Firestore Query: <span style="color: #f87171;">ERROR</span> (Firebase SDK not initialized)`;
-                        storageListLog.innerHTML = `2. Storage Inspector: Skipped`;
+                        firestoreStatusLog.innerHTML = `1. Firestore Query: <span style="color: #f87171;">ERROR</span> - Firebase SDK not loaded.`;
+                        storageListLog.innerHTML = `2. Storage Inspector: Skipped.`;
                     }
                 } catch (err) {
                     firestoreStatusLog.innerHTML = `1. Firestore Query: <span style="color: #f87171;">ERROR</span> - ${err.message}`;
-                    storageListLog.innerHTML = `2. Storage Inspector: Skipped due to Firestore failure`;
+                    storageListLog.innerHTML = `2. Storage Inspector: Skipped due to initialization error.`;
                 }
 
-                // 3. Render Logo atau Fallback Teks
+                // 3. Render Logo atau Teks
                 if (resolvedLogoUrl && resolvedLogoUrl.trim() !== "") {
                     tenantHeadingContainer.innerHTML = `<img src="${resolvedLogoUrl}" alt="${restaurantName} Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
-                    logoPathDebugEl.innerText = `Logo Source Path (Active): ${resolvedLogoUrl}`;
+                    logoPathDebugEl.innerText = `Logo Source Path (Resolved): ${resolvedLogoUrl}`;
                 } else {
                     tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${restaurantName} - Launchpad</h2>`;
-                    logoPathDebugEl.innerText = `Logo Source Path: [ Text Mode Active - Check Storage List Above to Copy Image Link ]`;
+                    logoPathDebugEl.innerText = `Logo Source Path: [ Text Mode Active - See Storage Inspector Above ]`;
                 }
 
             } else {

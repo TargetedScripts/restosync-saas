@@ -52,10 +52,8 @@
         .dot { width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; }
         
         /* Diagnostic Console at Bottom */
-        .diagnostic-box { background: #0b0f19; border: 1px dashed #334155; border-radius: 0.5rem; padding: 1rem; margin-top: 3rem; text-align: left; font-family: monospace; font-size: 0.75rem; color: #94a3b8; line-height: 1.4; }
+        .diagnostic-box { background: #0b0f19; border: 1px dashed #334155; border-radius: 0.5rem; padding: 1rem; margin-top: 2rem; text-align: left; font-family: monospace; font-size: 0.75rem; color: #94a3b8; line-height: 1.4; }
         
-        .pricing-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; text-align: left; margin-top: 2rem; margin-bottom: 2rem; }
-        .price-card { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; }
         .faq-section { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; text-align: left; margin-top: 2rem; font-size: 0.85rem; color: #94a3b8; }
         
         .header-demo-btn, .admin-btn { background-color: #334155; color: #cbd5e1; font-size: 0.75rem; padding: 0.375rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.375rem; font-weight: 500; border: 1px solid #475569; cursor: pointer; transition: 0.2s; text-decoration: none; }
@@ -105,7 +103,7 @@
                 <div id="templates-buttons-grid" style="display: flex; gap: 0.75rem; flex-wrap: wrap;"></div>
             </div>
 
-            <!-- Dashboard Grid Menu (Updated with admin-profile.html integration) -->
+            <!-- Dashboard Grid Menu (Optimized & Clean) -->
             <div class="grid-menu" id="launchpad-grid">
                 <a href="cashier.html" class="menu-btn" data-module="pos">
                     <div style="font-size: 1.5rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-cash-register text-amber-400"></i></div>
@@ -142,30 +140,6 @@
                     <strong style="font-size: 0.95rem; color: white; margin-bottom: 0.25rem;">Business Analytics</strong>
                     <span style="font-size: 0.75rem; color: #94a3b8; line-height: 1.3;">Sales reports & performance metrics</span>
                 </a>
-            </div>
-
-            <div style="text-align: left; font-weight: bold; font-size: 1rem; color: white; margin-bottom: 0.5rem; border-top: 1px solid #334155; padding-top: 1.5rem;">
-                Subscription Tiers & Value Package
-            </div>
-            <div class="pricing-box">
-                <div class="price-card">
-                    <div style="font-weight: bold; color: #f59e0b;">Basic Tier ($150/mo)</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
-                        Includes POS Cashier, Menu Catalog, Staff Roster, plus a <strong>Free Digital Customer Website</strong>.
-                    </div>
-                </div>
-                <div class="price-card">
-                    <div style="font-weight: bold; color: #f59e0b;">Professional Tier ($250/mo)</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
-                        Includes advanced operational features, priority support, and customized branding.
-                    </div>
-                </div>
-                <div class="price-card">
-                    <div style="font-weight: bold; color: #f59e0b;">Enterprise Tier ($400/mo)</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
-                        Multi-branch capabilities, automated reporting, and advanced enterprise solutions.
-                    </div>
-                </div>
             </div>
 
             <div class="faq-section">
@@ -224,7 +198,7 @@
                     demoLinkEl.setAttribute('href', `${href}?tenant=${encodeURIComponent(tenantParam)}`);
                 }
 
-                // Konsistensi parameter tenant pada semua link navigasi modul (termasuk admin-profile.html)
+                // Konsistensi parameter tenant pada semua link navigasi modul
                 const launchpadLinks = document.querySelectorAll('.grid-menu a');
                 launchpadLinks.forEach(link => {
                     const currentHref = link.getAttribute('href');
@@ -266,7 +240,7 @@
                             tenantData = docRef.data();
                             traceFirestoreLog.innerHTML = `3. Firestore Query: <span style="color: #34d399;">SUCCESS</span> (Document <code>${tenantKey}</code> read)`;
                             
-                            // Mengambil password secara presisi dari map 'profile.adminPassword' di Firestore[cite: 4, 5]
+                            // Mengambil password secara presisi dari map 'profile.adminPassword' di Firestore
                             if (tenantData.profile && tenantData.profile.adminPassword) {
                                 firestorePassword = tenantData.profile.adminPassword;
                             } else if (tenantData.adminPassword) {

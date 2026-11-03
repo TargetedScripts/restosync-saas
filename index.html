@@ -298,26 +298,26 @@
                             let rawLogo = data.logoUrl || data.logo || data.imageUrl || (data.profile && data.profile.logoUrl) || "";
 
                             if (rawLogo.startsWith("gs://")) {
-                                // Konversi otomatis gs:// menjadi HTTPS Public Download URL secara live!
-                                try {
-                                    resolvedLogoUrl = await storage.refFromURL(rawLogo).getDownloadURL();
-                                } catch (storageErr) {
-                                    console.error("Gagal mendapatkan download URL dari gs://:", storageErr);
-                                    resolvedLogoUrl = rawLogo;
-                                }
-                            } else if (rawLogo.trim() !== "") {
+                                resolvedLogoUrl = await storage.refFromURL(rawLogo).getDownloadURL();
+                            } else if (rawLogo.startsWith("http://") || rawLogo.startsWith("https://")) {
                                 resolvedLogoUrl = rawLogo;
+                            } else if (rawLogo.trim() !== "") {
+                                try {
+                                    resolvedLogoUrl = await storage.ref().child(rawLogo).getDownloadURL();
+                                } catch (e) {
+                                    resolvedLogoUrl = await storage.ref(`tenants/${tenantParam.toLowerCase().trim()}/${rawLogo}`).getDownloadURL();
+                                }
                             }
                         }
                     }
                 } catch (err) {
-                    console.error("Error fetching or converting logo from Firestore/Storage:", err);
+                    console.error("Error resolving storage path:", err);
                 }
 
                 // 3. Render Logo atau Fallback Teks ke Halaman
                 if (resolvedLogoUrl && resolvedLogoUrl.trim() !== "") {
                     tenantHeadingContainer.innerHTML = `<img src="${resolvedLogoUrl}" alt="${restaurantName} Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
-                    logoPathDebugEl.innerText = `Logo Source Path (Resolved from Storage/Firestore): ${resolvedLogoUrl}`;
+                    logoPathDebugEl.innerText = `Logo Source Path (Resolved): ${resolvedLogoUrl}`;
                 } else {
                     tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${restaurantName} - Launchpad</h2>`;
                     logoPathDebugEl.innerText = `Logo Source Path: [ Firestore Checked - No Valid logoUrl Found, Using Text Mode ]`;

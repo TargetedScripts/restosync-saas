@@ -51,8 +51,8 @@
         .btn-live { background-color: #059669; color: white; font-size: 0.75rem; padding: 0.375rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.375rem; font-weight: 500; }
         .dot { width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; }
         
-        /* Detailed Diagnostic Panel */
-        .diagnostic-box { background: #0b0f19; border: 1px dashed #f59e0b; border-radius: 0.5rem; padding: 1rem; margin-top: 1.5rem; margin-bottom: 2rem; text-align: left; font-family: monospace; font-size: 0.75rem; color: #cbd5e1; line-height: 1.4; }
+        /* Diagnostic Console Moved to Bottom */
+        .diagnostic-box { background: #0b0f19; border: 1px dashed #334155; border-radius: 0.5rem; padding: 1rem; margin-top: 3rem; text-align: left; font-family: monospace; font-size: 0.75rem; color: #94a3b8; line-height: 1.4; }
         
         .pricing-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; text-align: left; margin-top: 2rem; margin-bottom: 2rem; }
         .price-card { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; }
@@ -88,25 +88,11 @@
         <div class="card">
             <span class="badge" id="tenant-badge">New Zealand Hospitality Standard</span>
             
-            <div style="margin-top: 1rem; margin-bottom: 0.5rem; min-height: 60px; display: flex; align-items: center; justify-content: center;">
+            <!-- Clean Logo / Title Area (Debug path removed) -->
+            <div style="margin-top: 1rem; margin-bottom: 2rem; min-height: 60px; display: flex; align-items: center; justify-content: center;">
                 <div id="tenant-heading-container" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                     <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">Client Launchpad</h2>
                 </div>
-            </div>
-            
-            <div style="font-size: 0.75rem; color: #f59e0b; margin-bottom: 1rem; font-family: monospace;" id="logo-path-debug">
-                Logo Source Path: [ Tracing Active... ]
-            </div>
-
-            <!-- Super Detailed Trace Diagnostic Panel -->
-            <div class="diagnostic-box" id="diagnostic-panel">
-                <div style="color: #f59e0b; font-weight: bold; margin-bottom: 0.5rem; font-size: 0.85rem;">
-                    <i class="fa-solid fa-stethoscope"></i> RESTOSYNC TRACE & DIAGNOSTIC CONSOLE:
-                </div>
-                <div id="trace-config-log" style="margin-bottom: 0.4rem; color: #93c5fd;">1. Config Check: Scanning window.firebaseConfig...</div>
-                <div id="trace-init-log" style="margin-bottom: 0.4rem; color: #93c5fd;">2. Firebase Init: Waiting...</div>
-                <div id="trace-firestore-log" style="margin-bottom: 0.4rem; color: #93c5fd;">3. Firestore Query: Waiting...</div>
-                <div id="trace-storage-log" style="color: #cbd5e1;">4. Storage Inspector: Waiting...</div>
             </div>
 
             <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 44rem; margin-left: auto; margin-right: auto; line-height: 1.5; font-size: 0.875rem;">
@@ -158,9 +144,44 @@
                 </a>
             </div>
 
+            <div style="text-align: left; font-weight: bold; font-size: 1rem; color: white; margin-bottom: 0.5rem; border-top: 1px solid #334155; padding-top: 1.5rem;">
+                Subscription Tiers & Value Package
+            </div>
+            <div class="pricing-box">
+                <div class="price-card">
+                    <div style="font-weight: bold; color: #f59e0b;">Basic Tier ($150/mo)</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
+                        Includes POS Cashier, Menu Catalog, Staff Roster, plus a <strong>Free Digital Customer Website</strong>.
+                    </div>
+                </div>
+                <div class="price-card">
+                    <div style="font-weight: bold; color: #f59e0b;">Professional Tier ($250/mo)</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
+                        Includes advanced operational features, priority support, and customized branding.
+                    </div>
+                </div>
+                <div class="price-card">
+                    <div style="font-weight: bold; color: #f59e0b;">Enterprise Tier ($400/mo)</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
+                        Multi-branch capabilities, automated reporting, and advanced enterprise solutions.
+                    </div>
+                </div>
+            </div>
+
             <div class="faq-section">
-                <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Trace Diagnostic Active</strong>
-                SaaS environment tracing active via TargetedScripts.com.
+                <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Pure SaaS Architecture Active</strong>
+                Tenant configs loaded dynamically from Firestore & Storage. <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">TargetedScripts.com</a>.
+            </div>
+
+            <!-- Diagnostic Console Moved to Bottom -->
+            <div class="diagnostic-box" id="diagnostic-panel">
+                <div style="color: #f59e0b; font-weight: bold; margin-bottom: 0.4rem;">
+                    <i class="fa-solid fa-stethoscope"></i> RESTOSYNC TRACE & DIAGNOSTIC CONSOLE:
+                </div>
+                <div id="trace-config-log" style="margin-bottom: 0.3rem;">1. Config Check: Scanning...</div>
+                <div id="trace-init-log" style="margin-bottom: 0.3rem;">2. Firebase Init: Waiting...</div>
+                <div id="trace-firestore-log" style="margin-bottom: 0.3rem;">3. Firestore Query: Waiting...</div>
+                <div id="trace-storage-log">4. Storage Inspector: Waiting...</div>
             </div>
 
             <div style="font-size: 0.75rem; color: #64748b; margin-top: 1.5rem;">
@@ -174,7 +195,7 @@
         <div style="color: #64748b; font-size: 0.7rem;">Powered & Developed by TargetedScripts.com - Custom Software & Automation NZ</div>
     </footer>
 
-    <!-- Detailed Trace & Diagnostic Script -->
+    <!-- Clean Script Implementation -->
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -183,7 +204,6 @@
             const brandLogoLinkEl = document.getElementById('brand-logo-link');
             const demoLinkEl = document.getElementById('header-demo-link');
             const tenantHeadingContainer = document.getElementById('tenant-heading-container');
-            const logoPathDebugEl = document.getElementById('logo-path-debug');
             
             const traceConfigLog = document.getElementById('trace-config-log');
             const traceInitLog = document.getElementById('trace-init-log');
@@ -218,23 +238,45 @@
                 let resolvedLogoUrl = "";
                 let restaurantName = formattedTenant;
 
-                // TRACE 1: Cek window.firebaseConfig
                 if (typeof window.firebaseConfig !== 'undefined') {
                     traceConfigLog.innerHTML = `1. Config Check: <span style="color: #34d399;">FOUND</span> (projectId: <code>${window.firebaseConfig.projectId || 'N/A'}</code>)`;
                 } else {
-                    traceConfigLog.innerHTML = `1. Config Check: <span style="color: #f87171;">NOT FOUND</span> (window.firebaseConfig is undefined in config.js)`;
-                    traceInitLog.innerHTML = `2. Firebase Init: Skipped (No config)`;
+                    traceConfigLog.innerHTML = `1. Config Check: <span style="color: #f87171;">NOT FOUND</span> (window.firebaseConfig undefined)`;
+                    traceInitLog.innerHTML = `2. Firebase Init: Skipped`;
                     traceFirestoreLog.innerHTML = `3. Firestore Query: Skipped`;
                     traceStorageLog.innerHTML = `4. Storage Inspector: Skipped`;
                     return;
                 }
 
-                // Load config lokal tenant
                 if (window.tenantConfig) {
                     if (window.tenantConfig.restaurantName) restaurantName = window.tenantConfig.restaurantName;
+                    if (window.tenantConfig.enabledModules) {
+                        document.querySelectorAll('.menu-btn').forEach(btn => {
+                            const moduleKey = btn.getAttribute('data-module');
+                            if (window.tenantConfig.enabledModules[moduleKey] === false) {
+                                btn.classList.add('disabled');
+                                const subSpan = btn.querySelector('span');
+                                if (subSpan) subSpan.innerText = "Module Locked / Disabled";
+                            }
+                        });
+                    }
+                    if (window.tenantConfig.templates) {
+                        let templateHtml = "";
+                        let activeCount = 0;
+                        for (const [key, tpl] of Object.entries(window.tenantConfig.templates)) {
+                            if (tpl.enabled) {
+                                activeCount++;
+                                let iconClass = key === 'blog' ? 'fa-blog' : 'fa-store';
+                                templateHtml += `<a href="${tpl.url}?tenant=${encodeURIComponent(tenantParam)}" style="background: #1e293b; border: 1px solid #475569; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 0.8rem; display: flex; align-items: center; gap: 0.5rem; transition: 0.2s;" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#475569'"><i class="fa-solid ${iconClass} text-amber-400"></i> ${tpl.label} (${key.toUpperCase()})</a>`;
+                            }
+                        }
+                        if (activeCount > 0) {
+                            templatesButtonsGrid.innerHTML = templateHtml;
+                            templatesContainer.style.display = "block";
+                        }
+                    }
                 }
 
-                // TRACE 2: Inisialisasi Firebase
                 try {
                     if (!firebase.apps.length) {
                         firebase.initializeApp(window.firebaseConfig);
@@ -246,7 +288,6 @@
                     const db = firebase.firestore();
                     const storage = firebase.storage();
 
-                    // TRACE 3: Query Firestore
                     try {
                         const docRef = await db.collection("tenants").doc(tenantKey).get();
                         if (docRef.exists) {
@@ -272,7 +313,6 @@
                         traceFirestoreLog.innerHTML = `3. Firestore Query: <span style="color: #f87171;">ERROR</span> - ${fsErr.message}`;
                     }
 
-                    // TRACE 4: Storage Inspector
                     try {
                         let storageRef = storage.ref().child(`tenants/${tenantKey}/images`);
                         let res = null;
@@ -290,7 +330,7 @@
                             }
                             traceStorageLog.innerHTML = `4. Storage Inspector: <span style="color: #34d399;">SUCCESS</span> - ${listStr}`;
                         } else {
-                            traceStorageLog.innerHTML = `4. Storage Inspector: <span style="color: #f87171;">WARNING</span> - Connected, but folder <code>tenants/${tenantKey}/</code> is empty.`;
+                            traceStorageLog.innerHTML = `4. Storage Inspector: <span style="color: #f87171;">WARNING</span> - Folder <code>tenants/${tenantKey}/</code> is empty.`;
                         }
                     } catch (stErr) {
                         traceStorageLog.innerHTML = `4. Storage Inspector: <span style="color: #f87171;">ERROR</span> - ${stErr.message}`;
@@ -302,19 +342,15 @@
                     traceStorageLog.innerHTML = `4. Storage Inspector: Skipped`;
                 }
 
-                // Render Logo atau Teks
                 if (resolvedLogoUrl && resolvedLogoUrl.trim() !== "") {
                     tenantHeadingContainer.innerHTML = `<img src="${resolvedLogoUrl}" alt="${restaurantName} Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
-                    logoPathDebugEl.innerText = `Logo Source Path (Resolved): ${resolvedLogoUrl}`;
                 } else {
                     tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${restaurantName} - Launchpad</h2>`;
-                    logoPathDebugEl.innerText = `Logo Source Path: [ Text Mode Active - See Trace Console Above ]`;
                 }
 
             } else {
                 if (brandLogoLinkEl) brandLogoLinkEl.setAttribute('href', 'index.html');
                 tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">Client Launchpad</h2>`;
-                logoPathDebugEl.innerText = `Logo Source Path: [ No Tenant Parameter Provided ]`;
                 document.getElementById('diagnostic-panel').style.display = 'none';
             }
         });

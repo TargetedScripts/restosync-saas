@@ -87,7 +87,7 @@
                 </div>
             </div>
             
-            <!-- DYNAMIC PREVIEW LINKS WITH PARAMETER ?tenant= -->
+            <!-- DYNAMIC PREVIEW LINKS -->
             <div class="flex items-center space-x-2" id="quickTenantLinks">
                 <a id="linkKds" href="#" target="_blank" class="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1.5 rounded text-xs font-semibold transition">Open KDS</a>
                 <a id="linkAdmin" href="#" target="_blank" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">Store Admin</a>
@@ -181,45 +181,45 @@
                     <input type="text" id="inputJsAssetUrl" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-cyan-300 font-mono" placeholder="assets/js/tenant-id.js">
                 </div>
 
-                <!-- LOGO IMAGE URL DENGAN THUMBNAIL PREVIEW -->
+                <!-- LOGO IMAGE URL DENGAN FULL PREVIEW -->
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold flex justify-between items-center">
                         <span>Logo Image URL</span>
                         <span id="logoPreviewContainer" class="hidden">
-                            <img id="logoThumb" src="" alt="Logo Preview" class="w-7 h-7 object-cover rounded-md border border-amber-500/50 inline-block shadow">
+                            <img id="logoThumb" src="" alt="Logo Preview" class="h-14 max-w-[120px] object-contain rounded-lg border border-amber-500/50 bg-[#030712] p-1 inline-block shadow">
                         </span>
                     </label>
                     <input type="text" id="inputLogoUrl" oninput="updateImagePreview('inputLogoUrl', 'logoThumb', 'logoPreviewContainer')" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/BangkokThaiLogo.png">
                 </div>
 
-                <!-- HERO IMAGE 1 URL DENGAN THUMBNAIL PREVIEW -->
+                <!-- HERO IMAGE 1 URL DENGAN FULL PREVIEW -->
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400 flex justify-between items-center">
                         <span>Hero Image 1 URL (Optional)</span>
                         <span id="hero1PreviewContainer" class="hidden">
-                            <img id="hero1Thumb" src="" alt="Hero 1 Preview" class="w-7 h-7 object-cover rounded-md border border-amber-500/50 inline-block shadow">
+                            <img id="hero1Thumb" src="" alt="Hero 1 Preview" class="h-14 max-w-[120px] object-contain rounded-lg border border-amber-500/50 bg-[#030712] p-1 inline-block shadow">
                         </span>
                     </label>
                     <input type="text" id="inputHeroImage1" oninput="updateImagePreview('inputHeroImage1', 'hero1Thumb', 'hero1PreviewContainer')" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/Hero01.jpg">
                 </div>
 
-                <!-- HERO IMAGE 2 URL DENGAN THUMBNAIL PREVIEW -->
+                <!-- HERO IMAGE 2 URL DENGAN FULL PREVIEW -->
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400 flex justify-between items-center">
                         <span>Hero Image 2 URL (Optional)</span>
                         <span id="hero2PreviewContainer" class="hidden">
-                            <img id="hero2Thumb" src="" alt="Hero 2 Preview" class="w-7 h-7 object-cover rounded-md border border-amber-500/50 inline-block shadow">
+                            <img id="hero2Thumb" src="" alt="Hero 2 Preview" class="h-14 max-w-[120px] object-contain rounded-lg border border-amber-500/50 bg-[#030712] p-1 inline-block shadow">
                         </span>
                     </label>
                     <input type="text" id="inputHeroImage2" oninput="updateImagePreview('inputHeroImage2', 'hero2Thumb', 'hero2PreviewContainer')" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/Hero02.jpg">
                 </div>
 
-                <!-- HERO IMAGE 3 URL DENGAN THUMBNAIL PREVIEW -->
+                <!-- HERO IMAGE 3 URL DENGAN FULL PREVIEW -->
                 <div>
                     <label class="block text-stone-400 mb-1.5 font-semibold text-amber-400 flex justify-between items-center">
                         <span>Hero Image 3 URL (Optional)</span>
                         <span id="hero3PreviewContainer" class="hidden">
-                            <img id="hero3Thumb" src="" alt="Hero 3 Preview" class="w-7 h-7 object-cover rounded-md border border-amber-500/50 inline-block shadow">
+                            <img id="hero3Thumb" src="" alt="Hero 3 Preview" class="h-14 max-w-[120px] object-contain rounded-lg border border-amber-500/50 bg-[#030712] p-1 inline-block shadow">
                         </span>
                     </label>
                     <input type="text" id="inputHeroImage3" oninput="updateImagePreview('inputHeroImage3', 'hero3Thumb', 'hero3PreviewContainer')" class="w-full custom-input rounded-xl px-3.5 py-2.5 text-stone-200 font-mono" placeholder="assets/images/Hero03.jpg">
@@ -575,7 +575,6 @@
             });
         }
 
-        // KETIKA PILIH TENANT YANG ADA: MUAT SEMUA DATA KE FORM & TAMPILKAN THUMBNAIL
         function switchTenant(tenantId) {
             isNewTenantMode = false;
             document.getElementById('modeIndicator').innerText = "Mode: Editing Existing Tenant";
@@ -584,7 +583,6 @@
             updateQuickLinks(tenantId);
 
             db.collection("tenants").doc(tenantId).get().then((doc) => {
-                // Reset form terlebih dahulu
                 document.getElementById('inputStoreName').value = '';
                 document.getElementById('inputClientName').value = '';
                 document.getElementById('inputClientPhone').value = '';
@@ -620,7 +618,7 @@
                     document.getElementById('inputAdminPassword').value = profile.adminPassword || 'admin';
                     document.getElementById('inputJsAssetUrl').value = profile.jsAssetUrl || `assets/js/${tenantId}.js`;
                     
-                    // Set Logo & Hero Image URLs plus Thumbnail Previews
+                    // Set Logo & All Hero Image URLs plus Full Previews
                     document.getElementById('inputLogoUrl').value = profile.logoUrl || '';
                     updateImagePreview('inputLogoUrl', 'logoThumb', 'logoPreviewContainer');
 
@@ -657,7 +655,6 @@
             });
         }
 
-        // KETIKA KLIK + ADD NEW TENANT: KOSONGKAN SEMUA FIELD FORM & SEMBUNYIKAN THUMBNAIL
         function prepareNewTenant() {
             isNewTenantMode = true;
             document.getElementById('modeIndicator').innerText = "Mode: Creating New Tenant Entry";

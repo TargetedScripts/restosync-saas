@@ -78,12 +78,12 @@
                 </div>
             </section>
 
-            <!-- Section 2: Active Company Logo & Real-Time Preview -->
+            <!-- Section 2: Active Company Logo & File Upload / Preview -->
             <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
                 <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-bold text-slate-200">Active Company Logo</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Manage the primary active logo displayed across client interfaces with instant preview.</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Upload image file from computer or enter URL. Preview updates instantly.</p>
                     </div>
                     <span class="text-xs bg-accent/10 text-accent px-2.5 py-1 rounded-md border border-accent/20 font-medium">Visual Asset</span>
                 </div>
@@ -96,9 +96,19 @@
                     
                     <div class="flex-grow w-full space-y-4">
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Logo Image URL</label>
-                            <input type="text" id="logo-url-input" placeholder="https://example.com/logo.png" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition">
-                            <p class="text-[11px] text-slate-500 mt-1">Paste image URL or select from existing storage assets. Preview updates instantly.</p>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Upload Image File or Enter URL</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <!-- Text input for URL -->
+                                <input type="text" id="logo-url-input" placeholder="https://example.com/logo.png" class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition">
+                                
+                                <!-- Direct File Upload Button -->
+                                <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 cursor-pointer transition flex items-center justify-center space-x-2 flex-shrink-0">
+                                    <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                    <span>Browse File...</span>
+                                    <input type="file" id="logo-file-input" accept="image/*" class="hidden">
+                                </label>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1.5">Manager toko dapat mengunggah file gambar langsung atau menempelkan URL. Preview tampil seketika.</p>
                         </div>
                     </div>
                 </div>
@@ -147,7 +157,7 @@
                 <div class="max-w-md">
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Admin Password (Visible to Store Manager)</label>
                     <input type="text" id="admin-password" placeholder="Enter new password to update" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition">
-                    <p class="text-[11px] text-slate-500 mt-1.5">Store managers can view this password directly without contacting the system admin.</p>
+                    <p class="text-[11px] text-slate-500 mt-1.5">Store managers can view this password directly without contacting system admin.</p>
                 </div>
             </section>
 
@@ -230,7 +240,7 @@
 
         let db, tenantDocRef;
         let fetchedDocumentData = {};
-        let passwordFieldName = 'adminPassword'; // Default target field name
+        let passwordFieldName = 'adminPassword';
 
         function initFirebaseAndLoad() {
             try {
@@ -266,18 +276,38 @@
                     document.getElementById('locked-tenant-id').value = tenantId;
                     document.getElementById('locked-expiry-date').value = fetchedDocumentData.expiryDate || fetchedDocumentData.contractExpiry || '2027-12-31 (Active)';
 
-                    // 2. Handle Logo & Instant Preview
+                    // 2. Handle Logo & Instant Preview (URL & File Upload)
                     const shopConfig = fetchedDocumentData.shopConfig || {};
                     const currentLogo = fetchedDocumentData.logoUrl || shopConfig.logoUrl || shopConfig.logo || '';
                     const logoInput = document.getElementById('logo-url-input');
                     const logoPreview = document.getElementById('logo-preview');
+                    const logoFileInput = document.getElementById('logo-file-input');
                     
                     logoInput.value = currentLogo;
                     logoPreview.src = currentLogo;
 
-                    // Real-time preview listener on typing/changing logo URL
+                    // Real-time preview on typing URL
                     logoInput.addEventListener('input', (e) => {
                         logoPreview.src = e.target.value.trim();
+                        logTrace('Logo URL updated via text input.', 'info');
+                    });
+
+                    // Real-time preview & Base64 conversion on file upload
+                    logoFileInput.addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            if (file.size > 1024 * 1024) {
+                                showAlert('Peringatan: Ukuran file di atas 1MB.', 'warn');
+                            }
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                                const base64String = event.target.result;
+                                logoInput.value = base64String;
+                                logoPreview.src = base64String;
+                                logTrace('Logo file successfully loaded and previewed.', 'success');
+                            };
+                            reader.readAsDataURL(file);
+                        }
                     });
 
                     // 3. Render Shop Fields
@@ -286,7 +316,7 @@
                     // 4. Render Module Toggles
                     renderModuleToggles(fetchedDocumentData.enabledModules || { shop: true, blog: false });
 
-                    // 5. Detect and Display Password Correctly (Root vs Profile map)
+                    // 5. Detect Password Location Correctly
                     let existingPassword = '';
                     if (fetchedDocumentData.adminPassword !== undefined) {
                         existingPassword = fetchedDocumentData.adminPassword;
@@ -299,7 +329,7 @@
                         passwordFieldName = 'adminPassword';
                     }
                     document.getElementById('admin-password').value = existingPassword;
-                    logTrace(`Password field detected at "${passwordFieldName}" with value loaded.`, 'success');
+                    logTrace(`Password field detected at "${passwordFieldName}".`, 'success');
 
                 } else {
                     logTrace(`Document for "${tenantId}" not found. Initializing defaults.`, 'warn');
@@ -364,7 +394,7 @@
             }
         }
 
-        // Form Submit Handler (Strictly updating existing fields without creating duplicates)
+        // Form Submit Handler (Protecting tenantId & expiryDate)
         document.getElementById('profile-form').addEventListener('submit', function(e) {
             e.preventDefault();
             logTrace(`Saving updates for tenant "${tenantId}"...`, 'info');
@@ -385,7 +415,7 @@
                 updatedShopConfig[key] = val;
             });
 
-            // 2. Set Active Logo URL
+            // 2. Set Active Logo URL/Base64
             const logoUrlVal = document.getElementById('logo-url-input').value.trim();
             updatedShopConfig.logoUrl = logoUrlVal;
 
@@ -397,7 +427,7 @@
                 updatedModules[key] = input.checked;
             });
 
-            // 4. Password Update (Updating the exact correct field location, avoiding duplicate subfield creation)
+            // 4. Password Update (Ensuring correct existing path is updated)
             const passwordVal = document.getElementById('admin-password').value.trim();
 
             const updatePayload = {
@@ -406,7 +436,6 @@
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            // Respect existing document structure for password (root vs profile)
             if (passwordFieldName.startsWith('profile.')) {
                 updatePayload.profile = fetchedDocumentData.profile || {};
                 updatePayload.profile.adminPassword = passwordVal;
@@ -414,11 +443,11 @@
                 updatePayload.adminPassword = passwordVal;
             }
 
-            // Note: tenantId and expiryDate are explicitly omitted from updatePayload to protect them.
+            // Note: tenantId and expiryDate are strictly omitted from payload to prevent tampering.
 
             tenantDocRef.set(updatePayload, { merge: true })
                 .then(() => {
-                    logTrace(`Tenant "${tenantId}" successfully updated in Firestore without altering locked fields!`, 'success');
+                    logTrace(`Tenant "${tenantId}" successfully updated in Firestore!`, 'success');
                     showAlert('Perubahan profil, logo, dan password berhasil disimpan!', 'success');
                     saveBtn.disabled = false;
                     saveBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Simpan Perubahan</span>`;

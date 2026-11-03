@@ -53,6 +53,9 @@
         .btn-live { background-color: #059669; color: white; font-size: 0.75rem; padding: 0.375rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.375rem; font-weight: 500; }
         .dot { width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; }
         
+        /* Diagnostic Panel Styling */
+        .diagnostic-box { background: #0b0f19; border: 1px dashed #475569; border-radius: 0.5rem; padding: 1rem; margin-top: 1.5rem; margin-bottom: 2rem; text-align: left; font-family: monospace; font-size: 0.8rem; color: #cbd5e1; }
+        
         .pricing-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; text-align: left; margin-top: 2rem; margin-bottom: 2rem; }
         .price-card { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; }
         .faq-section { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.25rem; text-align: left; margin-top: 2rem; font-size: 0.85rem; color: #94a3b8; }
@@ -98,8 +101,17 @@
             </div>
             
             <!-- Debug Path Indicator below Launchpad -->
-            <div style="font-size: 0.75rem; color: #f59e0b; margin-bottom: 2rem; font-family: monospace;" id="logo-path-debug">
-                Logo Source Path: [ Initializing Firebase Storage & Firestore Sync... ]
+            <div style="font-size: 0.75rem; color: #f59e0b; margin-bottom: 1rem; font-family: monospace;" id="logo-path-debug">
+                Logo Source Path: [ Initializing Diagnostic... ]
+            </div>
+
+            <!-- Diagnostic Inspector Panel (Firestore Status & Storage Images List) -->
+            <div class="diagnostic-box" id="diagnostic-panel">
+                <div style="color: #f59e0b; font-weight: bold; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-terminal"></i> Firebase Diagnostic & Storage Inspector:
+                </div>
+                <div id="firestore-status-log" style="margin-bottom: 0.5rem; color: #93c5fd;">1. Firestore Query: Connecting...</div>
+                <div id="storage-list-log" style="color: #cbd5e1;">2. Storage Files: Waiting for connection...</div>
             </div>
 
             <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 44rem; margin-left: auto; margin-right: auto; line-height: 1.5; font-size: 0.875rem;">
@@ -195,8 +207,8 @@
 
             <!-- FAQ Section -->
             <div class="faq-section">
-                <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Pure SaaS Architecture Active</strong>
-                Tenant configs loaded from local JS modules, with storage GS-URI resolved dynamically to public URLs via Firebase SDK. <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">TargetedScripts.com</a>.
+                <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Diagnostic SaaS Inspector Active</strong>
+                Tenant configs loaded from local JS, Firestore queried, and Firebase Storage bucket inspected live. <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">TargetedScripts.com</a>.
             </div>
 
             <div style="font-size: 0.75rem; color: #64748b; margin-top: 1.5rem;">
@@ -211,7 +223,7 @@
         <div style="color: #64748b; font-size: 0.7rem;">Powered & Developed by TargetedScripts.com - Custom Software & Automation NZ</div>
     </footer>
 
-    <!-- Tenant Parameter Injector & Live Firebase Storage Resolver -->
+    <!-- Tenant Parameter Injector & Diagnostic Inspector Script -->
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -221,12 +233,15 @@
             const demoLinkEl = document.getElementById('header-demo-link');
             const tenantHeadingContainer = document.getElementById('tenant-heading-container');
             const logoPathDebugEl = document.getElementById('logo-path-debug');
+            const firestoreStatusLog = document.getElementById('firestore-status-log');
+            const storageListLog = document.getElementById('storage-list-log');
             const templatesContainer = document.getElementById('templates-container');
             const templatesButtonsGrid = document.getElementById('templates-buttons-grid');
 
             if (tenantParam) {
-                const formattedTenant = tenantParam.charAt(0).toUpperCase() + tenantParam.slice(1).replace(/-/g, ' ');
-                document.getElementById('tenant-badge').innerText = `Tenant ID: ${tenantParam}`;
+                const tenantKey = tenantParam.toLowerCase().trim();
+                const formattedTenant = tenantKey.charAt(0).toUpperCase() + tenantKey.slice(1).replace(/-/g, ' ');
+                document.getElementById('tenant-badge').innerText = `Tenant ID: ${tenantKey}`;
 
                 if (brandLogoLinkEl) brandLogoLinkEl.setAttribute('href', `index.html?tenant=${encodeURIComponent(tenantParam)}`);
                 if (demoLinkEl) {
@@ -244,17 +259,14 @@
                     }
                 });
 
-                // Tunggu sebentar agar skrip .js tenant lokal selesai dieksekusi
                 await new Promise(resolve => setTimeout(resolve, 250));
 
                 let resolvedLogoUrl = "";
                 let restaurantName = formattedTenant;
 
-                // 1. Ambil data dasar dari window.tenantConfig lokal
+                // 1. Ambil data dari window.tenantConfig lokal
                 if (window.tenantConfig) {
-                    if (window.tenantConfig.restaurantName) {
-                        restaurantName = window.tenantConfig.restaurantName;
-                    }
+                    if (window.tenantConfig.restaurantName) restaurantName = window.tenantConfig.restaurantName;
                     if (window.tenantConfig.enabledModules) {
                         document.querySelectorAll('.menu-btn').forEach(btn => {
                             const moduleKey = btn.getAttribute('data-module');
@@ -265,7 +277,6 @@
                             }
                         });
                     }
-                    // Render Templates Blog & Shop
                     if (window.tenantConfig.templates) {
                         let templateHtml = "";
                         let activeCount = 0;
@@ -283,7 +294,7 @@
                     }
                 }
 
-                // 2. Ambil data dari Firestore dan konversi otomatis path gs:// via Firebase Storage SDK
+                // 2. Baca Firestore & Inspect Firebase Storage secara Transparan
                 try {
                     if (typeof firebase !== 'undefined') {
                         if (!firebase.apps.length && window.firebaseConfig) {
@@ -291,12 +302,15 @@
                         }
                         const db = firebase.firestore();
                         const storage = firebase.storage();
-                        const docRef = await db.collection("tenants").doc(tenantParam.toLowerCase().trim()).get();
+
+                        // Cek Firestore Document
+                        const docRef = await db.collection("tenants").doc(tenantKey).get();
                         
                         if (docRef.exists) {
                             const data = docRef.data();
+                            firestoreStatusLog.innerHTML = `1. Firestore Query: <span style="color: #34d399;">SUCCESS</span> (Document found for ID: <code>${tenantKey}</code>)`;
+                            
                             let rawLogo = data.logoUrl || data.logo || data.imageUrl || (data.profile && data.profile.logoUrl) || "";
-
                             if (rawLogo.startsWith("gs://")) {
                                 resolvedLogoUrl = await storage.refFromURL(rawLogo).getDownloadURL();
                             } else if (rawLogo.startsWith("http://") || rawLogo.startsWith("https://")) {
@@ -305,28 +319,65 @@
                                 try {
                                     resolvedLogoUrl = await storage.ref().child(rawLogo).getDownloadURL();
                                 } catch (e) {
-                                    resolvedLogoUrl = await storage.ref(`tenants/${tenantParam.toLowerCase().trim()}/${rawLogo}`).getDownloadURL();
+                                    resolvedLogoUrl = await storage.ref(`tenants/${tenantKey}/${rawLogo}`).getDownloadURL();
                                 }
                             }
+                        } else {
+                            firestoreStatusLog.innerHTML = `1. Firestore Query: <span style="color: #f87171;">FAILED</span> (Document <code>${tenantKey}</code> does not exist in collection <code>tenants</code>)`;
                         }
+
+                        // Inspeksi & List Semua File di Firebase Storage untuk Tenant Ini
+                        try {
+                            // Coba list dari folder tenants/[tenantKey]/images/ atau tenants/[tenantKey]/
+                            let storageRef = storage.ref().child(`tenants/${tenantKey}/images`);
+                            let res = null;
+                            try {
+                                res = await storageRef.listAll();
+                            } catch (errSub) {
+                                // Fallback ke folder utama tenant jika folder images tidak ada
+                                storageRef = storage.ref().child(`tenants/${tenantKey}`);
+                                res = await storageRef.listAll();
+                            }
+
+                            let fileListHtml = "";
+                            if (res.items.length > 0 || res.prefixes.length > 0) {
+                                fileListHtml = `<span style="color: #34d399;">SUCCESS</span> (${res.items.length} files found in storage):<ul style="margin: 0.25rem 0 0 1rem; padding: 0; list-style-type: disc;">`;
+                                for (let itemRef of res.items) {
+                                    const fileUrl = await itemRef.getDownloadURL();
+                                    fileListHtml += `<li style="margin-bottom: 0.2rem;"><a href="${fileUrl}" target="_blank" style="color: #38bdf8; text-decoration: underline;">${itemRef.name}</a></li>`;
+                                }
+                                fileListHtml += `</ul>`;
+                            } else {
+                                fileListHtml = `<span style="color: #f87171;">WARNING</span> (Connected to storage, but no files found under <code>tenants/${tenantKey}/</code>)`;
+                            }
+                            storageListLog.innerHTML = `2. Storage Inspector: ${fileListHtml}`;
+                        } catch (storageErr) {
+                            storageListLog.innerHTML = `2. Storage Inspector: <span style="color: #f87171;">ERROR</span> - ${storageErr.message}`;
+                        }
+
+                    } else {
+                        firestoreStatusLog.innerHTML = `1. Firestore Query: <span style="color: #f87171;">ERROR</span> (Firebase SDK not initialized)`;
+                        storageListLog.innerHTML = `2. Storage Inspector: Skipped`;
                     }
                 } catch (err) {
-                    console.error("Error resolving storage path:", err);
+                    firestoreStatusLog.innerHTML = `1. Firestore Query: <span style="color: #f87171;">ERROR</span> - ${err.message}`;
+                    storageListLog.innerHTML = `2. Storage Inspector: Skipped due to Firestore failure`;
                 }
 
-                // 3. Render Logo atau Fallback Teks ke Halaman
+                // 3. Render Logo atau Fallback Teks
                 if (resolvedLogoUrl && resolvedLogoUrl.trim() !== "") {
                     tenantHeadingContainer.innerHTML = `<img src="${resolvedLogoUrl}" alt="${restaurantName} Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
-                    logoPathDebugEl.innerText = `Logo Source Path (Resolved): ${resolvedLogoUrl}`;
+                    logoPathDebugEl.innerText = `Logo Source Path (Active): ${resolvedLogoUrl}`;
                 } else {
                     tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${restaurantName} - Launchpad</h2>`;
-                    logoPathDebugEl.innerText = `Logo Source Path: [ Firestore Checked - No Valid logoUrl Found, Using Text Mode ]`;
+                    logoPathDebugEl.innerText = `Logo Source Path: [ Text Mode Active - Check Storage List Above to Copy Image Link ]`;
                 }
 
             } else {
                 if (brandLogoLinkEl) brandLogoLinkEl.setAttribute('href', 'index.html');
                 tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">Client Launchpad</h2>`;
                 logoPathDebugEl.innerText = `Logo Source Path: [ No Tenant Parameter Provided ]`;
+                document.getElementById('diagnostic-panel').style.display = 'none';
             }
         });
 

@@ -194,7 +194,7 @@
         <div style="color: #64748b; font-size: 0.7rem;">Powered & Developed by TargetedScripts.com - Custom Software & Automation NZ</div>
     </footer>
 
-    <!-- Main Logic Script with Firestore adminPassword Authentication -->
+    <!-- Main Logic Script with Firestore profile.adminPassword Authentication -->
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -265,8 +265,10 @@
                             tenantData = docRef.data();
                             traceFirestoreLog.innerHTML = `3. Firestore Query: <span style="color: #34d399;">SUCCESS</span> (Document <code>${tenantKey}</code> read)`;
                             
-                            // Mengambil password secara presisi dari field 'adminPassword' di Firestore
-                            if (tenantData.adminPassword) {
+                            // Mengambil password secara presisi dari map 'profile.adminPassword' di Firestore
+                            if (tenantData.profile && tenantData.profile.adminPassword) {
+                                firestorePassword = tenantData.profile.adminPassword;
+                            } else if (tenantData.adminPassword) {
                                 firestorePassword = tenantData.adminPassword;
                             } else if (tenantData.shopConfig && tenantData.shopConfig.adminPassword) {
                                 firestorePassword = tenantData.shopConfig.adminPassword;

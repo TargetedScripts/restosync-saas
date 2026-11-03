@@ -48,3 +48,15 @@ const RESTOSYNC_CONFIG = {
 
     serviceModelNote: "RestoSync subscription covers ready-to-use SaaS platform access and hosted template websites. For bespoke custom software development outside standard modules, services are provided via TargetedScripts.com."
 };
+
+// ==========================================
+// Firebase Global Connection Credentials
+// ==========================================
+window.firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "restosync-saas.firebaseapp.com",
+  projectId: "restosync-saas",
+  storageBucket: "restosync-saas.firebasestorage.app",
+  messagingSenderId: "...",
+  appId: "..."
+};

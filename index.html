@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RestoSync - Smart F&B Management SaaS | TargetedScripts.com</title>
     
-    <!-- Global Core Configuration & Firebase SDK (Compat) -->
+    <!-- Global Core Configuration & Firebase SDK (Compat - App, Firestore, & Storage) -->
     <script src="assets/js/config.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <!-- Dynamic Tenant JS Loader -->
     <script>
@@ -98,7 +99,7 @@
             
             <!-- Debug Path Indicator below Launchpad -->
             <div style="font-size: 0.75rem; color: #f59e0b; margin-bottom: 2rem; font-family: monospace;" id="logo-path-debug">
-                Logo Source Path: [ Initializing Firestore Sync... ]
+                Logo Source Path: [ Initializing Firebase Storage & Firestore Sync... ]
             </div>
 
             <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 44rem; margin-left: auto; margin-right: auto; line-height: 1.5; font-size: 0.875rem;">
@@ -195,7 +196,7 @@
             <!-- FAQ Section -->
             <div class="faq-section">
                 <strong style="color: white; display: block; margin-bottom: 0.25rem;">💡 Pure SaaS Architecture Active</strong>
-                Tenant configs loaded from local JS modules, with dynamic branding & logo paths fetched live from Firebase Firestore. <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">TargetedScripts.com</a>.
+                Tenant configs loaded from local JS modules, with storage GS-URI resolved dynamically to public URLs via Firebase SDK. <a href="https://targetedscripts.com" target="_blank" style="color: #f59e0b; text-decoration: none;">TargetedScripts.com</a>.
             </div>
 
             <div style="font-size: 0.75rem; color: #64748b; margin-top: 1.5rem;">
@@ -210,7 +211,7 @@
         <div style="color: #64748b; font-size: 0.7rem;">Powered & Developed by TargetedScripts.com - Custom Software & Automation NZ</div>
     </footer>
 
-    <!-- Tenant Parameter Injector & Live Firestore Logo Fetcher -->
+    <!-- Tenant Parameter Injector & Live Firebase Storage Resolver -->
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -249,7 +250,7 @@
                 let resolvedLogoUrl = "";
                 let restaurantName = formattedTenant;
 
-                // 1. Ambil data dasar dari window.tenantConfig lokal jika ada
+                // 1. Ambil data dasar dari window.tenantConfig lokal
                 if (window.tenantConfig) {
                     if (window.tenantConfig.restaurantName) {
                         restaurantName = window.tenantConfig.restaurantName;
@@ -282,32 +283,44 @@
                     }
                 }
 
-                // 2. Ambil path logo secara LIVE dari Firebase Firestore
+                // 2. Ambil data dari Firestore dan konversi otomatis path gs:// via Firebase Storage SDK
                 try {
                     if (typeof firebase !== 'undefined') {
                         if (!firebase.apps.length && window.firebaseConfig) {
                             firebase.initializeApp(window.firebaseConfig);
                         }
                         const db = firebase.firestore();
+                        const storage = firebase.storage();
                         const docRef = await db.collection("tenants").doc(tenantParam.toLowerCase().trim()).get();
                         
                         if (docRef.exists) {
                             const data = docRef.data();
-                            // Mendukung berbagai penamaan field logo di Firestore (logoUrl, logo, imageUrl)
-                            resolvedLogoUrl = data.logoUrl || data.logo || data.imageUrl || "";
+                            let rawLogo = data.logoUrl || data.logo || data.imageUrl || (data.profile && data.profile.logoUrl) || "";
+
+                            if (rawLogo.startsWith("gs://")) {
+                                // Konversi otomatis gs:// menjadi HTTPS Public Download URL secara live!
+                                try {
+                                    resolvedLogoUrl = await storage.refFromURL(rawLogo).getDownloadURL();
+                                } catch (storageErr) {
+                                    console.error("Gagal mendapatkan download URL dari gs://:", storageErr);
+                                    resolvedLogoUrl = rawLogo;
+                                }
+                            } else if (rawLogo.trim() !== "") {
+                                resolvedLogoUrl = rawLogo;
+                            }
                         }
                     }
                 } catch (err) {
-                    console.error("Error fetching logo from Firestore:", err);
+                    console.error("Error fetching or converting logo from Firestore/Storage:", err);
                 }
 
                 // 3. Render Logo atau Fallback Teks ke Halaman
                 if (resolvedLogoUrl && resolvedLogoUrl.trim() !== "") {
                     tenantHeadingContainer.innerHTML = `<img src="${resolvedLogoUrl}" alt="${restaurantName} Logo" style="max-height: 55px; width: auto; object-fit: contain; display: inline-block;"> <h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;">- Launchpad</h2>`;
-                    logoPathDebugEl.innerText = `Logo Source Path (Fetched from Firestore): ${resolvedLogoUrl}`;
+                    logoPathDebugEl.innerText = `Logo Source Path (Resolved from Storage/Firestore): ${resolvedLogoUrl}`;
                 } else {
                     tenantHeadingContainer.innerHTML = `<h2 style="font-size: 1.875rem; font-weight: 800; margin: 0;" id="tenant-title">${restaurantName} - Launchpad</h2>`;
-                    logoPathDebugEl.innerText = `Logo Source Path: [ Firestore Document Checked - No Logo URL Field Found, Using Text Mode ]`;
+                    logoPathDebugEl.innerText = `Logo Source Path: [ Firestore Checked - No Valid logoUrl Found, Using Text Mode ]`;
                 }
 
             } else {

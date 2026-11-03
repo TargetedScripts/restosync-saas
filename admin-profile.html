@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync SaaS - Tenant Profile & Configuration</title>
+    <title>RestoSync SaaS - Tenant Profile & Configuration Hub</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -21,9 +21,12 @@
             }
         }
     </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Firebase Compat SDK v9.22.0 -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <!-- Tenant Specific Configuration Script -->
     <script id="tenant-config-script"></script>
 </head>
@@ -33,7 +36,7 @@
     <header class="bg-cardBg border-b border-slate-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-md">
         <div class="flex items-center space-x-3">
             <span class="bg-accent/10 text-accent font-bold px-3 py-1.5 rounded-lg border border-accent/20 text-sm tracking-wide">RestoSync SaaS</span>
-            <h1 class="text-lg font-semibold tracking-tight text-slate-200">Tenant Profile & Secure Configuration</h1>
+            <h1 class="text-lg font-semibold tracking-tight text-slate-200">Tenant Profile & Control Panel</h1>
         </div>
         <div class="flex items-center space-x-4">
             <div id="tenant-badge" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-mono">
@@ -78,37 +81,50 @@
                 </div>
             </section>
 
-            <!-- Section 2: Active Company Logo & File Upload / Preview -->
+            <!-- Section 2: Active Company Logo (Full View, Storage Dropdown & Upload) -->
             <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
                 <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-bold text-slate-200">Active Company Logo</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Upload image file from computer or enter URL. Preview updates instantly.</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Select from Firebase Storage library, upload file, or enter URL. Full aspect ratio display with zoom control.</p>
                     </div>
                     <span class="text-xs bg-accent/10 text-accent px-2.5 py-1 rounded-md border border-accent/20 font-medium">Visual Asset</span>
                 </div>
 
                 <div class="flex flex-col md:flex-row items-center gap-6">
-                    <!-- Live Image Preview Box -->
-                    <div class="w-32 h-32 bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center relative shadow-inner flex-shrink-0">
-                        <img id="logo-preview" src="" alt="Company Logo Preview" class="object-cover w-full h-full" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\' ry=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\'/></svg>';">
+                    <!-- Live Full Image Preview Box (object-contain ensures full display without cropping) -->
+                    <div class="w-36 h-36 bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center relative shadow-inner flex-shrink-0 p-2">
+                        <img id="logo-preview" src="" alt="Company Logo Preview" class="object-contain w-full h-full transition-transform duration-200" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\' ry=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\'/></svg>';">
                     </div>
                     
                     <div class="flex-grow w-full space-y-4">
+                        <!-- Database & Storage Library Dropdown Selector -->
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Upload Image File or Enter URL</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5"><i class="fa-solid fa-folder-open mr-1"></i> Select from Storage Library</label>
+                            <select id="storageLogoDropdown" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-accent transition font-mono">
+                                <option value="">-- Choose existing logo from Firebase Storage --</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Or Upload File / Enter URL</label>
                             <div class="flex flex-col sm:flex-row gap-3">
-                                <!-- Text input for URL -->
-                                <input type="text" id="logo-url-input" placeholder="https://example.com/logo.png" class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition">
+                                <input type="text" id="logo-url-input" placeholder="https://..." class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition truncate">
                                 
-                                <!-- Direct File Upload Button -->
                                 <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 cursor-pointer transition flex items-center justify-center space-x-2 flex-shrink-0">
                                     <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                                     <span>Browse File...</span>
                                     <input type="file" id="logo-file-input" accept="image/*" class="hidden">
                                 </label>
                             </div>
-                            <p class="text-[11px] text-slate-500 mt-1.5">Manager toko dapat mengunggah file gambar langsung atau menempelkan URL. Preview tampil seketika.</p>
+                        </div>
+
+                        <!-- Logo Zoom Scale Control -->
+                        <div class="flex items-center space-x-4 pt-1">
+                            <span class="text-xs text-slate-400 font-semibold">Logo Scale:</span>
+                            <button type="button" onclick="adjustLogoScale(-10)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 rounded-lg text-xs font-bold">-</button>
+                            <span id="logoScaleDisplay" class="font-mono text-accent font-bold text-xs">100%</span>
+                            <button type="button" onclick="adjustLogoScale(10)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 rounded-lg text-xs font-bold">+</button>
                         </div>
                     </div>
                 </div>
@@ -180,13 +196,26 @@
                 <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing system & verifying tenant permissions...
+                Initializing system & scanning storage logo library...
             </div>
         </div>
     </footer>
 
     <!-- Core Logic & Integration Script -->
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
+            authDomain: "restosync-saas.firebaseapp.com",
+            projectId: "restosync-saas",
+            storageBucket: "restosync-saas.firebasestorage.app",
+            messagingSenderId: "780544019719",
+            appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
         function logTrace(message, type = 'info') {
             const consoleEl = document.getElementById('console-output');
             const timestamp = new Date().toLocaleTimeString();
@@ -212,130 +241,134 @@
         }
 
         const urlParams = new URLSearchParams(window.location.search);
-        const tenantId = urlParams.get('tenant');
+        const tenantId = urlParams.get('tenant') || 'bangkokthaipalmy';
 
-        if (!tenantId) {
-            logTrace('CRITICAL: No tenant parameter specified in URL.', 'error');
-            showAlert('Error: No tenant specified in URL (?tenant=identifier).', 'error');
-            document.getElementById('tenant-badge').textContent = 'No Tenant Provided';
-            document.getElementById('profile-form').style.opacity = '0.5';
-            document.getElementById('profile-form').style.pointerEvents = 'none';
-        } else {
-            logTrace(`Detected tenant parameter: "${tenantId}". Loading configuration script...`, 'info');
-            document.getElementById('tenant-badge').textContent = `Tenant: ${tenantId}`;
-            document.getElementById('back-to-console').href = `admin-console.html?tenant=${encodeURIComponent(tenantId)}`;
+        document.getElementById('tenant-badge').textContent = `Tenant: ${tenantId}`;
+        document.getElementById('back-to-console').href = `admin-console.html?tenant=${encodeURIComponent(tenantId)}`;
 
-            const configScript = document.getElementById('tenant-config-script');
-            configScript.src = `${tenantId}-config.js`;
-            
-            configScript.onload = function() {
-                logTrace(`Loaded configuration script: ${tenantId}-config.js`, 'success');
-                initFirebaseAndLoad();
-            };
-            configScript.onerror = function() {
-                logTrace(`Config script "${tenantId}-config.js" not found. Falling back to default init.`, 'warn');
-                initFirebaseAndLoad();
-            };
-        }
-
-        let db, tenantDocRef;
         let fetchedDocumentData = {};
         let passwordFieldName = 'adminPassword';
+        let currentLogoScale = 100;
 
-        function initFirebaseAndLoad() {
-            try {
-                const firebaseConfig = window.firebaseConfig || {
-                    apiKey: "AIzaSyDefaultRestoSyncKeyPlaceholder",
-                    authDomain: "restosync-saas.firebaseapp.com",
-                    projectId: "restosync-saas"
-                };
+        document.addEventListener('DOMContentLoaded', () => {
+            logTrace(`Initializing panel for tenant: [${tenantId}]`, 'info');
+            fetchStorageAssetLists();
+            fetchAndRenderTenantData();
+        });
 
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
+        // Scan Firebase Storage folder for assets
+        function fetchStorageAssetLists() {
+            const listRef = storage.ref().child(`tenants/${tenantId}/images`);
+            listRef.listAll().then((res) => {
+                const dropdown = document.getElementById('storageLogoDropdown');
+                dropdown.innerHTML = '<option value="">-- Choose existing logo from Firebase Storage --</option>';
+
+                res.items.forEach((itemRef) => {
+                    itemRef.getDownloadURL().then((url) => {
+                        const opt = document.createElement('option');
+                        opt.value = url;
+                        opt.textContent = itemRef.name;
+                        dropdown.appendChild(opt);
+                    });
+                });
+                logTrace(`Successfully fetched storage asset files list.`, 'success');
+            }).catch((err) => {
+                logTrace(`Note: Could not list storage files yet: ${err.message}`, 'warn');
+            });
+
+            document.getElementById('storageLogoDropdown').addEventListener('change', function(e) {
+                if(e.target.value) {
+                    document.getElementById('logo-url-input').value = e.target.value;
+                    updateLogoPreview(e.target.value);
+                    logTrace('Logo selected from storage dropdown.', 'success');
                 }
+            });
+        }
 
-                db = firebase.firestore();
-                tenantDocRef = db.collection('tenants').doc(tenantId);
+        function updateLogoPreview(url) {
+            const img = document.getElementById('logo-preview');
+            img.src = url || '';
+            img.style.transform = `scale(${currentLogoScale / 100})`;
+        }
 
-                fetchAndRenderTenantData();
-            } catch (err) {
-                logTrace(`Firebase error: ${err.message}`, 'error');
-                showAlert(`Firebase Error: ${err.message}`, 'error');
-            }
+        function adjustLogoScale(amount) {
+            currentLogoScale = Math.max(50, Math.min(200, currentLogoScale + amount));
+            document.getElementById('logoScaleDisplay').innerText = currentLogoScale + '%';
+            const url = document.getElementById('logo-url-input').value;
+            updateLogoPreview(url);
         }
 
         function fetchAndRenderTenantData() {
             logTrace(`Fetching Firestore document for "${tenantId}"...`, 'info');
-
-            tenantDocRef.get().then((doc) => {
+            db.collection('tenants').doc(tenantId).get().then((doc) => {
                 if (doc.exists) {
                     fetchedDocumentData = doc.data();
                     logTrace(`Document retrieved successfully. Rendering fields...`, 'success');
                     
-                    // 1. Set Locked Fields
+                    // 1. Locked Fields
                     document.getElementById('locked-tenant-id').value = tenantId;
                     document.getElementById('locked-expiry-date').value = fetchedDocumentData.expiryDate || fetchedDocumentData.contractExpiry || '2027-12-31 (Active)';
 
-                    // 2. Handle Logo & Instant Preview (URL & File Upload)
+                    // 2. Logo & Scale
+                    const profile = fetchedDocumentData.profile || {};
                     const shopConfig = fetchedDocumentData.shopConfig || {};
-                    const currentLogo = fetchedDocumentData.logoUrl || shopConfig.logoUrl || shopConfig.logo || '';
-                    const logoInput = document.getElementById('logo-url-input');
-                    const logoPreview = document.getElementById('logo-preview');
-                    const logoFileInput = document.getElementById('logo-file-input');
-                    
-                    logoInput.value = currentLogo;
-                    logoPreview.src = currentLogo;
+                    const currentLogo = profile.logoUrl || shopConfig.logoUrl || shopConfig.logo || '';
+                    currentLogoScale = profile.logoScale || 100;
+                    document.getElementById('logoScaleDisplay').innerText = currentLogoScale + '%';
 
-                    // Real-time preview on typing URL
+                    const logoInput = document.getElementById('logo-url-input');
+                    logoInput.value = currentLogo;
+                    updateLogoPreview(currentLogo);
+
                     logoInput.addEventListener('input', (e) => {
-                        logoPreview.src = e.target.value.trim();
-                        logTrace('Logo URL updated via text input.', 'info');
+                        updateLogoPreview(e.target.value.trim());
                     });
 
-                    // Real-time preview & Base64 conversion on file upload
-                    logoFileInput.addEventListener('change', function(e) {
+                    // File upload handler
+                    document.getElementById('logo-file-input').addEventListener('change', function(e) {
                         const file = e.target.files[0];
                         if (file) {
-                            if (file.size > 1024 * 1024) {
-                                showAlert('Peringatan: Ukuran file di atas 1MB.', 'warn');
-                            }
-                            const reader = new FileReader();
-                            reader.onload = function(event) {
-                                const base64String = event.target.result;
-                                logoInput.value = base64String;
-                                logoPreview.src = base64String;
-                                logTrace('Logo file successfully loaded and previewed.', 'success');
-                            };
-                            reader.readAsDataURL(file);
+                            const storagePath = `tenants/${tenantId}/images/${Date.now()}_${file.name}`;
+                            const storageRef = storage.ref().child(storagePath);
+                            logTrace(`Uploading file to Storage...`, 'info');
+                            storageRef.put(file).then(snapshot => {
+                                snapshot.ref.getDownloadURL().then(downloadURL => {
+                                    logoInput.value = downloadURL;
+                                    updateLogoPreview(downloadURL);
+                                    fetchStorageAssetLists();
+                                    logTrace(`Logo uploaded and previewed successfully!`, 'success');
+                                });
+                            }).catch(err => {
+                                logTrace(`Upload failed: ${err.message}`, 'error');
+                            });
                         }
                     });
 
-                    // 3. Render Shop Fields
+                    // 3. Shop Fields
                     renderShopFields(shopConfig);
 
-                    // 4. Render Module Toggles
+                    // 4. Modules
                     renderModuleToggles(fetchedDocumentData.enabledModules || { shop: true, blog: false });
 
-                    // 5. Detect Password Location Correctly
+                    // 5. Password
                     let existingPassword = '';
-                    if (fetchedDocumentData.adminPassword !== undefined) {
+                    if (profile.adminPassword !== undefined) {
+                        existingPassword = profile.adminPassword;
+                        passwordFieldName = 'profile.adminPassword';
+                    } else if (fetchedDocumentData.adminPassword !== undefined) {
                         existingPassword = fetchedDocumentData.adminPassword;
                         passwordFieldName = 'adminPassword';
-                    } else if (fetchedDocumentData.profile && fetchedDocumentData.profile.adminPassword !== undefined) {
-                        existingPassword = fetchedDocumentData.profile.adminPassword;
-                        passwordFieldName = 'profile.adminPassword';
                     } else {
-                        existingPassword = shopConfig.adminPassword || '';
+                        existingPassword = shopConfig.adminPassword || 'admin';
                         passwordFieldName = 'adminPassword';
                     }
                     document.getElementById('admin-password').value = existingPassword;
-                    logTrace(`Password field detected at "${passwordFieldName}".`, 'success');
 
                 } else {
                     logTrace(`Document for "${tenantId}" not found. Initializing defaults.`, 'warn');
                     document.getElementById('locked-tenant-id').value = tenantId;
                     document.getElementById('locked-expiry-date').value = '2027-12-31 (New Record)';
-                    renderShopFields({ shopName: tenantId, currency: 'NZD', taxRate: 15, email: '' });
+                    renderShopFields({ shopName: tenantId, currency: 'NZD', taxRate: 15 });
                     renderModuleToggles({ shop: true, blog: false });
                 }
             }).catch((error) => {
@@ -377,7 +410,7 @@
             const container = document.getElementById('modules-container');
             container.innerHTML = '';
 
-            const allModules = { shop: true, blog: false, pos: true, kds: false, ...modules };
+            const allModules = { shop: true, blog: false, pos: true, kds: true, ...modules };
 
             for (let modKey in allModules) {
                 const isActive = allModules[modKey];
@@ -394,7 +427,7 @@
             }
         }
 
-        // Form Submit Handler (Protecting tenantId & expiryDate)
+        // Form Submit (Protecting tenantId and expiryDate, updating correct password path)
         document.getElementById('profile-form').addEventListener('submit', function(e) {
             e.preventDefault();
             logTrace(`Saving updates for tenant "${tenantId}"...`, 'info');
@@ -403,52 +436,47 @@
             saveBtn.disabled = true;
             saveBtn.textContent = 'Saving...';
 
-            // 1. Collect Shop Config Fields
             const updatedShopConfig = fetchedDocumentData.shopConfig || {};
             const shopInputs = document.querySelectorAll('[id^="field_"]');
             shopInputs.forEach(input => {
                 const key = input.id.replace('field_', '');
                 let val = input.value.trim();
-                if (!isNaN(val) && val !== '') {
-                    val = Number(val);
-                }
+                if (!isNaN(val) && val !== '') val = Number(val);
                 updatedShopConfig[key] = val;
             });
 
-            // 2. Set Active Logo URL/Base64
             const logoUrlVal = document.getElementById('logo-url-input').value.trim();
             updatedShopConfig.logoUrl = logoUrlVal;
 
-            // 3. Collect Modules
+            const updatedProfile = fetchedDocumentData.profile || {};
+            updatedProfile.logoUrl = logoUrlVal;
+            updatedProfile.logoScale = currentLogoScale;
+
             const updatedModules = {};
-            const moduleInputs = document.querySelectorAll('[id^="mod_"]');
-            moduleInputs.forEach(input => {
+            document.querySelectorAll('[id^="mod_"]').forEach(input => {
                 const key = input.id.replace('mod_', '');
                 updatedModules[key] = input.checked;
             });
 
-            // 4. Password Update (Ensuring correct existing path is updated)
             const passwordVal = document.getElementById('admin-password').value.trim();
 
             const updatePayload = {
                 shopConfig: updatedShopConfig,
+                profile: updatedProfile,
                 enabledModules: updatedModules,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             if (passwordFieldName.startsWith('profile.')) {
-                updatePayload.profile = fetchedDocumentData.profile || {};
                 updatePayload.profile.adminPassword = passwordVal;
             } else {
                 updatePayload.adminPassword = passwordVal;
             }
 
-            // Note: tenantId and expiryDate are strictly omitted from payload to prevent tampering.
-
-            tenantDocRef.set(updatePayload, { merge: true })
+            db.collection('tenants').doc(tenantId).set(updatePayload, { merge: true })
                 .then(() => {
                     logTrace(`Tenant "${tenantId}" successfully updated in Firestore!`, 'success');
-                    showAlert('Perubahan profil, logo, dan password berhasil disimpan!', 'success');
+                    showAlert('Perubahan profil, logo, scale, dan password berhasil disimpan!', 'success');
                     saveBtn.disabled = false;
                     saveBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Simpan Perubahan</span>`;
                 })

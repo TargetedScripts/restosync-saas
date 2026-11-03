@@ -53,10 +53,10 @@ const RESTOSYNC_CONFIG = {
 // Firebase Global Connection Credentials
 // ==========================================
 window.firebaseConfig = {
-  apiKey: "AIzaSy...",
+  apiKey: "ISI_API_KEY_FIREBASE_ANDA",
   authDomain: "restosync-saas.firebaseapp.com",
   projectId: "restosync-saas",
   storageBucket: "restosync-saas.firebasestorage.app",
-  messagingSenderId: "...",
-  appId: "..."
+  messagingSenderId: "ISI_MESSAGING_SENDER_ID",
+  appId: "ISI_APP_ID"
 };

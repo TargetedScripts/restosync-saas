@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync SaaS - Tenant Profile & Configuration</title>
+    <title>RestoSync SaaS - Dynamic Tenant Profile & Configuration</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -33,7 +33,7 @@
     <header class="bg-cardBg border-b border-slate-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-md">
         <div class="flex items-center space-x-3">
             <span class="bg-accent/10 text-accent font-bold px-3 py-1.5 rounded-lg border border-accent/20 text-sm tracking-wide">RestoSync SaaS</span>
-            <h1 class="text-lg font-semibold tracking-tight text-slate-200">Tenant Profile & Configuration</h1>
+            <h1 class="text-lg font-semibold tracking-tight text-slate-200">Dynamic Tenant Profile & Schema Inspector</h1>
         </div>
         <div class="flex items-center space-x-4">
             <div id="tenant-badge" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-mono">
@@ -53,40 +53,43 @@
         <!-- Status Alert Banner -->
         <div id="alert-banner" class="hidden p-4 rounded-xl border text-sm font-medium transition-all"></div>
 
-        <!-- Configuration Grid -->
+        <!-- Configuration Form -->
         <form id="profile-form" class="space-y-6">
             
-            <!-- Section 1: Shop & General Profile Settings (shopConfig) -->
-            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+            <!-- Section 1: Dynamic Image Preview & Asset Inspector -->
+            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
                 <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                     <div>
-                        <h2 class="text-base font-bold text-slate-200">Store Profile & Shop Configuration</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Manage core business identity, currency, and tax parameters stored in <code class="text-accent font-mono">shopConfig</code>.</p>
+                        <h2 class="text-base font-bold text-slate-200">Tenant Visual Assets & Image Preview</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Automatically detected image attributes (logos, banners, avatars) from Firestore document.</p>
                     </div>
-                    <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/20 font-medium">shopConfig</span>
+                    <span class="text-xs bg-accent/10 text-accent px-2.5 py-1 rounded-md border border-accent/20 font-medium">Image Inspector</span>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Store / Restaurant Name</label>
-                        <input type="text" id="shop-name" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-accent transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Currency Symbol / Code</label>
-                        <input type="text" id="shop-currency" required placeholder="e.g. NZD, USD, IDR" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-accent transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Tax Rate (%)</label>
-                        <input type="number" step="0.01" id="shop-tax" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-accent transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Contact Email / Support</label>
-                        <input type="email" id="shop-email" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-accent transition">
+                
+                <div id="image-preview-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
+                    <!-- Dynamically populated image previews will appear here -->
+                    <div class="text-xs text-slate-500 italic p-4 bg-slate-900/40 rounded-xl border border-slate-800 col-span-full">
+                        Scanning document fields for image URLs or assets...
                     </div>
                 </div>
             </section>
 
-            <!-- Section 2: Module Visibility Toggles (enabledModules) -->
+            <!-- Section 2: Core Shop Configuration & Dynamic Fields (shopConfig) -->
+            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-200">Shop Configuration & Database Fields</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">All standard and custom fields extracted from <code class="text-accent font-mono">shopConfig</code> and root document.</p>
+                    </div>
+                    <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/20 font-medium">Unified Schema</span>
+                </div>
+
+                <div id="dynamic-fields-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Dynamic form fields populated here -->
+                </div>
+            </section>
+
+            <!-- Section 3: Module Visibility Toggles (enabledModules) -->
             <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
                 <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                     <div>
@@ -96,33 +99,17 @@
                     <span class="text-xs bg-amber-500/10 text-accent px-2.5 py-1 rounded-md border border-accent/20 font-medium">Feature Flags</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Shop Module Toggle -->
-                    <label class="flex items-center justify-between p-4 bg-slate-900/50 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
-                        <div class="space-y-0.5">
-                            <span class="text-sm font-semibold text-slate-200">Shop / POS Module</span>
-                            <p class="text-xs text-slate-400">Enable online catalog, cart, and point of sale features.</p>
-                        </div>
-                        <input type="checkbox" id="module-shop" class="w-5 h-5 accent-accent rounded cursor-pointer">
-                    </label>
-
-                    <!-- Blog Module Toggle -->
-                    <label class="flex items-center justify-between p-4 bg-slate-900/50 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
-                        <div class="space-y-0.5">
-                            <span class="text-sm font-semibold text-slate-200">Blog / News Module</span>
-                            <p class="text-xs text-slate-400">Enable content publishing and article feeds.</p>
-                        </div>
-                        <input type="checkbox" id="module-blog" class="w-5 h-5 accent-accent rounded cursor-pointer">
-                    </label>
+                <div id="modules-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Dynamically populated or default feature flags -->
                 </div>
             </section>
 
-            <!-- Section 3: Security & Admin Password Settings -->
+            <!-- Section 4: Security & Admin Password Settings -->
             <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
                 <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-bold text-slate-200">Security & Credentials</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Update administrative authentication key (<code class="text-accent font-mono">adminPassword</code>) for this tenant.</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Update administrative authentication key (<code class="text-accent font-mono">adminPassword</code>).</p>
                     </div>
                     <span class="text-xs bg-rose-500/10 text-rose-400 px-2.5 py-1 rounded-md border border-rose-500/20 font-medium">Access Control</span>
                 </div>
@@ -130,7 +117,7 @@
                 <div class="max-w-md">
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">New Admin Password</label>
                     <input type="password" id="admin-password" placeholder="Leave blank to keep existing password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-accent transition">
-                    <p class="text-[11px] text-slate-500 mt-1.5">Password must be securely stored. If left empty, current database password remains unchanged.</p>
+                    <p class="text-[11px] text-slate-500 mt-1.5">If left empty, current database password remains unchanged.</p>
                 </div>
             </section>
 
@@ -153,14 +140,13 @@
                 <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing system environment & reading URL parameters...
+                Initializing dynamic schema parser & reading URL parameters...
             </div>
         </div>
     </footer>
 
     <!-- Core Logic & Integration Script -->
     <script>
-        // Diagnostic Logger helper
         function logTrace(message, type = 'info') {
             const consoleEl = document.getElementById('console-output');
             const timestamp = new Date().toLocaleTimeString();
@@ -173,7 +159,6 @@
             console.log(`[RestoSync Trace ${timestamp}] ${message}`);
         }
 
-        // Alert Banner Helper
         function showAlert(message, type = 'success') {
             const alertEl = document.getElementById('alert-banner');
             alertEl.className = `p-4 rounded-xl border text-sm font-medium transition-all ${
@@ -186,7 +171,6 @@
             setTimeout(() => { alertEl.classList.add('hidden'); }, 5000);
         }
 
-        // Parse Tenant from URL Parameter
         const urlParams = new URLSearchParams(window.location.search);
         const tenantId = urlParams.get('tenant');
 
@@ -197,140 +181,272 @@
             document.getElementById('profile-form').style.opacity = '0.5';
             document.getElementById('profile-form').style.pointerEvents = 'none';
         } else {
-            logTrace(`Detected tenant parameter: "${tenantId}". Loading tenant-specific config script...`, 'info');
+            logTrace(`Detected tenant parameter: "${tenantId}". Loading configuration script...`, 'info');
             document.getElementById('tenant-badge').textContent = `Tenant: ${tenantId}`;
-            
-            // Set Back to Console link with query parameter preserved
             document.getElementById('back-to-console').href = `admin-console.html?tenant=${encodeURIComponent(tenantId)}`;
 
-            // Dynamically set tenant configuration JS filename per rule
             const configScript = document.getElementById('tenant-config-script');
             configScript.src = `${tenantId}-config.js`;
             
             configScript.onload = function() {
-                logTrace(`Successfully loaded configuration script: ${tenantId}-config.js`, 'success');
-                initializeFirebaseAndLoadData();
+                logTrace(`Loaded configuration script: ${tenantId}-config.js`, 'success');
+                initFirebaseAndLoad();
             };
-
             configScript.onerror = function() {
-                logTrace(`Warning: External config file "${tenantId}-config.js" not found or failed to load. Falling back to default initialization.`, 'warn');
-                initializeFirebaseAndLoadData();
+                logTrace(`Config script "${tenantId}-config.js" not found. Falling back to default init.`, 'warn');
+                initFirebaseAndLoad();
             };
         }
 
-        let db;
-        let tenantDocRef;
-        let originalPasswordHash = '';
+        let db, tenantDocRef;
+        let cachedTenantData = {};
 
-        function initializeFirebaseAndLoadData() {
+        function initFirebaseAndLoad() {
             try {
-                // Use global window.firebaseConfig if provided by ${tenantId}-config.js, otherwise fallback template
                 const firebaseConfig = window.firebaseConfig || {
-                    apiKey: "AIzaSyDefaultRestoSyncKeyPlaceholder-UpdateInConfig",
+                    apiKey: "AIzaSyDefaultRestoSyncKeyPlaceholder",
                     authDomain: "restosync-saas.firebaseapp.com",
-                    projectId: "restosync-saas",
-                    storageBucket: "restosync-saas.appspot.com",
-                    messagingSenderId: "123456789012",
-                    appId: "1:123456789012:web:abcdef1234567890"
+                    projectId: "restosync-saas"
                 };
 
                 if (!firebase.apps.length) {
                     firebase.initializeApp(firebaseConfig);
-                    logTrace('Firebase Compat SDK initialized successfully.', 'success');
                 }
 
                 db = firebase.firestore();
                 tenantDocRef = db.collection('tenants').doc(tenantId);
 
-                loadTenantDataFromFirestore();
-
+                fetchAndRenderTenantData();
             } catch (err) {
-                logTrace(`Firebase initialization error: ${err.message}`, 'error');
+                logTrace(`Firebase error: ${err.message}`, 'error');
                 showAlert(`Firebase Error: ${err.message}`, 'error');
             }
         }
 
-        // Fetch live tenant document from Firestore
-        function loadTenantDataFromFirestore() {
-            logTrace(`Fetching live document for tenant "${tenantId}" from Firestore ("tenants" collection)...`, 'info');
-            
+        // Helper to check if string looks like an image URL or path
+        function isImageUrl(val) {
+            if (typeof val !== 'string') return false;
+            return val.match(/\.(jpeg|jpg|gif|png|webp|svg)((\?.*)?)$/i) || val.startsWith('data:image/') || val.includes('firebasestorage.googleapis.com');
+        }
+
+        function fetchAndRenderTenantData() {
+            logTrace(`Fetching Firestore document for "${tenantId}"...`, 'info');
+
             tenantDocRef.get().then((doc) => {
                 if (doc.exists) {
-                    const data = doc.data();
-                    logTrace(`Document retrieved successfully for "${tenantId}". Populating form fields...`, 'success');
+                    cachedTenantData = doc.data();
+                    logTrace(`Document retrieved successfully. Rendering dynamic fields & image previews...`, 'success');
                     
-                    // Populate shopConfig
-                    const shopConfig = data.shopConfig || {};
-                    document.getElementById('shop-name').value = shopConfig.shopName || shopConfig.name || '';
-                    document.getElementById('shop-currency').value = shopConfig.currency || 'NZD';
-                    document.getElementById('shop-tax').value = shopConfig.taxRate !== undefined ? shopConfig.taxRate : 15;
-                    document.getElementById('shop-email').value = shopConfig.email || shopConfig.supportEmail || '';
+                    renderImagePreviews(cachedTenantData);
+                    renderDynamicShopFields(cachedTenantData.shopConfig || {});
+                    renderModuleToggles(cachedTenantData.enabledModules || { shop: true, blog: false });
 
-                    // Populate enabledModules
-                    const enabledModules = data.enabledModules || {};
-                    document.getElementById('module-shop').checked = enabledModules.shop !== undefined ? enabledModules.shop : true;
-                    document.getElementById('module-blog').checked = enabledModules.blog !== undefined ? enabledModules.blog : false;
-
-                    // Store reference password hash if present
-                    originalPasswordHash = data.adminPassword || '';
-
-                    logTrace(`UI successfully synchronized with Firestore unified configuration.`, 'success');
                 } else {
-                    logTrace(`Document for tenant "${tenantId}" does not exist in Firestore. Initializing default structure...`, 'warn');
-                    showAlert(`Tenant document "${tenantId}" not found in database. You can save to create it.`, 'warn');
+                    logTrace(`Document for "${tenantId}" not found in Firestore. Using default template schema.`, 'warn');
+                    showAlert(`Tenant document not found. Saving will create a new record.`, 'warn');
+                    
+                    renderImagePreviews({});
+                    renderDynamicShopFields({ shopName: tenantId, currency: 'NZD', taxRate: 15, email: '' });
+                    renderModuleToggles({ shop: true, blog: false });
                 }
             }).catch((error) => {
                 logTrace(`Firestore read error: ${error.message}`, 'error');
-                showAlert(`Failed to load tenant data: ${error.message}`, 'error');
+                showAlert(`Failed to load data: ${error.message}`, 'error');
             });
         }
 
-        // Handle Form Submission & Direct Firestore Update
+        // Dynamically detect and render image previews from document
+        function renderImagePreviews(data) {
+            const container = document.getElementById('image-preview-container');
+            container.innerHTML = '';
+
+            let imageFieldsFound = [];
+
+            // Scan root and shopConfig for image URLs
+            function scanObject(obj, prefix = '') {
+                for (let key in obj) {
+                    const fullKey = prefix ? `${prefix}.${key}` : key;
+                    const val = obj[key];
+                    if (typeof val === 'string' && isImageUrl(val)) {
+                        imageFieldsFound.push({ key: fullKey, url: val });
+                    } else if (val && typeof val === 'object' && !Array.isArray(val)) {
+                        scanObject(val, fullKey);
+                    }
+                }
+            }
+
+            scanObject(data);
+
+            if (imageFieldsFound.length === 0) {
+                container.innerHTML = `
+                    <div class="text-xs text-slate-400 italic p-4 bg-slate-900/40 rounded-xl border border-slate-800 col-span-full flex items-center justify-between">
+                        <span>No image fields detected in current document schema. (Tip: add fields ending in image/logo/banner with valid URLs).</span>
+                        <input type="text" id="custom-image-url" placeholder="Paste image URL to preview..." class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1 text-xs text-slate-200 w-72 focus:outline-none focus:border-accent">
+                    </div>
+                `;
+                const customInput = document.getElementById('custom-image-url');
+                if (customInput) {
+                    customInput.addEventListener('change', (e) => {
+                        if (isImageUrl(e.target.value)) {
+                            renderCustomPreview(e.target.value, 'Custom Image URL');
+                        }
+                    });
+                }
+                return;
+            }
+
+            imageFieldsFound.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-900/60 border border-slate-800 rounded-xl p-3 flex flex-col space-y-2 relative group';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-mono text-accent truncate max-w-[180px]" title="${item.key}">${item.key}</span>
+                        <span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">Asset</span>
+                    </div>
+                    <div class="w-full h-28 bg-slate-950 rounded-lg overflow-hidden border border-slate-800 flex items-center justify-center relative">
+                        <img src="${item.url}" alt="${item.key}" class="object-cover w-full h-full transition hover:scale-105" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\' ry=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\'/></svg>';">
+                    </div>
+                    <input type="text" name="img_field_${item.key}" value="${item.url}" class="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-[11px] text-slate-300 font-mono focus:outline-none focus:border-accent">
+                `;
+                container.appendChild(card);
+            });
+            logTrace(`Detected and rendered ${imageFieldsFound.length} image asset preview(s).`, 'success');
+        }
+
+        function renderCustomPreview(url, label) {
+            const container = document.getElementById('image-preview-container');
+            const card = document.createElement('div');
+            card.className = 'bg-slate-900/60 border border-slate-800 rounded-xl p-3 flex flex-col space-y-2';
+            card.innerHTML = `
+                <div class="flex items-center justify-between"><span class="text-[11px] font-mono text-accent">${label}</span></div>
+                <div class="w-full h-28 bg-slate-950 rounded-lg overflow-hidden border border-slate-800 flex items-center justify-center">
+                    <img src="${url}" alt="${label}" class="object-cover w-full h-full">
+                </div>
+            `;
+            container.appendChild(card);
+        }
+
+        // Dynamically render shopConfig fields
+        function renderDynamicShopFields(shopConfig) {
+            const grid = document.getElementById('dynamic-fields-grid');
+            grid.innerHTML = '';
+
+            // Ensure baseline fields exist
+            const fields = {
+                shopName: shopConfig.shopName || shopConfig.name || tenantId,
+                currency: shopConfig.currency || 'NZD',
+                taxRate: shopConfig.taxRate !== undefined ? shopConfig.taxRate : 15,
+                email: shopConfig.email || shopConfig.supportEmail || ''
+            };
+
+            // Merge any additional custom keys found in shopConfig
+            for (let key in shopConfig) {
+                if (!(key in fields)) {
+                    fields[key] = shopConfig[key];
+                }
+            }
+
+            for (let key in fields) {
+                const val = fields[key];
+                const isNum = typeof val === 'number';
+                const fieldDiv = document.createElement('div');
+                fieldDiv.innerHTML = `
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 font-mono">${key}</label>
+                    <input type="${isNum ? 'number' : 'text'}" ${isNum ? 'step="0.01"' : ''} id="field_${key}" value="${val !== undefined ? val : ''}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-accent transition font-mono">
+                `;
+                grid.appendChild(fieldDiv);
+            }
+            logTrace(`Rendered ${Object.keys(fields).length} dynamic shopConfig fields.`, 'success');
+        }
+
+        // Render Module Visibility Toggles dynamically
+        function renderModuleToggles(modules) {
+            const container = document.getElementById('modules-container');
+            container.innerHTML = '';
+
+            const allModules = { shop: true, blog: false, pos: true, kds: false, ...modules };
+
+            for (let modKey in allModules) {
+                const isActive = allModules[modKey];
+                const labelEl = document.createElement('label');
+                labelEl.className = 'flex items-center justify-between p-4 bg-slate-900/50 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition';
+                labelEl.innerHTML = `
+                    <div class="space-y-0.5">
+                        <span class="text-sm font-semibold text-slate-200 uppercase tracking-wide">Module: ${modKey}</span>
+                        <p class="text-xs text-slate-400">Enable or disable ${modKey} operational features.</p>
+                    </div>
+                    <input type="checkbox" id="mod_${modKey}" ${isActive ? 'checked' : ''} class="w-5 h-5 accent-accent rounded cursor-pointer">
+                `;
+                container.appendChild(labelEl);
+            }
+        }
+
+        // Form Submit Handler
         document.getElementById('profile-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            logTrace(`Preparing to save configuration changes for tenant "${tenantId}"...`, 'info');
+            logTrace(`Preparing payload to update Firestore for tenant "${tenantId}"...`, 'info');
 
             const saveBtn = document.getElementById('save-btn');
             saveBtn.disabled = true;
             saveBtn.textContent = 'Saving...';
 
-            const updatedShopConfig = {
-                shopName: document.getElementById('shop-name').value.trim(),
-                currency: document.getElementById('shop-currency').value.trim(),
-                taxRate: parseFloat(document.getElementById('shop-tax').value) || 0,
-                email: document.getElementById('shop-email').value.trim()
-            };
+            // Collect shopConfig fields dynamically
+            const updatedShopConfig = {};
+            const shopInputs = document.querySelectorAll('[id^="field_"]');
+            shopInputs.forEach(input => {
+                const key = input.id.replace('field_', '');
+                let val = input.value.trim();
+                if (!isNaN(val) && val !== '') {
+                    val = Number(val);
+                }
+                updatedShopConfig[key] = val;
+            });
 
-            const updatedModules = {
-                shop: document.getElementById('module-shop').checked,
-                blog: document.getElementById('module-blog').checked
-            };
+            // Collect module toggles
+            const updatedModules = {};
+            const moduleInputs = document.querySelectorAll('[id^="mod_"]');
+            moduleInputs.forEach(input => {
+                const key = input.id.replace('mod_', '');
+                updatedModules[key] = input.checked;
+            });
 
-            const newPasswordInput = document.getElementById('admin-password').value.trim();
-            
-            // Build payload using Unified Configuration structure
+            // Collect image overrides if any custom image inputs updated
+            const imageInputs = document.querySelectorAll('input[name^="img_field_"]');
+            imageInputs.forEach(input => {
+                const path = input.name.replace('img_field_', '');
+                // Handle nested path assignment if needed, or save to root/shopConfig
+                const parts = path.split('.');
+                if (parts.length === 1) {
+                    updatedShopConfig[parts[0]] = input.value.trim();
+                } else if (parts.length === 2 && parts[0] === 'shopConfig') {
+                    updatedShopConfig[parts[1]] = input.value.trim();
+                }
+            });
+
+            const newPassword = document.getElementById('admin-password').value.trim();
+
             const updatePayload = {
                 shopConfig: updatedShopConfig,
                 enabledModules: updatedModules,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            if (newPasswordInput) {
-                updatePayload.adminPassword = newPasswordInput;
+            if (newPassword) {
+                updatePayload.adminPassword = newPassword;
                 logTrace(`Password update included in payload.`, 'warn');
             }
 
             tenantDocRef.set(updatePayload, { merge: true })
                 .then(() => {
                     logTrace(`Tenant "${tenantId}" successfully updated in Firestore!`, 'success');
-                    showAlert('Perubahan profil dan konfigurasi berhasil disimpan ke Firestore!', 'success');
-                    document.getElementById('admin-password').value = ''; // clear password field
+                    showAlert('Seluruh field, konfigurasi, dan preview gambar berhasil disimpan!', 'success');
+                    document.getElementById('admin-password').value = '';
                     saveBtn.disabled = false;
                     saveBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Simpan Perubahan</span>`;
                 })
                 .catch((error) => {
                     logTrace(`Firestore write error: ${error.message}`, 'error');
-                    showAlert(`Gagal menyimpan perubahan: ${error.message}`, 'error');
+                    showAlert(`Gagal menyimpan: ${error.message}`, 'error');
                     saveBtn.disabled = false;
                     saveBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Simpan Perubahan</span>`;
                 });

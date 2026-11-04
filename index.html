@@ -41,8 +41,8 @@
         .btn-live { background-color: #059669; color: white; font-size: 0.7rem; padding: 0.3rem 0.6rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.3rem; font-weight: 500; }
         .dot { width: 0.4rem; height: 0.4rem; background-color: white; border-radius: 50%; }
         
-        /* Diagnostic Console Compact */
-        .diagnostic-box { background: #0b0f19; border: 1px dashed #334155; border-radius: 0.4rem; padding: 0.6rem 0.8rem; text-align: left; font-family: monospace; font-size: 0.7rem; color: #94a3b8; line-height: 1.3; }
+        /* Diagnostic Console Separated */
+        .diagnostic-box { background: #0b0f19; border: 1px dashed #334155; border-radius: 0.5rem; padding: 0.75rem 1rem; text-align: left; font-family: monospace; font-size: 0.7rem; color: #94a3b8; line-height: 1.4; width: 100%; max-width: 72rem; margin: 0.75rem auto 0 auto; }
     </style>
 
     <!-- Dynamic Tenant JS Loader (Unified Configuration) -->
@@ -66,14 +66,12 @@
 </head>
 <body class="bg-darkBg text-slate-100 font-sans antialiased selection:bg-accent selection:text-darkBg flex flex-col h-screen overflow-hidden justify-between">
 
-    <!-- Header / Navbar Compact -->
+    <!-- Header / Navbar Compact (RestoSync text removed, logo RS only) -->
     <header class="bg-darkBg/90 backdrop-blur-md border-b border-slate-800 h-16 flex-shrink-0">
         <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <a href="index.html" id="brand-logo-link" class="flex items-center space-x-2.5 text-decoration-none">
-                    <!-- Logo RS menggunakan assets/images/RS.png diperkecil 50% (~h-6) -->
+                <a href="index.html" id="brand-logo-link" class="flex items-center space-x-2 text-decoration-none">
                     <img src="assets/images/RS.png" alt="RestoSync Logo" class="h-6 w-auto object-contain">
-                    <span class="text-lg font-black tracking-wider bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">RESTOSYNC</span>
                 </a>
                 <span class="text-xs text-slate-400 border-l border-slate-800 pl-3 hidden sm:inline">TargetedScripts.com Ecosystem</span>
             </div>
@@ -92,7 +90,7 @@
     </header>
 
     <!-- Main Content Area (Single Viewport Fit) -->
-    <main class="flex-grow flex items-center justify-center py-4 px-4 overflow-y-auto">
+    <main class="flex-grow flex flex-col items-center justify-center py-3 px-4 overflow-y-auto">
         
         <!-- Hero Section (Visible when NO tenant is selected) -->
         <div id="hero-section" class="relative overflow-hidden text-center max-w-4xl mx-auto">
@@ -119,12 +117,12 @@
             </div>
         </div>
 
-        <!-- Tenant Dashboard Launchpad Card (Single Viewport Fit, Frame Box Minimal / Clean) -->
-        <div id="dashboard-container" class="w-full max-w-6xl hidden">
-            <div class="bg-cardBg border border-slate-800/80 rounded-2xl p-5 md:p-6 shadow-xl">
+        <!-- Tenant Dashboard Launchpad Card (Separated from Diagnostic Console) -->
+        <div id="dashboard-container" class="w-full max-w-6xl hidden flex flex-col items-center">
+            <div class="bg-cardBg border border-slate-800/80 rounded-2xl p-5 md:p-6 shadow-xl w-full">
                 
                 <!-- Top Bar Tenant info -->
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 border-b border-slate-800 pb-3">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 border-b border-slate-800 pb-3">
                     <div>
                         <span class="badge mb-1" id="tenant-badge">Tenant ID: Loading...</span>
                         <div id="tenant-heading-container" class="flex items-center gap-2">
@@ -136,12 +134,12 @@
                     </div>
                 </div>
 
-                <p class="text-slate-400 text-xs md:text-sm mb-4 leading-relaxed">
+                <p class="text-slate-400 text-xs md:text-sm mb-3 leading-relaxed">
                     Welcome to your centralized F&B management control center. Access your live operations, customer websites, kitchen displays, inventory catalog, and brand settings below.
                 </p>
 
                 <!-- Customer Web Templates Container -->
-                <div id="templates-container" class="hidden mb-4 bg-darkBg border border-slate-800 rounded-xl p-3">
+                <div id="templates-container" class="hidden mb-3 bg-darkBg border border-slate-800 rounded-xl p-2.5">
                     <div class="text-[11px] font-bold text-accent uppercase tracking-wider mb-2 flex items-center gap-1.5">
                         <i class="fa-solid fa-globe"></i> Customer Web Templates (Active Tenant Access)
                     </div>
@@ -149,57 +147,57 @@
                 </div>
 
                 <!-- Dashboard Grid Menu (4 Columns Layout to fit 1 screen cleanly) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4" id="launchpad-grid">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5" id="launchpad-grid">
                     <a href="cashier.html" class="menu-btn" data-module="pos">
-                        <div class="text-lg mb-1.5"><i class="fa-solid fa-cash-register text-amber-400"></i></div>
+                        <div class="text-base mb-1"><i class="fa-solid fa-cash-register text-amber-400"></i></div>
                         <strong class="text-xs md:text-sm text-white mb-0.5">Live Orders & POS</strong>
                         <span class="text-[11px] text-slate-400">Real-time orders & 15% GST</span>
                     </a>
                     <a href="kds.html" class="menu-btn" data-module="kds">
-                        <div class="text-lg mb-1.5"><i class="fa-solid fa-utensils text-amber-400"></i></div>
+                        <div class="text-base mb-1"><i class="fa-solid fa-utensils text-amber-400"></i></div>
                         <strong class="text-xs md:text-sm text-white mb-0.5">Kitchen Display (KDS)</strong>
                         <span class="text-[11px] text-slate-400">Live kitchen kanban board</span>
                     </a>
                     <a href="admin-profile.html" class="menu-btn" data-module="profile">
-                        <div class="text-lg mb-1.5"><i class="fa-solid fa-building text-amber-400"></i></div>
+                        <div class="text-base mb-1"><i class="fa-solid fa-building text-amber-400"></i></div>
                         <strong class="text-xs md:text-sm text-white mb-0.5">Tenant Profile & Config</strong>
                         <span class="text-[11px] text-slate-400">Store info & passwords</span>
                     </a>
                     <a href="branding.html" class="menu-btn" data-module="branding">
-                        <div class="text-lg mb-1.5"><i class="fa-solid fa-palette text-amber-400"></i></div>
+                        <div class="text-base mb-1"><i class="fa-solid fa-palette text-amber-400"></i></div>
                         <strong class="text-xs md:text-sm text-white mb-0.5">Theme & Branding</strong>
                         <span class="text-[11px] text-slate-400">Colors, logos & skins</span>
                     </a>
                     <a href="menu.html" class="menu-btn" data-module="menu">
-                        <div class="text-lg mb-1.5"><i class="fa-solid fa-book-open text-amber-400"></i></div>
+                        <div class="text-base mb-1"><i class="fa-solid fa-book-open text-amber-400"></i></div>
                         <strong class="text-xs md:text-sm text-white mb-0.5">Menu Catalog</strong>
                         <span class="text-[11px] text-slate-400">Categories, items & pricing</span>
                     </a>
                     <a href="fcp.html" class="menu-btn" data-module="fcp">
-                        <div class="text-lg mb-1.5"><i class="fa-solid fa-shield-halved text-amber-400"></i></div>
+                        <div class="text-base mb-1"><i class="fa-solid fa-shield-halved text-amber-400"></i></div>
                         <strong class="text-xs md:text-sm text-white mb-0.5">Food Safety Compliance</strong>
                         <span class="text-[11px] text-slate-400">Temperature logs & audits</span>
                     </a>
                     <a href="analytics.html" class="menu-btn" data-module="analytics">
-                        <div class="text-lg mb-1.5"><i class="fa-solid fa-chart-line text-amber-400"></i></div>
+                        <div class="text-base mb-1"><i class="fa-solid fa-chart-line text-amber-400"></i></div>
                         <strong class="text-xs md:text-sm text-white mb-0.5">Business Analytics</strong>
                         <span class="text-[11px] text-slate-400">Sales reports & metrics</span>
                     </a>
                 </div>
 
-                <!-- Trace & Diagnostic Console Compact -->
-                <div class="diagnostic-box" id="diagnostic-panel">
-                    <div class="text-accent font-bold mb-1 flex items-center gap-1.5">
-                        <i class="fa-solid fa-stethoscope"></i> RESTOSYNC TRACE & DIAGNOSTIC CONSOLE:
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-                        <div id="trace-config-log">1. Config Check: Scanning...</div>
-                        <div id="trace-init-log">2. Firebase Init: Waiting...</div>
-                        <div id="trace-firestore-log">3. Firestore Query: Waiting...</div>
-                        <div id="trace-storage-log">4. Storage Inspector: Waiting...</div>
-                    </div>
-                </div>
+            </div>
 
+            <!-- Trace & Diagnostic Console (Separated Outside Launchpad Frame Box) -->
+            <div class="diagnostic-box hidden" id="diagnostic-panel-outer">
+                <div class="text-accent font-bold mb-1 flex items-center gap-1.5">
+                    <i class="fa-solid fa-stethoscope"></i> RESTOSYNC TRACE & DIAGNOSTIC CONSOLE:
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                    <div id="trace-config-log">1. Config Check: Scanning...</div>
+                    <div id="trace-init-log">2. Firebase Init: Waiting...</div>
+                    <div id="trace-firestore-log">3. Firestore Query: Waiting...</div>
+                    <div id="trace-storage-log">4. Storage Inspector: Waiting...</div>
+                </div>
             </div>
         </div>
 
@@ -223,6 +221,7 @@
             const demoLinkEl = document.getElementById('header-demo-link');
             const heroSection = document.getElementById('hero-section');
             const dashboardContainer = document.getElementById('dashboard-container');
+            const diagnosticPanelOuter = document.getElementById('diagnostic-panel-outer');
             const tenantHeadingContainer = document.getElementById('tenant-heading-container');
             
             const traceConfigLog = document.getElementById('trace-config-log');
@@ -236,6 +235,7 @@
             if (tenantParam) {
                 if (heroSection) heroSection.style.display = 'none';
                 if (dashboardContainer) dashboardContainer.classList.remove('hidden');
+                if (diagnosticPanelOuter) diagnosticPanelOuter.classList.remove('hidden');
 
                 const tenantKey = tenantParam.toLowerCase().trim();
                 const formattedTenant = tenantKey.charAt(0).toUpperCase() + tenantKey.slice(1).replace(/-/g, ' ');
@@ -393,6 +393,7 @@
             } else {
                 if (heroSection) heroSection.style.display = 'block';
                 if (dashboardContainer) dashboardContainer.classList.add('hidden');
+                if (diagnosticPanelOuter) diagnosticPanelOuter.classList.add('hidden');
                 if (brandLogoLinkEl) brandLogoLinkEl.setAttribute('href', 'index.html');
             }
         });

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync SaaS - Tenant Profile & Control Panel</title>
+    <title>RestoSync SaaS - Tenant Profile & Multi-User Control Hub</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -29,23 +29,25 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <!-- Tenant Specific Configuration Script -->
     <script id="tenant-config-script"></script>
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
 </head>
 <body class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans selection:bg-accent selection:text-slate-900">
 
     <!-- Top Navigation Bar -->
     <header class="bg-cardBg border-b border-slate-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-md">
         <div class="flex items-center space-x-3">
-            <!-- Logo RestoSync RS.png menggantikan teks badge -->
             <a href="#" id="header-logo-link" class="flex items-center space-x-2">
                 <img src="assets/images/RS.png" alt="RestoSync Logo" class="h-9 w-auto object-contain" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'36\' height=\'36\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23f59e0b\' stroke-width=\'2\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\'/><path d=\'m9 12 2 2 4-4\'/></svg>';">
             </a>
-            <h1 class="text-lg font-semibold tracking-tight text-slate-200 border-l border-slate-700 pl-3">Tenant Profile & Control Panel</h1>
+            <h1 class="text-lg font-semibold tracking-tight text-slate-200 border-l border-slate-700 pl-3">Tenant Profile & Multi-User Hub</h1>
         </div>
         <div class="flex items-center space-x-4">
             <div id="tenant-badge" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-mono">
                 Loading tenant...
             </div>
-            <!-- Back to Console link ke console.targetedscripts.com/index.html?tenant=... -->
             <a id="back-to-console" href="#" class="text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-4 py-2 rounded-lg border border-slate-700 transition flex items-center space-x-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -54,135 +56,169 @@
         </div>
     </header>
 
+    <!-- NAVIGATION TABS (Tab-based Card Layout) -->
+    <nav class="bg-slate-950 border-b border-slate-800 px-6 flex space-x-2 overflow-x-auto shadow-inner">
+        <button onclick="switchTab('tab-branding')" id="btn-tab-branding" class="tab-btn px-5 py-3.5 text-xs font-bold text-accent border-b-2 border-accent flex items-center space-x-2 transition">
+            <i class="fa-solid fa-paintbrush"></i><span>Store Branding & Logo</span>
+        </button>
+        <button onclick="switchTab('tab-shop')" id="btn-tab-shop" class="tab-btn px-5 py-3.5 text-xs font-bold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 transition">
+            <i class="fa-solid fa-store"></i><span>Shop & Modules</span>
+        </button>
+        <button onclick="switchTab('tab-staff')" id="btn-tab-staff" class="tab-btn px-5 py-3.5 text-xs font-bold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 transition">
+            <i class="fa-solid fa-users-gear"></i><span>Staff & User Logon</span>
+        </button>
+        <button onclick="switchTab('tab-security')" id="btn-tab-security" class="tab-btn px-5 py-3.5 text-xs font-bold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 transition">
+            <i class="fa-solid fa-shield-halved"></i><span>Security & System</span>
+        </button>
+    </nav>
+
     <!-- Main Content Area -->
     <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-8 space-y-6">
 
         <!-- Status Alert Banner -->
         <div id="alert-banner" class="hidden p-4 rounded-xl border text-sm font-medium transition-all"></div>
 
-        <!-- Configuration Form -->
+        <!-- Configuration Form wrapping all tabs -->
         <form id="profile-form" class="space-y-6">
             
-            <!-- Section 1: Locked System Info (Tenant ID & Contract Expiry) -->
-            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-                <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-base font-bold text-slate-200">System Information (Locked)</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Tenant identifier and contract expiry dates are managed centrally and cannot be modified.</p>
-                    </div>
-                    <span class="text-xs bg-rose-500/10 text-rose-400 px-2.5 py-1 rounded-md border border-rose-500/20 font-medium">Read-Only</span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Tenant ID</label>
-                        <input type="text" id="locked-tenant-id" disabled class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-400 text-sm font-mono cursor-not-allowed">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Contract Expiry Date</label>
-                        <input type="text" id="locked-expiry-date" disabled class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-400 text-sm font-mono cursor-not-allowed">
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section 2: Active Company Logo (Full View, Storage Dropdown & Upload) -->
-            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
-                <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-base font-bold text-slate-200">Active Company Logo</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Select from Firebase Storage library, upload file, or enter URL. Full aspect ratio display with zoom control.</p>
-                    </div>
-                    <span class="text-xs bg-accent/10 text-accent px-2.5 py-1 rounded-md border border-accent/20 font-medium">Visual Asset</span>
-                </div>
-
-                <div class="flex flex-col md:flex-row items-center gap-6">
-                    <!-- Live Full Image Preview Box -->
-                    <div class="w-36 h-36 bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center relative shadow-inner flex-shrink-0 p-2">
-                        <img id="logo-preview" src="" alt="Company Logo Preview" class="object-contain w-full h-full transition-transform duration-200" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\' ry=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\'/></svg>';">
-                    </div>
-                    
-                    <div class="flex-grow w-full space-y-4">
+            <!-- TAB 1: BRANDING & LOGO -->
+            <div id="tab-branding" class="tab-content active space-y-6">
+                <!-- System Information (Locked) -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5"><i class="fa-solid fa-folder-open mr-1"></i> Select from Storage Library</label>
-                            <select id="storageLogoDropdown" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-accent transition font-mono">
-                                <option value="">-- Choose existing logo from Firebase Storage --</option>
-                            </select>
+                            <h2 class="text-base font-bold text-slate-200">System Information (Locked)</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Tenant identifier and contract expiry dates are managed centrally.</p>
                         </div>
-
+                        <span class="text-xs bg-rose-500/10 text-rose-400 px-2.5 py-1 rounded-md border border-rose-500/20 font-medium">Read-Only</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Or Upload File / Enter URL</label>
-                            <div class="flex flex-col sm:flex-row gap-3">
-                                <input type="text" id="logo-url-input" placeholder="https://..." class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition truncate">
-                                
-                                <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 cursor-pointer transition flex items-center justify-center space-x-2 flex-shrink-0">
-                                    <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                                    <span>Browse File...</span>
-                                    <input type="file" id="logo-file-input" accept="image/*" class="hidden">
-                                </label>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Tenant ID</label>
+                            <input type="text" id="locked-tenant-id" disabled class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-400 text-sm font-mono cursor-not-allowed">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Contract Expiry Date</label>
+                            <input type="text" id="locked-expiry-date" disabled class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-400 text-sm font-mono cursor-not-allowed">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Active Company Logo -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                    <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-200">Active Company Logo</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Select from Firebase Storage library, upload file, or enter URL with zoom control.</p>
+                        </div>
+                        <span class="text-xs bg-accent/10 text-accent px-2.5 py-1 rounded-md border border-accent/20 font-medium">Visual Asset</span>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="w-36 h-36 bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center relative shadow-inner flex-shrink-0 p-2">
+                            <img id="logo-preview" src="" alt="Company Logo Preview" class="object-contain w-full h-full transition-transform duration-200" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\' ry=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\'/></svg>';">
+                        </div>
+                        
+                        <div class="flex-grow w-full space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5"><i class="fa-solid fa-folder-open mr-1"></i> Select from Storage Library</label>
+                                <select id="storageLogoDropdown" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-accent transition font-mono">
+                                    <option value="">-- Choose existing logo from Firebase Storage --</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Or Upload File / Enter URL</label>
+                                <div class="flex flex-col sm:flex-row gap-3">
+                                    <input type="text" id="logo-url-input" placeholder="https://..." class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition truncate">
+                                    
+                                    <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 cursor-pointer transition flex items-center justify-center space-x-2 flex-shrink-0">
+                                        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                        <span>Browse File...</span>
+                                        <input type="file" id="logo-file-input" accept="image/*" class="hidden">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-4 pt-1">
+                                <span class="text-xs text-slate-400 font-semibold">Logo Scale:</span>
+                                <button type="button" onclick="adjustLogoScale(-10)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 rounded-lg text-xs font-bold">-</button>
+                                <span id="logoScaleDisplay" class="font-mono text-accent font-bold text-xs">100%</span>
+                                <button type="button" onclick="adjustLogoScale(10)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 rounded-lg text-xs font-bold">+</button>
                             </div>
                         </div>
+                    </div>
+                </section>
+            </div>
 
-                        <!-- Logo Zoom Scale Control -->
-                        <div class="flex items-center space-x-4 pt-1">
-                            <span class="text-xs text-slate-400 font-semibold">Logo Scale:</span>
-                            <button type="button" onclick="adjustLogoScale(-10)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 rounded-lg text-xs font-bold">-</button>
-                            <span id="logoScaleDisplay" class="font-mono text-accent font-bold text-xs">100%</span>
-                            <button type="button" onclick="adjustLogoScale(10)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 rounded-lg text-xs font-bold">+</button>
+            <!-- TAB 2: SHOP & MODULES -->
+            <div id="tab-shop" class="tab-content space-y-6">
+                <!-- Shop Configuration -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                    <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-200">Store Profile & Shop Configuration</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Edit store name, currency, tax, and core parameters.</p>
                         </div>
+                        <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/20 font-medium">shopConfig</span>
                     </div>
-                </div>
-            </section>
+                    <div id="dynamic-fields-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+                </section>
 
-            <!-- Section 3: General Profile & Shop Configuration -->
-            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
-                <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-base font-bold text-slate-200">Store Profile & Shop Configuration</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Edit store name, currency, tax, and contact details.</p>
+                <!-- Module Visibility Toggles -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                    <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-200">Module Visibility Toggles</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Control active operational modules (<code class="text-accent font-mono">enabledModules</code>).</p>
+                        </div>
+                        <span class="text-xs bg-amber-500/10 text-accent px-2.5 py-1 rounded-md border border-accent/20 font-medium">Feature Flags</span>
                     </div>
-                    <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/20 font-medium">shopConfig</span>
-                </div>
+                    <div id="modules-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </section>
+            </div>
 
-                <div id="dynamic-fields-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Dynamic fields populated here -->
-                </div>
-            </section>
-
-            <!-- Section 4: Module Visibility Toggles -->
-            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
-                <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-base font-bold text-slate-200">Module Visibility Toggles</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Control active operational modules (<code class="text-accent font-mono">enabledModules</code>).</p>
+            <!-- TAB 3: STAFF & USER LOGON MANAGER -->
+            <div id="tab-staff" class="tab-content space-y-6">
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                    <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-200">Staff & User Logon Manager</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Manage multi-user accounts, passwords, and specific operational roles (Floor, POS, Kitchen).</p>
+                        </div>
+                        <button type="button" onclick="addNewStaffMember()" class="bg-accent hover:bg-accentHover text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition flex items-center space-x-2 shadow-md">
+                            <i class="fa-solid fa-user-plus"></i><span>+ Add New Staff</span>
+                        </button>
                     </div>
-                    <span class="text-xs bg-amber-500/10 text-accent px-2.5 py-1 rounded-md border border-accent/20 font-medium">Feature Flags</span>
-                </div>
 
-                <div id="modules-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Toggles populated here -->
-                </div>
-            </section>
-
-            <!-- Section 5: Security & Visible Admin Password -->
-            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
-                <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-base font-bold text-slate-200">Security & Credentials</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">View or update administrative password (<code class="text-accent font-mono">adminPassword</code>) for store manager access.</p>
+                    <div id="staff-container" class="space-y-4">
+                        <!-- Dynamically populated staff cards will appear here -->
                     </div>
-                    <span class="text-xs bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-md border border-blue-500/20 font-medium">Manager Access</span>
-                </div>
+                </section>
+            </div>
 
-                <div class="max-w-md">
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Admin Password (Visible to Store Manager)</label>
-                    <input type="text" id="admin-password" placeholder="Enter new password to update" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition">
-                    <p class="text-[11px] text-slate-500 mt-1.5">Store managers can view this password directly without contacting system admin.</p>
-                </div>
-            </section>
+            <!-- TAB 4: SECURITY & SYSTEM -->
+            <div id="tab-security" class="tab-content space-y-6">
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                    <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-200">Security & Credentials</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">View or update primary store manager password (<code class="text-accent font-mono">adminPassword</code>).</p>
+                        </div>
+                        <span class="text-xs bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-md border border-blue-500/20 font-medium">Manager Access</span>
+                    </div>
 
-            <!-- Action Button Bar -->
-            <div class="flex items-center justify-end space-x-4 pt-2">
-                <button type="submit" id="save-btn" class="bg-accent hover:bg-accentHover text-slate-950 font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-accent/10 flex items-center space-x-2 text-sm">
+                    <div class="max-w-md">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Primary Admin Password (Visible to Store Manager)</label>
+                        <input type="text" id="admin-password" placeholder="Enter new password to update" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition">
+                        <p class="text-[11px] text-slate-500 mt-1.5">Store managers can view this password directly without calling system admin.</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Action Button Bar (Persistent at bottom) -->
+            <div class="flex items-center justify-end space-x-4 pt-4 border-t border-slate-800">
+                <button type="submit" id="save-btn" class="bg-accent hover:bg-accentHover text-slate-950 font-bold px-8 py-3.5 rounded-xl transition shadow-lg shadow-accent/10 flex items-center space-x-2 text-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     <span>Simpan Perubahan</span>
                 </button>
@@ -199,7 +235,7 @@
                 <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing system & scanning storage logo library...
+                Initializing tabbed control panel & scanning database...
             </div>
         </div>
     </footer>
@@ -243,21 +279,35 @@
             setTimeout(() => { alertEl.classList.add('hidden'); }, 5000);
         }
 
+        // Tab Switching Function
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-accent', 'border-accent');
+                btn.classList.add('text-slate-400', 'border-transparent');
+            });
+            document.getElementById(tabId).classList.add('active');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-slate-400', 'border-transparent');
+                activeBtn.classList.add('text-accent', 'border-accent');
+            }
+        }
+
         const urlParams = new URLSearchParams(window.location.search);
         const tenantId = urlParams.get('tenant') || 'bangkokthaipalmy';
 
         document.getElementById('tenant-badge').textContent = `Tenant: ${tenantId}`;
-        
-        // Memperbarui link Back to Console ke domain console.targetedscripts.com/index.html?tenant=...
         document.getElementById('back-to-console').href = `https://console.targetedscripts.com/index.html?tenant=${encodeURIComponent(tenantId)}`;
         document.getElementById('header-logo-link').href = `https://console.targetedscripts.com/index.html?tenant=${encodeURIComponent(tenantId)}`;
 
         let fetchedDocumentData = {};
         let passwordFieldName = 'adminPassword';
         let currentLogoScale = 100;
+        let staffList = [];
 
         document.addEventListener('DOMContentLoaded', () => {
-            logTrace(`Initializing panel for tenant: [${tenantId}]`, 'info');
+            logTrace(`Initializing tabbed panel for tenant: [${tenantId}]`, 'info');
             fetchStorageAssetLists();
             fetchAndRenderTenantData();
         });
@@ -308,7 +358,7 @@
             db.collection('tenants').doc(tenantId).get().then((doc) => {
                 if (doc.exists) {
                     fetchedDocumentData = doc.data();
-                    logTrace(`Document retrieved successfully. Rendering fields...`, 'success');
+                    logTrace(`Document retrieved successfully. Rendering all tabs...`, 'success');
                     
                     document.getElementById('locked-tenant-id').value = tenantId;
                     document.getElementById('locked-expiry-date').value = fetchedDocumentData.expiryDate || fetchedDocumentData.contractExpiry || '2027-12-31 (Active)';
@@ -349,6 +399,12 @@
                     renderShopFields(shopConfig);
                     renderModuleToggles(fetchedDocumentData.enabledModules || { shop: true, blog: false });
 
+                    // Load Staff Users
+                    staffList = fetchedDocumentData.staffUsers || fetchedDocumentData.users || [
+                        { name: "Store Manager", email: "manager@restosync.com", password: "admin", role: "floor" }
+                    ];
+                    renderStaffManager();
+
                     let existingPassword = '';
                     if (profile.adminPassword !== undefined) {
                         existingPassword = profile.adminPassword;
@@ -368,6 +424,8 @@
                     document.getElementById('locked-expiry-date').value = '2027-12-31 (New Record)';
                     renderShopFields({ shopName: tenantId, currency: 'NZD', taxRate: 15 });
                     renderModuleToggles({ shop: true, blog: false });
+                    staffList = [{ name: "Default Manager", email: "manager@restosync.com", password: "admin", role: "floor" }];
+                    renderStaffManager();
                 }
             }).catch((error) => {
                 logTrace(`Firestore read error: ${error.message}`, 'error');
@@ -425,6 +483,74 @@
             }
         }
 
+        // Staff Manager Render Function (Multi-User Card Layout)
+        function renderStaffManager() {
+            const container = document.getElementById('staff-container');
+            container.innerHTML = '';
+
+            if (staffList.length === 0) {
+                container.innerHTML = `<div class="text-xs text-slate-500 italic p-4 text-center">No staff users configured yet. Click "+ Add New Staff" above.</div>`;
+                return;
+            }
+
+            staffList.forEach((staff, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-4 relative shadow-md';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <span class="text-xs font-mono font-bold text-accent">Staff Account #${index + 1}</span>
+                        <button type="button" onclick="removeStaffMember(${index})" class="text-rose-400 hover:text-rose-300 text-xs font-bold px-2.5 py-1 rounded-lg bg-rose-500/10 border border-rose-500/20 transition">
+                            <i class="fa-solid fa-trash mr-1"></i> Remove Staff
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                        <div>
+                            <label class="block text-stone-400 mb-1 font-semibold">Staff Name</label>
+                            <input type="text" value="${staff.name || ''}" onchange="updateStaffData(${index}, 'name', this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-stone-200" placeholder="Full Name">
+                        </div>
+                        <div>
+                            <label class="block text-stone-400 mb-1 font-semibold">Email Address (Logon)</label>
+                            <input type="email" value="${staff.email || ''}" onchange="updateStaffData(${index}, 'email', this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-stone-200" placeholder="staff@domain.com">
+                        </div>
+                        <div>
+                            <label class="block text-stone-400 mb-1 font-semibold">Password</label>
+                            <input type="text" value="${staff.password || ''}" onchange="updateStaffData(${index}, 'password', this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-stone-200 font-mono" placeholder="Password">
+                        </div>
+                        <div>
+                            <label class="block text-stone-400 mb-1 font-semibold">Role & Access Area</label>
+                            <select onchange="updateStaffData(${index}, 'role', this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-stone-200">
+                                <option value="floor" ${staff.role === 'floor' ? 'selected' : ''}>Floor / Front Area</option>
+                                <option value="pos" ${staff.role === 'pos' ? 'selected' : ''}>Cashier / POS</option>
+                                <option value="kitchen" ${staff.role === 'kitchen' ? 'selected' : ''}>Kitchen / KDS</option>
+                                <option value="manager" ${staff.role === 'manager' ? 'selected' : ''}>Store Manager (Full)</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addNewStaffMember() {
+            staffList.push({ name: "", email: "", password: "", role: "floor" });
+            renderStaffManager();
+            logTrace('Added new blank staff logon slot.', 'info');
+        }
+
+        function removeStaffMember(index) {
+            staffList.splice(index, 1);
+            renderStaffManager();
+            logTrace(`Removed staff account at index ${index}.`, 'warn');
+        }
+
+        function updateStaffData(index, field, value) {
+            if (staffList[index]) {
+                staffList[index][field] = value.trim();
+                logTrace(`Updated staff [${index}] ${field} = ${value}`, 'info');
+            }
+        }
+
+        // Form Submit Handler
         document.getElementById('profile-form').addEventListener('submit', function(e) {
             e.preventDefault();
             logTrace(`Saving updates for tenant "${tenantId}"...`, 'info');
@@ -461,6 +587,7 @@
                 shopConfig: updatedShopConfig,
                 profile: updatedProfile,
                 enabledModules: updatedModules,
+                staffUsers: staffList, // Menyimpan multi-user staff logon ke database Firestore
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -472,8 +599,8 @@
 
             db.collection('tenants').doc(tenantId).set(updatePayload, { merge: true })
                 .then(() => {
-                    logTrace(`Tenant "${tenantId}" successfully updated in Firestore!`, 'success');
-                    showAlert('Perubahan profil, logo, scale, dan password berhasil disimpan!', 'success');
+                    logTrace(`Tenant "${tenantId}" successfully updated with staff users in Firestore!`, 'success');
+                    showAlert('Perubahan profil, logo, dan staff logon berhasil disimpan!', 'success');
                     saveBtn.disabled = false;
                     saveBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Simpan Perubahan</span>`;
                 })

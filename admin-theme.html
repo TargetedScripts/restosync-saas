@@ -101,7 +101,7 @@
             </div>
         </section>
 
-        <!-- Main Workspace: 2-Column Split Layout + Floating Sticky Save Button in the middle gutter -->
+        <!-- Main Workspace: 2-Column Split Layout + Floating Dynamic Save Button -->
         <form id="theme-form" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
             
             <!-- Left Column: Detailed Element UI Customization Form (Col span 5) -->
@@ -118,21 +118,21 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Background</label>
-                                <input type="color" id="ui-headerBgColor" value="#000000" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-headerBgColor" value="#000000" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-headerBgColor">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Border Color</label>
-                                <input type="color" id="ui-headerBorderColor" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-headerBorderColor" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-headerBorderColor">
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2 pt-1">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Border Size</label>
-                                <input type="text" id="ui-headerBorderSize" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white">
+                                <input type="text" id="ui-headerBorderSize" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white" data-field-id="ui-headerBorderSize">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Extra Text</label>
-                                <input type="text" id="ui-headerExtraText" placeholder="LIVE" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white">
+                                <input type="text" id="ui-headerExtraText" placeholder="LIVE" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white" data-field-id="ui-headerExtraText">
                             </div>
                         </div>
                     </div>
@@ -143,11 +143,11 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Body Background</label>
-                                <input type="color" id="ui-bodyBgColor" value="#18181b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-bodyBgColor" value="#18181b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-bodyBgColor">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Body Text Color</label>
-                                <input type="color" id="ui-bodyTextColor" value="#d6d3d1" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-bodyTextColor" value="#d6d3d1" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-bodyTextColor">
                             </div>
                         </div>
                     </div>
@@ -158,27 +158,27 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Filter Bar Bg</label>
-                                <input type="color" id="ui-filterBarBg" value="#18181bf2" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-filterBarBg" value="#18181bf2" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-filterBarBg">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Border Color</label>
-                                <input type="color" id="ui-catBtnBorderColor" value="#374151" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-catBtnBorderColor" value="#374151" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-catBtnBorderColor">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Active Button Bg</label>
-                                <input type="color" id="ui-catBtnActiveBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-catBtnActiveBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-catBtnActiveBg">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Active Text</label>
-                                <input type="color" id="ui-catBtnActiveText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-catBtnActiveText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-catBtnActiveText">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Inactive Button Bg</label>
-                                <input type="color" id="ui-catBtnInactiveBg" value="#1f2937" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-catBtnInactiveBg" value="#1f2937" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-catBtnInactiveBg">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Inactive Text</label>
-                                <input type="color" id="ui-catBtnInactiveText" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-catBtnInactiveText" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-catBtnInactiveText">
                             </div>
                         </div>
                     </div>
@@ -189,15 +189,15 @@
                         <div class="grid grid-cols-3 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Card Bg</label>
-                                <input type="color" id="ui-cardMenuBg" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-cardMenuBg" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-cardMenuBg">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Border</label>
-                                <input type="color" id="ui-cardBorderColor" value="#3f3f46" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-cardBorderColor" value="#3f3f46" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-cardBorderColor">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Thickness</label>
-                                <input type="text" id="ui-cardBorderThickness" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white">
+                                <input type="text" id="ui-cardBorderThickness" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white" data-field-id="ui-cardBorderThickness">
                             </div>
                         </div>
                     </div>
@@ -208,22 +208,22 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Footer Background</label>
-                                <input type="color" id="ui-footerBgColor" value="#000000" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-footerBgColor" value="#000000" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-footerBgColor">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Footer Text Color</label>
-                                <input type="color" id="ui-footerTextColor" value="#a8a29e" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                                <input type="color" id="ui-footerTextColor" value="#a8a29e" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-footerTextColor">
                             </div>
                         </div>
                     </div>
                 </section>
             </div>
 
-            <!-- Floating Sticky Save Action Button (Positioned right in the middle gutter bridging left & right panels) -->
-            <div class="hidden lg:flex absolute left-[41.5%] top-1/2 -translate-y-1/2 z-40">
-                <button type="button" id="save-btn" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-3 rounded-full shadow-2xl transition flex items-center justify-center border-2 border-slate-900 group relative" title="Save Theme Settings">
-                    <i class="fa-solid fa-floppy-disk text-sm"></i>
-                    <span class="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-amber-400 text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none border border-slate-700">Save Theme</span>
+            <!-- Dynamic Floating Save Action Button (Positioned dynamically next to active input) -->
+            <div id="dynamic-save-container" class="hidden lg:block absolute z-40 transition-all duration-300 ease-out" style="left: 41.5%; top: 50px;">
+                <button type="button" id="save-btn" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3.5 py-2 rounded-xl shadow-2xl transition flex items-center space-x-1.5 text-xs border border-amber-300/50 whitespace-nowrap">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span>Save Theme Settings</span>
                 </button>
             </div>
 
@@ -267,7 +267,7 @@
                 <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing storage library & live preview studio...
+                Initializing dynamic floating save button studio...
             </div>
         </div>
     </footer>
@@ -335,8 +335,21 @@
             'footerBgColor', 'footerTextColor'
         ];
 
+        // Function to dynamically move the Save button next to the active input element
+        function positionSaveButtonNear(element) {
+            if (!element) return;
+            const container = document.getElementById('dynamic-save-container');
+            const formRect = document.getElementById('theme-form').getBoundingClientRect();
+            const elemRect = element.getBoundingClientRect();
+
+            // Calculate relative offset inside the form container
+            const relativeTop = elemRect.top - formRect.top + (elemRect.height / 2) - 18;
+            container.style.top = `${Math.max(0, relativeTop)}px`;
+            container.classList.remove('hidden');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            logTrace(`Initializing Theme Studio with Storage library for tenant: [${tenantId}]`, 'info');
+            logTrace(`Initializing Theme Studio with dynamic floating save button for tenant: [${tenantId}]`, 'info');
             fetchStorageAssetLists();
             fetchAndRenderThemeData();
 
@@ -344,8 +357,16 @@
                 const el = document.getElementById(`ui-${key}`);
                 if (el) {
                     el.addEventListener('input', () => sendRealtimeThemeToIframe());
+                    el.addEventListener('focus', () => positionSaveButtonNear(el));
+                    el.addEventListener('click', () => positionSaveButtonNear(el));
                 }
             });
+
+            // Set default initial position to the first input
+            setTimeout(() => {
+                const firstInput = document.getElementById('ui-headerBgColor');
+                if (firstInput) positionSaveButtonNear(firstInput);
+            }, 300);
 
             document.getElementById('shop-name-input').addEventListener('input', () => sendRealtimeThemeToIframe());
             document.getElementById('logo-url-input').addEventListener('input', (e) => {
@@ -476,7 +497,7 @@
 
             const saveBtn = document.getElementById('save-btn');
             saveBtn.disabled = true;
-            saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sm"></i>`;
+            saveBtn.innerHTML = `<span>Saving...</span>`;
 
             const updatedProfile = fetchedDocumentData.profile || {};
             updatedProfile.tenantName = document.getElementById('shop-name-input').value.trim();
@@ -497,13 +518,13 @@
                     refreshIframe();
 
                     saveBtn.disabled = false;
-                    saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk text-sm"></i><span class="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-amber-400 text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none border border-slate-700">Save Theme</span>`;
+                    saveBtn.innerHTML = `<span>Save Theme Settings</span>`;
                 })
                 .catch((error) => {
                     logTrace(`Firestore write error: ${error.message}`, 'error');
                     showAlert(`Failed to save theme: ${error.message}`, 'error');
                     saveBtn.disabled = false;
-                    saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk text-sm"></i><span class="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-amber-400 text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none border border-slate-700">Save Theme</span>`;
+                    saveBtn.innerHTML = `<span>Save Theme Settings</span>`;
                 });
         });
     </script>

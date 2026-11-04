@@ -263,20 +263,42 @@
                 picker.addEventListener('input', (e) => {
                     textInput.value = e.target.value;
                     applyGlobalThemeColors();
+                    sendRealtimeThemeToIframe();
                 });
 
                 textInput.addEventListener('input', (e) => {
                     if(/^#[0-9A-F]{6}$/i.test(e.target.value)) {
                         picker.value = e.target.value;
                         applyGlobalThemeColors();
+                        sendRealtimeThemeToIframe();
                     }
                 });
             });
 
             document.getElementById('shop-name-input').addEventListener('input', (e) => {
-                // Live update logic if needed
+                sendRealtimeThemeToIframe();
             });
         });
+
+        // Send live theme payload to iframe via postMessage for instant real-time preview
+        function sendRealtimeThemeToIframe() {
+            const iframe = document.getElementById('live-storefront-iframe');
+            if (!iframe || !iframe.contentWindow) return;
+
+            const customColors = {};
+            colorKeys.forEach(key => {
+                customColors[key] = document.getElementById(`text-${key}`).value.trim();
+            });
+
+            const payload = {
+                type: 'RESTOSYNC_LIVE_THEME_UPDATE',
+                colors: customColors,
+                shopName: document.getElementById('shop-name-input').value.trim(),
+                logoUrl: document.getElementById('logo-url-input').value.trim()
+            };
+
+            iframe.contentWindow.postMessage(payload, '*');
+        }
 
         function applyGlobalThemeColors() {
             const bg = document.getElementById('text-bg').value;
@@ -385,7 +407,6 @@
                     logTrace(`Theme settings for "${tenantId}" successfully saved!`, 'success');
                     showAlert('Theme and branding settings successfully saved to Firestore!', 'success');
                     
-                    // Refresh the iframe to instantly reflect saved settings on demo1.html
                     refreshIframe();
 
                     saveBtn.disabled = false;

@@ -71,14 +71,14 @@
                     </div>
                     <div class="flex-grow">
                         <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Display Shop Name</label>
-                        <input type="text" id="shop-name-input" placeholder="Shop Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent" data-field-id="shop-name-input">
+                        <input type="text" id="shop-name-input" placeholder="Shop Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent">
                     </div>
                 </div>
 
                 <!-- Storage Library Dropdown -->
                 <div>
                     <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1"><i class="fa-solid fa-folder-open mr-1"></i> Storage Library</label>
-                    <select id="storageLogoDropdown" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent font-mono" data-field-id="storageLogoDropdown">
+                    <select id="storageLogoDropdown" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent font-mono">
                         <option value="">-- Choose from Firebase Storage --</option>
                     </select>
                 </div>
@@ -87,7 +87,7 @@
                 <div class="space-y-2">
                     <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Logo URL / Upload File</label>
                     <div class="flex gap-2">
-                        <input type="text" id="logo-url-input" placeholder="https://..." class="flex-grow bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs font-mono focus:outline-none focus:border-accent truncate" data-field-id="logo-url-input">
+                        <input type="text" id="logo-url-input" placeholder="https://..." class="flex-grow bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs font-mono focus:outline-none focus:border-accent truncate">
                         <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold px-3 py-1.5 rounded-lg border border-slate-700 cursor-pointer transition shrink-0 flex items-center space-x-1">
                             <i class="fa-solid fa-upload text-accent"></i><span>Upload</span>
                             <input type="file" id="logo-file-input" accept="image/*" class="hidden">
@@ -95,7 +95,7 @@
                     </div>
                     <div class="flex items-center space-x-2 pt-1">
                         <span class="text-[10px] text-slate-400 font-semibold">Scale (%):</span>
-                        <input type="number" id="logo-scale-input" value="100" min="50" max="200" class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white" data-field-id="logo-scale-input">
+                        <input type="number" id="logo-scale-input" value="100" min="50" max="200" class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white">
                     </div>
                 </div>
             </div>
@@ -118,21 +118,21 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Background</label>
-                                <input type="color" id="ui-headerBgColor" value="#000000" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-headerBgColor">
+                                <input type="color" id="ui-headerBgColor" value="#000000" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Border Color</label>
-                                <input type="color" id="ui-headerBorderColor" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-headerBorderColor">
+                                <input type="color" id="ui-headerBorderColor" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2 pt-1">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Border Size</label>
-                                <input type="text" id="ui-headerBorderSize" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white" data-field-id="ui-headerBorderSize">
+                                <input type="text" id="ui-headerBorderSize" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white theme-input-item">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Extra Text</label>
-                                <input type="text" id="ui-headerExtraText" placeholder="LIVE" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white" data-field-id="ui-headerExtraText">
+                                <input type="text" id="ui-headerExtraText" placeholder="LIVE" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white theme-input-item">
                             </div>
                         </div>
                     </div>
@@ -143,11 +143,11 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Body Background</label>
-                                <input type="color" id="ui-bodyBgColor" value="#18181b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-bodyBgColor">
+                                <input type="color" id="ui-bodyBgColor" value="#18181b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Body Text Color</label>
-                                <input type="color" id="ui-bodyTextColor" value="#d6d3d1" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-bodyTextColor">
+                                <input type="color" id="ui-bodyTextColor" value="#d6d3d1" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                         </div>
                     </div>
@@ -158,27 +158,27 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Filter Bar Bg</label>
-                                <input type="color" id="ui-filterBarBg" value="#18181bf2" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-filterBarBg">
+                                <input type="color" id="ui-filterBarBg" value="#18181bf2" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Border Color</label>
-                                <input type="color" id="ui-catBtnBorderColor" value="#374151" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-catBtnBorderColor">
+                                <input type="color" id="ui-catBtnBorderColor" value="#374151" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Active Button Bg</label>
-                                <input type="color" id="ui-catBtnActiveBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-catBtnActiveBg">
+                                <input type="color" id="ui-catBtnActiveBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Active Text</label>
-                                <input type="color" id="ui-catBtnActiveText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-catBtnActiveText">
+                                <input type="color" id="ui-catBtnActiveText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Inactive Button Bg</label>
-                                <input type="color" id="ui-catBtnInactiveBg" value="#1f2937" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-catBtnInactiveBg">
+                                <input type="color" id="ui-catBtnInactiveBg" value="#1f2937" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Inactive Text</label>
-                                <input type="color" id="ui-catBtnInactiveText" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-catBtnInactiveText">
+                                <input type="color" id="ui-catBtnInactiveText" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                         </div>
                     </div>
@@ -189,15 +189,15 @@
                         <div class="grid grid-cols-3 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Card Bg</label>
-                                <input type="color" id="ui-cardMenuBg" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-cardMenuBg">
+                                <input type="color" id="ui-cardMenuBg" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Border</label>
-                                <input type="color" id="ui-cardBorderColor" value="#3f3f46" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-cardBorderColor">
+                                <input type="color" id="ui-cardBorderColor" value="#3f3f46" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Thickness</label>
-                                <input type="text" id="ui-cardBorderThickness" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white" data-field-id="ui-cardBorderThickness">
+                                <input type="text" id="ui-cardBorderThickness" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white theme-input-item">
                             </div>
                         </div>
                     </div>
@@ -208,11 +208,11 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Footer Background</label>
-                                <input type="color" id="ui-footerBgColor" value="#000000" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-footerBgColor">
+                                <input type="color" id="ui-footerBgColor" value="#000000" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Footer Text Color</label>
-                                <input type="color" id="ui-footerTextColor" value="#a8a29e" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5" data-field-id="ui-footerTextColor">
+                                <input type="color" id="ui-footerTextColor" value="#a8a29e" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                         </div>
                     </div>
@@ -248,9 +248,9 @@
 
         </form>
 
-        <!-- Truly Floating Dynamic Save Action Button (Positioned via JS with fixed coordinate tracking) -->
-        <div id="dynamic-save-container" class="hidden lg:block fixed z-50 transition-all duration-200 ease-out" style="top: 150px; left: 400px;">
-            <button type="button" id="save-btn" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3.5 py-2 rounded-xl shadow-2xl transition flex items-center space-x-1.5 text-xs border border-amber-300/50 whitespace-nowrap">
+        <!-- Truly Floating Dynamic Save Action Button (Murni teks, posisi fixed melayang dinamis mengikuti input aktif) -->
+        <div id="dynamic-save-container" class="hidden lg:block fixed z-50 transition-all duration-300 ease-out pointer-events-auto" style="top: 150px; left: 400px;">
+            <button type="button" id="save-btn" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl shadow-2xl transition flex items-center text-xs border border-amber-300/60 whitespace-nowrap">
                 <span>Save Theme Settings</span>
             </button>
         </div>
@@ -265,7 +265,7 @@
                 <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing dynamic floating save button studio...
+                Initializing wandering floating save button studio...
             </div>
         </div>
     </footer>
@@ -335,7 +335,7 @@
 
         let activeTargetElement = null;
 
-        // Function to dynamically move the Save button next to the active input element using fixed positioning
+        // Function to dynamically move the Save button right next to the active input element
         function positionSaveButtonNear(element) {
             if (!element) return;
             activeTargetElement = element;
@@ -343,16 +343,11 @@
             const elemRect = element.getBoundingClientRect();
 
             // Align vertically with the center of the active input field
-            const topPos = elemRect.top + (elemRect.height / 2) - 18;
+            const topPos = elemRect.top + (elemRect.height / 2) - 16;
             container.style.top = `${Math.max(10, topPos)}px`;
 
-            // Position it right on the border between left panel and right preview box
-            const previewSection = document.getElementById('live-storefront-iframe').closest('section');
-            if (previewSection) {
-                const previewRect = previewSection.getBoundingClientRect();
-                // Overlap slightly onto the left edge of the preview box
-                container.style.left = `${previewRect.left - 110}px`;
-            }
+            // Position it floating right at the edge of the input box or bridging towards preview
+            container.style.left = `${elemRect.right + 12}px`;
             container.classList.remove('hidden');
         }
 
@@ -370,20 +365,22 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            logTrace(`Initializing Theme Studio with dynamic floating save button for tenant: [${tenantId}]`, 'info');
+            logTrace(`Initializing Theme Studio with wandering floating button for tenant: [${tenantId}]`, 'info');
             fetchStorageAssetLists();
             fetchAndRenderThemeData();
 
+            // Attach listeners to all color pickers and inputs inside UI styles
             uiKeys.forEach(key => {
                 const el = document.getElementById(`ui-${key}`);
                 if (el) {
                     el.addEventListener('input', () => sendRealtimeThemeToIframe());
                     el.addEventListener('focus', () => positionSaveButtonNear(el));
                     el.addEventListener('click', () => positionSaveButtonNear(el));
+                    el.addEventListener('change', () => positionSaveButtonNear(el));
                 }
             });
 
-            // Also support top inputs
+            // Also attach listeners to top branding inputs
             ['shop-name-input', 'storageLogoDropdown', 'logo-url-input', 'logo-scale-input'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -392,7 +389,7 @@
                 }
             });
 
-            // Set default initial position to the first header background input
+            // Set default initial position to the first input field
             setTimeout(() => {
                 const firstInput = document.getElementById('ui-headerBgColor');
                 if (firstInput) positionSaveButtonNear(firstInput);

@@ -36,7 +36,7 @@
                 <img src="assets/images/RS.png" alt="RestoSync Logo" class="h-8 w-auto object-contain">
             </a>
             <div class="h-5 w-px bg-slate-700"></div>
-            <h1 id="header-title-text" class="text-lg font-semibold tracking-tight text-slate-200">Theme & Branding Studio</h1>
+            <h1 class="text-lg font-semibold tracking-tight text-slate-200">Theme & Branding Studio</h1>
         </div>
         <div class="flex items-center space-x-4">
             <div id="tenant-badge" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-mono">
@@ -59,11 +59,11 @@
         <form id="theme-form" class="space-y-6">
             
             <!-- Section 1: Tenant Branding & Logo -->
-            <section id="section-branding" class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6 transition-colors duration-200">
+            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
                 <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-bold text-slate-200">Tenant Identity & Logo</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Configure display shop name and official tenant logo URL synchronized to client portal.</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Configure display shop name, logo URL, and scale synchronized to demo1.html.</p>
                     </div>
                     <span class="text-xs bg-accent/10 text-accent px-2.5 py-1 rounded-md border border-accent/20 font-medium">Branding</span>
                 </div>
@@ -73,7 +73,6 @@
                         <div class="w-28 h-28 bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center p-2 shadow-inner">
                             <img id="logo-preview" src="" alt="Logo Preview" class="object-contain w-full h-full" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'48\' height=\'48\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\' ry=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\'/></svg>';">
                         </div>
-                        <span class="text-[11px] text-slate-500 font-mono">Logo Aspect Fit</span>
                     </div>
 
                     <div class="md:col-span-2 space-y-4">
@@ -81,81 +80,140 @@
                             <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Display Shop Name</label>
                             <input type="text" id="shop-name-input" placeholder="e.g. Bangkok Thai Takeaway" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-accent transition">
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Logo Image URL</label>
-                            <input type="text" id="logo-url-input" placeholder="https://.../logo.png" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Logo Image URL</label>
+                                <input type="text" id="logo-url-input" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Logo Scale (%)</label>
+                                <input type="number" id="logo-scale-input" value="100" min="50" max="200" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition">
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Section 2: Comprehensive Color Customization Studio -->
-            <section id="section-colors" class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6 transition-colors duration-200">
+            <!-- Section 2: Detailed UI Styles Customization (Matching demo1.html elements) -->
+            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
                 <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                     <div>
-                        <h2 class="text-base font-bold text-slate-200">Global Color Palette Customization</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Customize background, card surfaces, text colors, borders, and primary accent highlights.</p>
+                        <h2 class="text-base font-bold text-slate-200">Detailed Element UI Customization</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Customize every single element present in demo1.html (Header, Body, Filter Bar, Cards, Footer).</p>
                     </div>
-                    <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/20 font-medium">Full UI Styling</span>
+                    <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/20 font-medium">uiStyles</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Body Background</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="color" id="picker-bg" value="#0f172a" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
-                            <input type="text" id="text-bg" value="#0f172a" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
+                <!-- 1. Header Styling -->
+                <div class="space-y-3 pt-2">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-heading mr-1"></i> Header Styling</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Header Background</label>
+                            <input type="color" id="ui-headerBgColor" value="#000000" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Header Border Color</label>
+                            <input type="color" id="ui-headerBorderColor" value="#27272a" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Header Border Size</label>
+                            <input type="text" id="ui-headerBorderSize" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs font-mono text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Header Extra Text</label>
+                            <input type="text" id="ui-headerExtraText" placeholder="e.g. LIVE ENTERPRISE" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs font-mono text-white">
                         </div>
                     </div>
+                </div>
 
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Card & Header Surface</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="color" id="picker-card" value="#1e293b" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
-                            <input type="text" id="text-card" value="#1e293b" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
+                <!-- 2. Body & Main Page Styling -->
+                <div class="space-y-3 pt-4 border-t border-slate-800">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-desktop mr-1"></i> Body & Main Page Styling</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Body Background Color</label>
+                            <input type="color" id="ui-bodyBgColor" value="#18181b" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Body Text Color</label>
+                            <input type="color" id="ui-bodyTextColor" value="#d6d3d1" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
                         </div>
                     </div>
+                </div>
 
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Primary Accent</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="color" id="picker-accent" value="#f59e0b" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
-                            <input type="text" id="text-accent" value="#f59e0b" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
+                <!-- 3. Filter Bar & Categories -->
+                <div class="space-y-3 pt-4 border-t border-slate-800">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-filter mr-1"></i> Filter Bar & Category Pills</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Filter Bar Background</label>
+                            <input type="color" id="ui-filterBarBg" value="#18181bf2" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Active Button Background</label>
+                            <input type="color" id="ui-catBtnActiveBg" value="#f59e0b" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Active Button Text</label>
+                            <input type="color" id="ui-catBtnActiveText" value="#030712" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Inactive Button Background</label>
+                            <input type="color" id="ui-catBtnInactiveBg" value="#1f2937" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Inactive Button Text</label>
+                            <input type="color" id="ui-catBtnInactiveText" value="#f1f5f9" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Button/Bar Border Color</label>
+                            <input type="color" id="ui-catBtnBorderColor" value="#374151" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
                         </div>
                     </div>
+                </div>
 
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Border Color</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="color" id="picker-border" value="#334155" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
-                            <input type="text" id="text-border" value="#334155" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
+                <!-- 4. Menu Card Styling -->
+                <div class="space-y-3 pt-4 border-t border-slate-800">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-utensils mr-1"></i> Menu Card Styling</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Card Menu Background</label>
+                            <input type="color" id="ui-cardMenuBg" value="#27272a" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Card Border Color</label>
+                            <input type="color" id="ui-cardBorderColor" value="#3f3f46" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Card Border Thickness</label>
+                            <input type="text" id="ui-cardBorderThickness" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs font-mono text-white">
                         </div>
                     </div>
+                </div>
 
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Primary Text Color</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="color" id="picker-text-primary" value="#f8fafc" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
-                            <input type="text" id="text-text-primary" value="#f8fafc" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
+                <!-- 5. Footer Styling -->
+                <div class="space-y-3 pt-4 border-t border-slate-800">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-shoe-prints mr-1"></i> Footer Styling</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Footer Background Color</label>
+                            <input type="color" id="ui-footerBgColor" value="#000000" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
                         </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Secondary Text Color</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="color" id="picker-text-secondary" value="#94a3b8" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
-                            <input type="text" id="text-text-secondary" value="#94a3b8" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Footer Text Color</label>
+                            <input type="color" id="ui-footerTextColor" value="#a8a29e" class="w-full h-9 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Section 3: Real-Time Live Website Display (demo1.html Iframe at the Bottom) -->
-            <section id="section-iframe-preview" class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4 transition-colors duration-200">
+            <!-- Section 3: Real-Time Live Website Display (demo1.html Iframe) -->
+            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
                 <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-bold text-slate-200">Real-Time Storefront Preview (demo1.html)</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Live embedded view of your active store frontend to test themes instantly.</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Live embedded view reflecting all style and branding changes instantly.</p>
                     </div>
                     <div class="flex items-center space-x-2">
                         <button type="button" onclick="refreshIframe()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium border border-slate-700 transition">
@@ -165,8 +223,7 @@
                     </div>
                 </div>
 
-                <!-- Iframe Container -->
-                <div class="w-full h-[550px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-inner">
+                <div class="w-full h-[600px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-inner">
                     <iframe id="live-storefront-iframe" src="" class="w-full h-full border-0"></iframe>
                 </div>
             </section>
@@ -182,15 +239,15 @@
 
     </main>
 
-    <!-- Trace & Diagnostic Console (Footer) -->
-    <footer id="app-footer" class="bg-slate-950 border-t border-slate-900 text-xs text-slate-400 py-4 px-6 mt-12 font-mono transition-colors duration-200">
+    <!-- Trace & Diagnostic Console -->
+    <footer class="bg-slate-950 border-t border-slate-900 text-xs text-slate-400 py-4 px-6 mt-12 font-mono">
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
             <div class="flex items-center space-x-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span id="footer-label-text" class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
+                <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing theme studio & connecting to Firestore...
+                Initializing comprehensive theme studio & connecting to Firestore...
             </div>
         </div>
     </footer>
@@ -240,7 +297,6 @@
         document.getElementById('back-to-console').href = `index.html?tenant=${encodeURIComponent(tenantId)}`;
         document.getElementById('logo-link').href = `index.html?tenant=${encodeURIComponent(tenantId)}`;
 
-        // Set initial Iframe source pointing to demo1.html with tenant query
         document.getElementById('live-storefront-iframe').src = `demo1.html?tenant=${encodeURIComponent(tenantId)}`;
 
         function refreshIframe() {
@@ -250,84 +306,58 @@
         }
 
         let fetchedDocumentData = {};
-        const colorKeys = ['bg', 'card', 'accent', 'border', 'text-primary', 'text-secondary'];
+        const uiKeys = [
+            'headerBgColor', 'headerBorderColor', 'headerBorderSize', 'headerTextColor', 'headerExtraText',
+            'bodyBgColor', 'bodyTextColor',
+            'filterBarBg', 'catBtnActiveBg', 'catBtnActiveText', 'catBtnInactiveBg', 'catBtnInactiveText', 'catBtnBorderColor',
+            'cardMenuBg', 'cardBorderColor', 'cardBorderThickness',
+            'footerBgColor', 'footerTextColor'
+        ];
 
         document.addEventListener('DOMContentLoaded', () => {
-            logTrace(`Initializing Theme Studio with Live Iframe for tenant: [${tenantId}]`, 'info');
+            logTrace(`Initializing Comprehensive Theme Studio for tenant: [${tenantId}]`, 'info');
             fetchAndRenderThemeData();
 
-            colorKeys.forEach(key => {
-                const picker = document.getElementById(`picker-${key}`);
-                const textInput = document.getElementById(`text-${key}`);
-
-                picker.addEventListener('input', (e) => {
-                    textInput.value = e.target.value;
-                    applyGlobalThemeColors();
-                    sendRealtimeThemeToIframe();
-                });
-
-                textInput.addEventListener('input', (e) => {
-                    if(/^#[0-9A-F]{6}$/i.test(e.target.value)) {
-                        picker.value = e.target.value;
-                        applyGlobalThemeColors();
+            // Setup real-time postMessage listener or input change triggers
+            uiKeys.forEach(key => {
+                const el = document.getElementById(`ui-${key}`);
+                if (el) {
+                    el.addEventListener('input', () => {
                         sendRealtimeThemeToIframe();
-                    }
-                });
+                    });
+                }
             });
 
-            document.getElementById('shop-name-input').addEventListener('input', (e) => {
+            document.getElementById('shop-name-input').addEventListener('input', () => sendRealtimeThemeToIframe());
+            document.getElementById('logo-url-input').addEventListener('input', (e) => {
+                document.getElementById('logo-preview').src = e.target.value.trim();
                 sendRealtimeThemeToIframe();
             });
+            document.getElementById('logo-scale-input').addEventListener('input', () => sendRealtimeThemeToIframe());
         });
 
-        // Send live theme payload to iframe via postMessage for instant real-time preview
+        function collectUiStylesPayload() {
+            const uiStyles = {};
+            uiKeys.forEach(key => {
+                const el = document.getElementById(`ui-${key}`);
+                if (el) uiStyles[key] = el.value.trim();
+            });
+            return uiStyles;
+        }
+
         function sendRealtimeThemeToIframe() {
             const iframe = document.getElementById('live-storefront-iframe');
             if (!iframe || !iframe.contentWindow) return;
 
-            const customColors = {};
-            colorKeys.forEach(key => {
-                customColors[key] = document.getElementById(`text-${key}`).value.trim();
-            });
-
             const payload = {
                 type: 'RESTOSYNC_LIVE_THEME_UPDATE',
-                colors: customColors,
-                shopName: document.getElementById('shop-name-input').value.trim(),
-                logoUrl: document.getElementById('logo-url-input').value.trim()
+                tenantName: document.getElementById('shop-name-input').value.trim(),
+                logoUrl: document.getElementById('logo-url-input').value.trim(),
+                logoScale: Number(document.getElementById('logo-scale-input').value) || 100,
+                uiStyles: collectUiStylesPayload()
             };
 
             iframe.contentWindow.postMessage(payload, '*');
-        }
-
-        function applyGlobalThemeColors() {
-            const bg = document.getElementById('text-bg').value;
-            const card = document.getElementById('text-card').value;
-            const accent = document.getElementById('text-accent').value;
-            const border = document.getElementById('text-border').value;
-            const textPri = document.getElementById('text-text-primary').value;
-
-            document.getElementById('app-body').style.backgroundColor = bg;
-            document.getElementById('app-body').style.color = textPri;
-            document.getElementById('app-footer').style.backgroundColor = bg;
-            document.getElementById('app-footer').style.borderColor = border;
-
-            document.getElementById('app-header').style.backgroundColor = card;
-            document.getElementById('app-header').style.borderColor = border;
-
-            ['section-branding', 'section-colors', 'section-iframe-preview'].forEach(id => {
-                const sec = document.getElementById(id);
-                if(sec) {
-                    sec.style.backgroundColor = card;
-                    sec.style.borderColor = border;
-                }
-            });
-
-            const saveBtn = document.getElementById('save-btn');
-            if(saveBtn) {
-                saveBtn.style.backgroundColor = accent;
-                saveBtn.style.color = bg;
-            }
         }
 
         function fetchAndRenderThemeData() {
@@ -335,36 +365,35 @@
             db.collection('tenants').doc(tenantId).get().then((doc) => {
                 if (doc.exists) {
                     fetchedDocumentData = doc.data();
-                    logTrace(`Document retrieved successfully. Populating branding settings...`, 'success');
+                    logTrace(`Document retrieved successfully. Populating detailed uiStyles...`, 'success');
 
+                    const profile = fetchedDocumentData.profile || {};
                     const shopConfig = fetchedDocumentData.shopConfig || {};
-                    const themeConfig = fetchedDocumentData.themeConfig || shopConfig.themeConfig || {};
+                    const uiStyles = profile.uiStyles || {};
 
-                    const shopName = shopConfig.shopName || shopConfig.name || tenantId;
-                    const logoUrl = shopConfig.logoUrl || shopConfig.logo || '';
-                    
+                    const shopName = profile.tenantName || shopConfig.shopName || tenantId;
+                    const logoUrl = profile.logoUrl || shopConfig.logoUrl || '';
+                    const logoScale = profile.logoScale || 100;
+
                     document.getElementById('shop-name-input').value = shopName;
                     document.getElementById('logo-url-input').value = logoUrl;
+                    document.getElementById('logo-scale-input').value = logoScale;
                     
                     if(logoUrl) {
                         document.getElementById('logo-preview').src = logoUrl;
                     }
 
-                    if(themeConfig.colors) {
-                        colorKeys.forEach(key => {
-                            if(themeConfig.colors[key]) {
-                                document.getElementById(`picker-${key}`).value = themeConfig.colors[key];
-                                document.getElementById(`text-${key}`).value = themeConfig.colors[key];
-                            }
-                        });
-                    }
-
-                    applyGlobalThemeColors();
+                    // Populate detailed UI style fields
+                    uiKeys.forEach(key => {
+                        if (uiStyles[key] !== undefined && uiStyles[key] !== '') {
+                            const el = document.getElementById(`ui-${key}`);
+                            if (el) el.value = uiStyles[key];
+                        }
+                    });
 
                 } else {
                     logTrace(`Document for "${tenantId}" not found. Using defaults.`, 'warn');
                     document.getElementById('shop-name-input').value = tenantId;
-                    applyGlobalThemeColors();
                 }
             }).catch((error) => {
                 logTrace(`Firestore read error: ${error.message}`, 'error');
@@ -372,40 +401,30 @@
             });
         }
 
-        // Save Theme Settings to Firestore
+        // Save Theme Settings to Firestore under profile.uiStyles
         document.getElementById('theme-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            logTrace(`Saving theme updates for tenant "${tenantId}"...`, 'info');
+            logTrace(`Saving comprehensive theme updates for tenant "${tenantId}"...`, 'info');
 
             const saveBtn = document.getElementById('save-btn');
             saveBtn.disabled = true;
             saveBtn.textContent = 'Saving...';
 
-            const updatedShopConfig = fetchedDocumentData.shopConfig || {};
-            updatedShopConfig.shopName = document.getElementById('shop-name-input').value.trim();
-            updatedShopConfig.logoUrl = document.getElementById('logo-url-input').value.trim();
-
-            const customColors = {};
-            colorKeys.forEach(key => {
-                customColors[key] = document.getElementById(`text-${key}`).value.trim();
-            });
-
-            const updatedThemeConfig = {
-                accentColor: customColors.accent,
-                colors: customColors,
-                themeMode: 'custom'
-            };
+            const updatedProfile = fetchedDocumentData.profile || {};
+            updatedProfile.tenantName = document.getElementById('shop-name-input').value.trim();
+            updatedProfile.logoUrl = document.getElementById('logo-url-input').value.trim();
+            updatedProfile.logoScale = Number(document.getElementById('logo-scale-input').value) || 100;
+            updatedProfile.uiStyles = collectUiStylesPayload();
 
             const updatePayload = {
-                shopConfig: updatedShopConfig,
-                themeConfig: updatedThemeConfig,
+                profile: updatedProfile,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             db.collection('tenants').doc(tenantId).set(updatePayload, { merge: true })
                 .then(() => {
-                    logTrace(`Theme settings for "${tenantId}" successfully saved!`, 'success');
-                    showAlert('Theme and branding settings successfully saved to Firestore!', 'success');
+                    logTrace(`Detailed theme settings for "${tenantId}" successfully saved!`, 'success');
+                    showAlert('All detailed element styles successfully saved to Firestore!', 'success');
                     
                     refreshIframe();
 

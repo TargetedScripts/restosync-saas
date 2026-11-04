@@ -26,6 +26,7 @@
     <!-- Firebase Compat SDK v9.22.0 -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 </head>
 <body id="app-body" class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans selection:bg-accent selection:text-slate-900 transition-colors duration-200 overflow-x-hidden">
 
@@ -50,19 +51,20 @@
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-grow w-full max-w-7xl mx-auto p-4 lg:p-6 space-y-6">
+    <main class="flex-grow w-full max-w-7xl mx-auto p-4 lg:p-6 space-y-6 relative">
 
         <!-- Status Alert Banner -->
         <div id="alert-banner" class="hidden p-4 rounded-xl border text-sm font-medium transition-all"></div>
 
-        <!-- Section Top: Tenant Identity & Logo (Placed at the very top) -->
+        <!-- Section Top: Tenant Identity & Logo (Library, Upload, URL, Scale) -->
         <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
             <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
                 <h2 class="text-sm font-bold text-slate-200">Tenant Identity & Logo</h2>
-                <span class="text-[10px] bg-accent/10 text-accent px-2 py-0.5 rounded border border-accent/20 font-medium">Branding</span>
+                <span class="text-[10px] bg-accent/10 text-accent px-2 py-0.5 rounded border border-accent/20 font-medium">Branding & Storage</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                <!-- Preview & Shop Name -->
                 <div class="flex items-center space-x-4">
                     <div class="w-16 h-16 bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex items-center justify-center p-1 shrink-0">
                         <img id="logo-preview" src="" alt="Logo" class="object-contain w-full h-full" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\' ry=\'2\'/></svg>';">
@@ -72,19 +74,35 @@
                         <input type="text" id="shop-name-input" placeholder="Shop Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent">
                     </div>
                 </div>
+
+                <!-- Storage Library Dropdown -->
                 <div>
-                    <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Logo Image URL</label>
-                    <input type="text" id="logo-url-input" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs font-mono focus:outline-none focus:border-accent">
+                    <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1"><i class="fa-solid fa-folder-open mr-1"></i> Storage Library</label>
+                    <select id="storageLogoDropdown" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent font-mono">
+                        <option value="">-- Choose from Firebase Storage --</option>
+                    </select>
                 </div>
-                <div>
-                    <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Logo Scale (%)</label>
-                    <input type="number" id="logo-scale-input" value="100" min="50" max="200" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs font-mono focus:outline-none focus:border-accent">
+
+                <!-- URL & Upload & Scale -->
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Logo URL / Upload File</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="logo-url-input" placeholder="https://..." class="flex-grow bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs font-mono focus:outline-none focus:border-accent truncate">
+                        <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold px-3 py-1.5 rounded-lg border border-slate-700 cursor-pointer transition shrink-0 flex items-center space-x-1">
+                            <i class="fa-solid fa-upload text-accent"></i><span>Upload</span>
+                            <input type="file" id="logo-file-input" accept="image/*" class="hidden">
+                        </label>
+                    </div>
+                    <div class="flex items-center space-x-2 pt-1">
+                        <span class="text-[10px] text-slate-400 font-semibold">Scale (%):</span>
+                        <input type="number" id="logo-scale-input" value="100" min="50" max="200" class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white">
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Main Workspace: 2-Column Split Layout (Left: Detailed UI Customization Form, Right: Sticky Preview & On-Top Flying Save Button) -->
-        <form id="theme-form" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- Main Workspace: 2-Column Split Layout + Floating Sticky Save Button in the middle gutter -->
+        <form id="theme-form" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
             
             <!-- Left Column: Detailed Element UI Customization Form (Col span 5) -->
             <div class="lg:col-span-5 space-y-6">
@@ -201,20 +219,27 @@
                 </section>
             </div>
 
-            <!-- Right Column: Sticky Preview & On-Top Flying Save Button (Col span 7) -->
+            <!-- Floating Sticky Save Action Button (Positioned right in the middle gutter bridging left & right panels) -->
+            <div class="hidden lg:flex absolute left-[41.5%] top-1/2 -translate-y-1/2 z-40">
+                <button type="button" id="save-btn" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-3 rounded-full shadow-2xl transition flex items-center justify-center border-2 border-slate-900 group relative" title="Save Theme Settings">
+                    <i class="fa-solid fa-floppy-disk text-sm"></i>
+                    <span class="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-amber-400 text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none border border-slate-700">Save Theme</span>
+                </button>
+            </div>
+
+            <!-- Right Column: Real-Time Storefront Preview (demo1.html Iframe) (Col span 7) -->
             <div class="lg:col-span-7 sticky top-24 space-y-4">
                 
-                <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col space-y-3 relative">
-                    
-                    <!-- On-Top Floating / Sticky Save Action Button inside Preview Box Header -->
-                    <div class="absolute top-4 right-5 z-30">
-                        <button type="button" id="save-btn" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl shadow-2xl transition flex items-center space-x-2 text-xs border border-amber-300/40">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span>Save Theme Settings</span>
-                        </button>
-                    </div>
+                <!-- Mobile/Responsive Save Button -->
+                <div class="lg:hidden flex justify-end">
+                    <button type="button" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl shadow-lg transition flex items-center space-x-2 text-xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Save Theme Settings</span>
+                    </button>
+                </div>
 
-                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between pr-44">
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col space-y-3">
+                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
                         <div>
                             <h2 class="text-sm font-bold text-slate-200">Real-Time Storefront Preview</h2>
                             <p class="text-[11px] text-slate-400">Live preview of demo1.html reflecting theme edits instantly.</p>
@@ -242,7 +267,7 @@
                 <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing updated layout studio & connecting to Firestore...
+                Initializing storage library & live preview studio...
             </div>
         </div>
     </footer>
@@ -260,6 +285,7 @@
 
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const storage = firebase.storage();
 
         function logTrace(message, type = 'info') {
             const consoleEl = document.getElementById('console-output');
@@ -310,7 +336,8 @@
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
-            logTrace(`Initializing updated studio layout for tenant: [${tenantId}]`, 'info');
+            logTrace(`Initializing Theme Studio with Storage library for tenant: [${tenantId}]`, 'info');
+            fetchStorageAssetLists();
             fetchAndRenderThemeData();
 
             uiKeys.forEach(key => {
@@ -326,7 +353,57 @@
                 sendRealtimeThemeToIframe();
             });
             document.getElementById('logo-scale-input').addEventListener('input', () => sendRealtimeThemeToIframe());
+
+            // File upload handler
+            document.getElementById('logo-file-input').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const storagePath = `tenants/${tenantId}/images/${Date.now()}_${file.name}`;
+                    const storageRef = storage.ref().child(storagePath);
+                    logTrace(`Uploading file to Storage...`, 'info');
+                    storageRef.put(file).then(snapshot => {
+                        snapshot.ref.getDownloadURL().then(downloadURL => {
+                            document.getElementById('logo-url-input').value = downloadURL;
+                            document.getElementById('logo-preview').src = downloadURL;
+                            fetchStorageAssetLists();
+                            sendRealtimeThemeToIframe();
+                            logTrace(`Logo uploaded and previewed successfully!`, 'success');
+                        });
+                    }).catch(err => {
+                        logTrace(`Upload failed: ${err.message}`, 'error');
+                    });
+                }
+            });
+
+            document.getElementById('storageLogoDropdown').addEventListener('change', function(e) {
+                if(e.target.value) {
+                    document.getElementById('logo-url-input').value = e.target.value;
+                    document.getElementById('logo-preview').src = e.target.value;
+                    sendRealtimeThemeToIframe();
+                    logTrace('Logo selected from storage dropdown.', 'success');
+                }
+            });
         });
+
+        function fetchStorageAssetLists() {
+            const listRef = storage.ref().child(`tenants/${tenantId}/images`);
+            listRef.listAll().then((res) => {
+                const dropdown = document.getElementById('storageLogoDropdown');
+                dropdown.innerHTML = '<option value="">-- Choose from Firebase Storage --</option>';
+
+                res.items.forEach((itemRef) => {
+                    itemRef.getDownloadURL().then((url) => {
+                        const opt = document.createElement('option');
+                        opt.value = url;
+                        opt.textContent = itemRef.name;
+                        dropdown.appendChild(opt);
+                    });
+                });
+                logTrace(`Successfully fetched storage asset files list.`, 'success');
+            }).catch((err) => {
+                logTrace(`Note: Could not list storage files yet: ${err.message}`, 'warn');
+            });
+        }
 
         function collectUiStylesPayload() {
             const uiStyles = {};
@@ -399,7 +476,7 @@
 
             const saveBtn = document.getElementById('save-btn');
             saveBtn.disabled = true;
-            saveBtn.innerHTML = `<span>Saving...</span>`;
+            saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sm"></i>`;
 
             const updatedProfile = fetchedDocumentData.profile || {};
             updatedProfile.tenantName = document.getElementById('shop-name-input').value.trim();
@@ -420,13 +497,13 @@
                     refreshIframe();
 
                     saveBtn.disabled = false;
-                    saveBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Save Theme Settings</span>`;
+                    saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk text-sm"></i><span class="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-amber-400 text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none border border-slate-700">Save Theme</span>`;
                 })
                 .catch((error) => {
                     logTrace(`Firestore write error: ${error.message}`, 'error');
                     showAlert(`Failed to save theme: ${error.message}`, 'error');
                     saveBtn.disabled = false;
-                    saveBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Save Theme Settings</span>`;
+                    saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk text-sm"></i><span class="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-amber-400 text-xs font-semibold rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none border border-slate-700">Save Theme</span>`;
                 });
         });
     </script>

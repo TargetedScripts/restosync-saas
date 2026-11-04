@@ -27,13 +27,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans selection:bg-accent selection:text-slate-900">
+<body id="app-body" class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans selection:bg-accent selection:text-slate-900 transition-colors duration-200">
 
-    <!-- Top Navigation Bar -->
-    <header class="bg-cardBg border-b border-slate-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-md">
+    <!-- Top Navigation Bar (Header) -->
+    <header id="app-header" class="bg-cardBg border-b border-slate-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-md transition-colors duration-200">
         <div class="flex items-center space-x-3">
-            <span class="bg-accent/10 text-accent font-bold px-3 py-1.5 rounded-lg border border-accent/20 text-sm tracking-wide">RestoSync SaaS</span>
-            <h1 class="text-lg font-semibold tracking-tight text-slate-200">Theme & Branding Studio</h1>
+            <!-- Top-Left RestoSync Logo (50% scaled, boxless, no text) -->
+            <a id="logo-link" href="#" class="flex items-center focus:outline-none">
+                <img src="assets/images/RS.png" alt="RestoSync Logo" class="h-8 w-auto object-contain">
+            </a>
+            <div class="h-5 w-px bg-slate-700"></div>
+            <h1 id="header-title-text" class="text-lg font-semibold tracking-tight text-slate-200">Theme & Branding Studio</h1>
         </div>
         <div class="flex items-center space-x-4">
             <div id="tenant-badge" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-mono">
@@ -56,11 +60,11 @@
         <form id="theme-form" class="space-y-6">
             
             <!-- Section 1: Tenant Branding & Logo -->
-            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+            <section id="section-branding" class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6 transition-colors duration-200">
                 <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-bold text-slate-200">Tenant Identity & Logo</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Atur nama tampilan dan URL logo resmi tenant yang akan disinkronkan ke client portal.</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Configure display shop name and official tenant logo URL synchronized to client portal.</p>
                     </div>
                     <span class="text-xs bg-accent/10 text-accent px-2.5 py-1 rounded-md border border-accent/20 font-medium">Branding</span>
                 </div>
@@ -87,40 +91,79 @@
                 </div>
             </section>
 
-            <!-- Section 2: Accent & Color Palette -->
-            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+            <!-- Section 2: Comprehensive Color Customization Studio -->
+            <section id="section-colors" class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6 transition-colors duration-200">
                 <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                     <div>
-                        <h2 class="text-base font-bold text-slate-200">Color Palette & Accent</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Pilih warna aksen utama yang akan diterapkan pada tombol, badge, dan elemen interaktif.</p>
+                        <h2 class="text-base font-bold text-slate-200">Global Color Palette Customization</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Customize background, card surfaces, text colors, borders, and primary accent highlights across all UI components.</p>
                     </div>
-                    <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/20 font-medium">UI Styling</span>
+                    <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/20 font-medium">Full UI Styling</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Primary Accent Color</label>
-                        <div class="flex items-center space-x-3">
-                            <input type="color" id="accent-color-picker" value="#f59e0b" class="w-12 h-11 bg-slate-900 border border-slate-700 rounded-xl cursor-pointer p-1">
-                            <input type="text" id="accent-color-text" value="#f59e0b" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm font-mono focus:outline-none focus:border-accent transition">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Background Color -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Body Background</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="color" id="picker-bg" value="#0f172a" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                            <input type="text" id="text-bg" value="#0f172a" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Theme Mode</label>
-                        <select id="theme-mode-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:border-accent transition font-mono">
-                            <option value="dark">Dark Theme (#0f172a)</option>
-                            <option value="midnight" disabled>Midnight Deep (Coming Soon)</option>
-                        </select>
+
+                    <!-- Card / Surface Color -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Card & Header Surface</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="color" id="picker-card" value="#1e293b" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                            <input type="text" id="text-card" value="#1e293b" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
+                        </div>
+                    </div>
+
+                    <!-- Primary Accent Color -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Primary Accent</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="color" id="picker-accent" value="#f59e0b" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                            <input type="text" id="text-accent" value="#f59e0b" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
+                        </div>
+                    </div>
+
+                    <!-- Border Color -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Border Color</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="color" id="picker-border" value="#334155" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                            <input type="text" id="text-border" value="#334155" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
+                        </div>
+                    </div>
+
+                    <!-- Primary Text Color -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Primary Text Color</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="color" id="picker-text-primary" value="#f8fafc" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                            <input type="text" id="text-text-primary" value="#f8fafc" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
+                        </div>
+                    </div>
+
+                    <!-- Secondary Text Color -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Secondary Text Color</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="color" id="picker-text-secondary" value="#94a3b8" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer p-1">
+                            <input type="text" id="text-text-secondary" value="#94a3b8" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono">
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Section 3: Live Preview Area -->
-            <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <!-- Section 3: Live Component Preview -->
+            <section id="section-preview" class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4 transition-colors duration-200">
                 <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-bold text-slate-200">Live Component Preview</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Pratinjau langsung tombol dan kartu dengan warna aksen yang Anda pilih.</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Instant preview of buttons, cards, headers, and text formatting reflecting your custom color palette.</p>
                     </div>
                     <span class="text-xs bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-md border border-blue-500/20 font-medium">Interactive Preview</span>
                 </div>
@@ -129,7 +172,7 @@
                     <div class="flex items-center justify-between">
                         <div class="space-y-1">
                             <h3 id="preview-shop-title" class="text-base font-bold text-slate-100">RestoSync Tenant Sample</h3>
-                            <p class="text-xs text-slate-400">Contoh tampilan komponen antarmuka tenant.</p>
+                            <p id="preview-shop-desc" class="text-xs text-slate-400">Sample user interface component rendering.</p>
                         </div>
                         <span id="preview-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-500 border border-amber-500/20">Active Theme</span>
                     </div>
@@ -137,7 +180,7 @@
                         <button type="button" id="preview-btn-primary" class="px-5 py-2.5 rounded-xl font-bold text-slate-950 text-sm shadow-md transition bg-amber-500 hover:opacity-90">
                             Primary Button Sample
                         </button>
-                        <button type="button" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium rounded-xl text-sm transition border border-slate-700">
+                        <button type="button" id="preview-btn-secondary" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium rounded-xl text-sm transition border border-slate-700">
                             Secondary Action
                         </button>
                     </div>
@@ -148,19 +191,19 @@
             <div class="flex items-center justify-end space-x-4 pt-2">
                 <button type="submit" id="save-btn" class="bg-accent hover:bg-accentHover text-slate-950 font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-accent/10 flex items-center space-x-2 text-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    <span>Simpan Tema</span>
+                    <span>Save Theme Settings</span>
                 </button>
             </div>
         </form>
 
     </main>
 
-    <!-- Trace & Diagnostic Console -->
-    <footer class="bg-slate-950 border-t border-slate-900 text-xs text-slate-400 py-4 px-6 mt-12 font-mono">
+    <!-- Trace & Diagnostic Console (Footer) -->
+    <footer id="app-footer" class="bg-slate-950 border-t border-slate-900 text-xs text-slate-400 py-4 px-6 mt-12 font-mono transition-colors duration-200">
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
             <div class="flex items-center space-x-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
+                <span id="footer-label-text" class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
                 Initializing theme studio & connecting to Firestore...
@@ -211,27 +254,33 @@
 
         document.getElementById('tenant-badge').textContent = `Tenant: ${tenantId}`;
         document.getElementById('back-to-console').href = `index.html?tenant=${encodeURIComponent(tenantId)}`;
+        document.getElementById('logo-link').href = `index.html?tenant=${encodeURIComponent(tenantId)}`;
 
         let fetchedDocumentData = {};
+
+        // Color mapping setup
+        const colorKeys = ['bg', 'card', 'accent', 'border', 'text-primary', 'text-secondary'];
 
         document.addEventListener('DOMContentLoaded', () => {
             logTrace(`Initializing Theme Studio for tenant: [${tenantId}]`, 'info');
             fetchAndRenderThemeData();
 
-            // Color picker synchronization
-            const colorPicker = document.getElementById('accent-color-picker');
-            const colorText = document.getElementById('accent-color-text');
+            // Setup real-time color picker synchronization
+            colorKeys.forEach(key => {
+                const picker = document.getElementById(`picker-${key}`);
+                const textInput = document.getElementById(`text-${key}`);
 
-            colorPicker.addEventListener('input', (e) => {
-                colorText.value = e.target.value;
-                updateLivePreviewColor(e.target.value);
-            });
+                picker.addEventListener('input', (e) => {
+                    textInput.value = e.target.value;
+                    applyGlobalThemeColors();
+                });
 
-            colorText.addEventListener('input', (e) => {
-                if(/^#[0-9A-F]{6}$/i.test(e.target.value)) {
-                    colorPicker.value = e.target.value;
-                    updateLivePreviewColor(e.target.value);
-                }
+                textInput.addEventListener('input', (e) => {
+                    if(/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+                        picker.value = e.target.value;
+                        applyGlobalThemeColors();
+                    }
+                });
             });
 
             // Shop Name live update in preview
@@ -245,14 +294,51 @@
             });
         });
 
-        function updateLivePreviewColor(hexColor) {
+        // Apply custom colors live across all UI components
+        function applyGlobalThemeColors() {
+            const bg = document.getElementById('text-bg').value;
+            const card = document.getElementById('text-card').value;
+            const accent = document.getElementById('text-accent').value;
+            const border = document.getElementById('text-border').value;
+            const textPri = document.getElementById('text-text-primary').value;
+            const textSec = document.getElementById('text-text-secondary').value;
+
+            // 1. Body & Footer background
+            document.getElementById('app-body').style.backgroundColor = bg;
+            document.getElementById('app-body').style.color = textPri;
+            document.getElementById('app-footer').style.backgroundColor = bg;
+            document.getElementById('app-footer').style.borderColor = border;
+
+            // 2. Header & Sections (Cards)
+            document.getElementById('app-header').style.backgroundColor = card;
+            document.getElementById('app-header').style.borderColor = border;
+
+            ['section-branding', 'section-colors', 'section-preview'].forEach(id => {
+                const sec = document.getElementById(id);
+                if(sec) {
+                    sec.style.backgroundColor = card;
+                    sec.style.borderColor = border;
+                }
+            });
+
+            // 3. Primary Buttons & Badges
             const btnPrimary = document.getElementById('preview-btn-primary');
+            const saveBtn = document.getElementById('save-btn');
             const previewBadge = document.getElementById('preview-badge');
-            
-            btnPrimary.style.backgroundColor = hexColor;
-            previewBadge.style.color = hexColor;
-            previewBadge.style.borderColor = hexColor + '40';
-            previewBadge.style.backgroundColor = hexColor + '15';
+
+            if(btnPrimary) {
+                btnPrimary.style.backgroundColor = accent;
+                btnPrimary.style.color = bg;
+            }
+            if(saveBtn) {
+                saveBtn.style.backgroundColor = accent;
+                saveBtn.style.color = bg;
+            }
+            if(previewBadge) {
+                previewBadge.style.color = accent;
+                previewBadge.style.borderColor = accent + '40';
+                previewBadge.style.backgroundColor = accent + '15';
+            }
         }
 
         function fetchAndRenderThemeData() {
@@ -265,11 +351,9 @@
                     const shopConfig = fetchedDocumentData.shopConfig || {};
                     const themeConfig = fetchedDocumentData.themeConfig || shopConfig.themeConfig || {};
 
-                    // Populate fields
                     const shopName = shopConfig.shopName || shopConfig.name || tenantId;
                     const logoUrl = shopConfig.logoUrl || shopConfig.logo || '';
-                    const accentColor = themeConfig.accentColor || shopConfig.accentColor || '#f59e0b';
-
+                    
                     document.getElementById('shop-name-input').value = shopName;
                     document.getElementById('logo-url-input').value = logoUrl;
                     document.getElementById('preview-shop-title').textContent = shopName;
@@ -278,17 +362,26 @@
                         document.getElementById('logo-preview').src = logoUrl;
                     }
 
-                    document.getElementById('accent-color-picker').value = accentColor;
-                    document.getElementById('accent-color-text').value = accentColor;
-                    updateLivePreviewColor(accentColor);
+                    // Load custom theme colors if saved
+                    if(themeConfig.colors) {
+                        colorKeys.forEach(key => {
+                            if(themeConfig.colors[key]) {
+                                document.getElementById(`picker-${key}`).value = themeConfig.colors[key];
+                                document.getElementById(`text-${key}`).value = themeConfig.colors[key];
+                            }
+                        });
+                    }
+
+                    applyGlobalThemeColors();
 
                 } else {
                     logTrace(`Document for "${tenantId}" not found. Using defaults.`, 'warn');
                     document.getElementById('shop-name-input').value = tenantId;
+                    applyGlobalThemeColors();
                 }
             }).catch((error) => {
                 logTrace(`Firestore read error: ${error.message}`, 'error');
-                showAlert(`Gagal memuat data tema: ${error.message}`, 'error');
+                showAlert(`Failed to load theme data: ${error.message}`, 'error');
             });
         }
 
@@ -305,9 +398,15 @@
             updatedShopConfig.shopName = document.getElementById('shop-name-input').value.trim();
             updatedShopConfig.logoUrl = document.getElementById('logo-url-input').value.trim();
 
+            const customColors = {};
+            colorKeys.forEach(key => {
+                customColors[key] = document.getElementById(`text-${key}`).value.trim();
+            });
+
             const updatedThemeConfig = {
-                accentColor: document.getElementById('accent-color-text').value.trim(),
-                themeMode: document.getElementById('theme-mode-select').value
+                accentColor: customColors.accent,
+                colors: customColors,
+                themeMode: 'custom'
             };
 
             const updatePayload = {
@@ -319,15 +418,15 @@
             db.collection('tenants').doc(tenantId).set(updatePayload, { merge: true })
                 .then(() => {
                     logTrace(`Theme settings for "${tenantId}" successfully saved!`, 'success');
-                    showAlert('Perubahan tema dan branding berhasil disimpan ke Firestore!', 'success');
+                    showAlert('Theme and branding settings successfully saved to Firestore!', 'success');
                     saveBtn.disabled = false;
-                    saveBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Simpan Tema</span>`;
+                    saveBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Save Theme Settings</span>`;
                 })
                 .catch((error) => {
                     logTrace(`Firestore write error: ${error.message}`, 'error');
-                    showAlert(`Gagal menyimpan tema: ${error.message}`, 'error');
+                    showAlert(`Failed to save theme: ${error.message}`, 'error');
                     saveBtn.disabled = false;
-                    saveBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Simpan Tema</span>`;
+                    saveBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Save Theme Settings</span>`;
                 });
         });
     </script>

@@ -41,8 +41,14 @@
         .btn-live { background-color: #059669; color: white; font-size: 0.7rem; padding: 0.3rem 0.6rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.3rem; font-weight: 500; }
         .dot { width: 0.4rem; height: 0.4rem; background-color: white; border-radius: 50%; }
         
-        /* Diagnostic Console Separated */
-        .diagnostic-box { background: #0b0f19; border: 1px dashed #334155; border-radius: 0.5rem; padding: 0.75rem 1rem; text-align: left; font-family: monospace; font-size: 0.7rem; color: #94a3b8; line-height: 1.4; width: 100%; max-width: 72rem; margin: 0.75rem auto 0 auto; }
+        /* Diagnostic Console with Scroll Up & Down */
+        .diagnostic-box { background: #0b0f19; border: 1px dashed #334155; border-radius: 0.5rem; padding: 0.75rem 1rem; text-align: left; font-family: monospace; font-size: 0.7rem; color: #94a3b8; line-height: 1.4; width: 100%; max-width: 72rem; margin: 0.75rem auto 0 auto; max-height: 140px; overflow-y: auto; }
+        
+        /* Custom scrollbar style for clean dark theme */
+        .diagnostic-box::-webkit-scrollbar { width: 6px; }
+        .diagnostic-box::-webkit-scrollbar-track { background: #0b0f19; }
+        .diagnostic-box::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .diagnostic-box::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 
     <!-- Dynamic Tenant JS Loader (Unified Configuration) -->
@@ -66,7 +72,7 @@
 </head>
 <body class="bg-darkBg text-slate-100 font-sans antialiased selection:bg-accent selection:text-darkBg flex flex-col h-screen overflow-hidden justify-between">
 
-    <!-- Header / Navbar Compact (RestoSync text removed, logo RS only) -->
+    <!-- Header / Navbar Compact (Logo RS only, RestoSync text removed) -->
     <header class="bg-darkBg/90 backdrop-blur-md border-b border-slate-800 h-16 flex-shrink-0">
         <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -117,7 +123,7 @@
             </div>
         </div>
 
-        <!-- Tenant Dashboard Launchpad Card (Separated from Diagnostic Console) -->
+        <!-- Tenant Dashboard Launchpad Card -->
         <div id="dashboard-container" class="w-full max-w-6xl hidden flex flex-col items-center">
             <div class="bg-cardBg border border-slate-800/80 rounded-2xl p-5 md:p-6 shadow-xl w-full">
                 
@@ -146,7 +152,7 @@
                     <div id="templates-buttons-grid" class="flex gap-2 flex-wrap"></div>
                 </div>
 
-                <!-- Dashboard Grid Menu (4 Columns Layout to fit 1 screen cleanly) -->
+                <!-- Dashboard Grid Menu (4 Columns Layout) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5" id="launchpad-grid">
                     <a href="cashier.html" class="menu-btn" data-module="pos">
                         <div class="text-base mb-1"><i class="fa-solid fa-cash-register text-amber-400"></i></div>
@@ -187,9 +193,9 @@
 
             </div>
 
-            <!-- Trace & Diagnostic Console (Separated Outside Launchpad Frame Box) -->
+            <!-- Trace & Diagnostic Console with Built-in Scroll Up/Down -->
             <div class="diagnostic-box hidden" id="diagnostic-panel-outer">
-                <div class="text-accent font-bold mb-1 flex items-center gap-1.5">
+                <div class="text-accent font-bold mb-1 flex items-center gap-1.5 sticky top-0 bg-[#0b0f19] py-0.5">
                     <i class="fa-solid fa-stethoscope"></i> RESTOSYNC TRACE & DIAGNOSTIC CONSOLE:
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">

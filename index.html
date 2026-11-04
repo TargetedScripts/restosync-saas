@@ -143,7 +143,7 @@
                     Welcome to your centralized F&B management control center. Access your live operations, customer websites, kitchen displays, inventory catalog, and brand settings below.
                 </p>
 
-                <!-- Customer Web Templates Container (Updated to route to admin-theme.html) -->
+                <!-- Customer Web Templates Container -->
                 <div id="templates-container" class="hidden mb-3 bg-darkBg border border-slate-800 rounded-xl p-2.5">
                     <div class="text-[11px] font-bold text-accent uppercase tracking-wider mb-2 flex items-center gap-1.5">
                         <i class="fa-solid fa-globe"></i> Customer Web Templates (Active Tenant Access)
@@ -151,7 +151,7 @@
                     <div id="templates-buttons-grid" class="flex gap-2 flex-wrap"></div>
                 </div>
 
-                <!-- Dashboard Grid Menu -->
+                <!-- Dashboard Grid Menu (Updated branding.html -> admin-theme.html) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5" id="launchpad-grid">
                     <a href="cashier.html" class="menu-btn" data-module="pos">
                         <div class="text-base mb-1"><i class="fa-solid fa-cash-register text-amber-400"></i></div>
@@ -168,7 +168,7 @@
                         <strong class="text-xs md:text-sm text-white mb-0.5">Tenant Profile & Config</strong>
                         <span class="text-[11px] text-slate-400">Store info & passwords</span>
                     </a>
-                    <a href="branding.html" class="menu-btn" data-module="branding">
+                    <a href="admin-theme.html" class="menu-btn" data-module="branding">
                         <div class="text-base mb-1"><i class="fa-solid fa-palette text-amber-400"></i></div>
                         <strong class="text-xs md:text-sm text-white mb-0.5">Theme & Branding</strong>
                         <span class="text-[11px] text-slate-400">Colors, logos & skins</span>
@@ -336,7 +336,6 @@
                                     activeCount++;
                                     let iconClass = key === 'blog' ? 'fa-blog' : 'fa-store';
                                     
-                                    // Rule & condition: Routing ke admin-theme.html dengan membawa parameter tenant yang konsisten
                                     let targetThemeUrl = `admin-theme.html?tenant=${encodeURIComponent(tenantParam)}`;
                                     
                                     templateHtml += `<a href="${targetThemeUrl}" class="bg-darkBg border border-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 hover:border-accent transition-colors"><i class="fa-solid ${iconClass} text-accent"></i> ${tpl.label} (${key.toUpperCase()})</a>`;

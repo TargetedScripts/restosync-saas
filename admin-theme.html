@@ -71,14 +71,14 @@
                     </div>
                     <div class="flex-grow">
                         <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Display Shop Name</label>
-                        <input type="text" id="shop-name-input" placeholder="Shop Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent">
+                        <input type="text" id="shop-name-input" placeholder="Shop Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent" data-field-id="shop-name-input">
                     </div>
                 </div>
 
                 <!-- Storage Library Dropdown -->
                 <div>
                     <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1"><i class="fa-solid fa-folder-open mr-1"></i> Storage Library</label>
-                    <select id="storageLogoDropdown" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent font-mono">
+                    <select id="storageLogoDropdown" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent font-mono" data-field-id="storageLogoDropdown">
                         <option value="">-- Choose from Firebase Storage --</option>
                     </select>
                 </div>
@@ -87,7 +87,7 @@
                 <div class="space-y-2">
                     <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Logo URL / Upload File</label>
                     <div class="flex gap-2">
-                        <input type="text" id="logo-url-input" placeholder="https://..." class="flex-grow bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs font-mono focus:outline-none focus:border-accent truncate">
+                        <input type="text" id="logo-url-input" placeholder="https://..." class="flex-grow bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs font-mono focus:outline-none focus:border-accent truncate" data-field-id="logo-url-input">
                         <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold px-3 py-1.5 rounded-lg border border-slate-700 cursor-pointer transition shrink-0 flex items-center space-x-1">
                             <i class="fa-solid fa-upload text-accent"></i><span>Upload</span>
                             <input type="file" id="logo-file-input" accept="image/*" class="hidden">
@@ -95,13 +95,13 @@
                     </div>
                     <div class="flex items-center space-x-2 pt-1">
                         <span class="text-[10px] text-slate-400 font-semibold">Scale (%):</span>
-                        <input type="number" id="logo-scale-input" value="100" min="50" max="200" class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white">
+                        <input type="number" id="logo-scale-input" value="100" min="50" max="200" class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white" data-field-id="logo-scale-input">
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Main Workspace: 2-Column Split Layout + Floating Dynamic Save Button -->
+        <!-- Main Workspace: 2-Column Split Layout -->
         <form id="theme-form" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
             
             <!-- Left Column: Detailed Element UI Customization Form (Col span 5) -->
@@ -219,21 +219,12 @@
                 </section>
             </div>
 
-            <!-- Dynamic Floating Save Action Button (Positioned dynamically next to active input) -->
-            <div id="dynamic-save-container" class="hidden lg:block absolute z-40 transition-all duration-300 ease-out" style="left: 41.5%; top: 50px;">
-                <button type="button" id="save-btn" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3.5 py-2 rounded-xl shadow-2xl transition flex items-center space-x-1.5 text-xs border border-amber-300/50 whitespace-nowrap">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    <span>Save Theme Settings</span>
-                </button>
-            </div>
-
             <!-- Right Column: Real-Time Storefront Preview (demo1.html Iframe) (Col span 7) -->
             <div class="lg:col-span-7 sticky top-24 space-y-4">
                 
                 <!-- Mobile/Responsive Save Button -->
                 <div class="lg:hidden flex justify-end">
                     <button type="button" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl shadow-lg transition flex items-center space-x-2 text-xs">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                         <span>Save Theme Settings</span>
                     </button>
                 </div>
@@ -256,6 +247,13 @@
             </div>
 
         </form>
+
+        <!-- Truly Floating Dynamic Save Action Button (Positioned via JS with fixed coordinate tracking) -->
+        <div id="dynamic-save-container" class="hidden lg:block fixed z-50 transition-all duration-200 ease-out" style="top: 150px; left: 400px;">
+            <button type="button" id="save-btn" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3.5 py-2 rounded-xl shadow-2xl transition flex items-center space-x-1.5 text-xs border border-amber-300/50 whitespace-nowrap">
+                <span>Save Theme Settings</span>
+            </button>
+        </div>
 
     </main>
 
@@ -335,18 +333,41 @@
             'footerBgColor', 'footerTextColor'
         ];
 
-        // Function to dynamically move the Save button next to the active input element
+        let activeTargetElement = null;
+
+        // Function to dynamically move the Save button next to the active input element using fixed positioning
         function positionSaveButtonNear(element) {
             if (!element) return;
+            activeTargetElement = element;
             const container = document.getElementById('dynamic-save-container');
-            const formRect = document.getElementById('theme-form').getBoundingClientRect();
             const elemRect = element.getBoundingClientRect();
 
-            // Calculate relative offset inside the form container
-            const relativeTop = elemRect.top - formRect.top + (elemRect.height / 2) - 18;
-            container.style.top = `${Math.max(0, relativeTop)}px`;
+            // Align vertically with the center of the active input field
+            const topPos = elemRect.top + (elemRect.height / 2) - 18;
+            container.style.top = `${Math.max(10, topPos)}px`;
+
+            // Position it right on the border between left panel and right preview box
+            const previewSection = document.getElementById('live-storefront-iframe').closest('section');
+            if (previewSection) {
+                const previewRect = previewSection.getBoundingClientRect();
+                // Overlap slightly onto the left edge of the preview box
+                container.style.left = `${previewRect.left - 110}px`;
+            }
             container.classList.remove('hidden');
         }
+
+        // Re-adjust position on window scroll or resize
+        window.addEventListener('scroll', () => {
+            if (activeTargetElement) {
+                positionSaveButtonNear(activeTargetElement);
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (activeTargetElement) {
+                positionSaveButtonNear(activeTargetElement);
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             logTrace(`Initializing Theme Studio with dynamic floating save button for tenant: [${tenantId}]`, 'info');
@@ -362,7 +383,16 @@
                 }
             });
 
-            // Set default initial position to the first input
+            // Also support top inputs
+            ['shop-name-input', 'storageLogoDropdown', 'logo-url-input', 'logo-scale-input'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('focus', () => positionSaveButtonNear(el));
+                    el.addEventListener('click', () => positionSaveButtonNear(el));
+                }
+            });
+
+            // Set default initial position to the first header background input
             setTimeout(() => {
                 const firstInput = document.getElementById('ui-headerBgColor');
                 if (firstInput) positionSaveButtonNear(firstInput);

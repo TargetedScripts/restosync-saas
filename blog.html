@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">RestoSync Storefront</title>
+    <title id="pageTitle">RestoSync Journal & Stories</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -33,34 +33,28 @@
     <header id="mainHeader" class="sticky top-0 z-40 bg-[#1e293b]/90 backdrop-blur-md border-b border-zinc-800 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
-            <!-- Left: Global RestoSync Logo (50% scale) & Tenant Logo -->
+            <!-- Left: Global RestoSync Logo (50% scale) & Tenant Blog Identity -->
             <div class="flex items-center space-x-4">
                 <a href="index.html" class="flex items-center space-x-2 focus:outline-none">
                     <img src="assets/images/RS.png" alt="RestoSync Logo" class="h-8 w-auto opacity-90 hover:opacity-100 transition" style="transform: scale(0.9);">
                 </a>
                 <div class="h-6 w-px bg-zinc-700"></div>
                 <div class="flex items-center space-x-3">
-                    <img id="tenantLogo" src="" alt="Store Logo" class="h-10 w-10 object-cover rounded-full border border-amber-500/30 hidden">
+                    <img id="tenantLogo" src="" alt="Blog Logo" class="h-10 w-10 object-cover rounded-full border border-amber-500/30 hidden">
                     <div>
-                        <h1 id="storeNameHeader" class="font-bold text-lg text-white tracking-tight">Loading Store...</h1>
+                        <h1 id="blogTitleHeader" class="font-bold text-lg text-white tracking-tight">Loading Journal...</h1>
                         <p id="headerExtraText" class="text-xs text-stone-400 hidden"></p>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Nav: Switcher, Cart & Mobile Menu -->
+            <!-- Right Nav: Switcher & Mobile Menu -->
             <div class="flex items-center space-x-4">
-                <!-- Cross-Navigation Switcher (Shop ⇄ Blog) -->
+                <!-- Cross-Navigation Switcher (Blog ⇄ Shop) -->
                 <div id="moduleSwitcher" class="hidden items-center space-x-2 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800 text-xs">
-                    <a id="shopLinkNav" href="#" class="px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold transition"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
-                    <a id="blogLinkNav" href="#" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition"><i class="fa-solid fa-blog mr-1.5"></i>Blog</a>
+                    <a id="blogLinkNav" href="#" class="px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold transition"><i class="fa-solid fa-book-open mr-1.5"></i>Journal</a>
+                    <a id="shopLinkNav" href="#" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
                 </div>
-
-                <!-- Cart Button -->
-                <button onclick="toggleCartModal()" class="relative p-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl text-stone-200 transition focus:outline-none">
-                    <i class="fa-solid fa-shopping-bag text-lg text-amber-400"></i>
-                    <span id="cartBadge" class="absolute -top-1.5 -right-1.5 bg-amber-500 text-black font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center shadow-md hidden">0</span>
-                </button>
 
                 <!-- Mobile Menu Toggle -->
                 <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-stone-200">
@@ -78,107 +72,45 @@
     <!-- MAIN CONTENT CONTAINER -->
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-10">
 
-        <!-- HERO SECTION & FLYING LOGO -->
-        <section id="heroSection" class="relative rounded-3xl overflow-hidden bg-[#1e293b] border border-zinc-800 min-h-[360px] flex items-center p-8 lg:p-12 shadow-2xl transition-all duration-500">
+        <!-- HERO SECTION / FEATURED STORY -->
+        <section id="heroSection" class="relative rounded-3xl overflow-hidden bg-[#1e293b] border border-zinc-800 min-h-[380px] flex items-center p-8 lg:p-12 shadow-2xl transition-all duration-500">
             <div id="heroBgOverlay" class="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent z-10"></div>
             <img id="heroImage" src="" alt="Hero Banner" class="absolute inset-0 w-full h-full object-cover opacity-30 transform hover:scale-105 transition duration-1000">
             
             <div class="relative z-20 max-w-2xl space-y-4">
-                <span id="heroBadge" class="px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-xs font-semibold tracking-wider uppercase">Artisanal F&B Experience</span>
-                <h2 id="heroTitle" class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">Welcome to Our Store</h2>
-                <p id="heroSubtitle" class="text-stone-300 text-sm sm:text-base leading-relaxed">Discover our freshly prepared dishes, crafted with premium ingredients and delivered straight to you.</p>
-                <div class="pt-2 flex flex-wrap gap-4">
-                    <a href="#menuSection" class="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl text-sm transition shadow-lg shadow-amber-500/20">Explore Menu</a>
-                </div>
-            </div>
-
-            <!-- Smart Flying Logo (Hides during hero item slider showcase) -->
-            <div id="flyingLogoContainer" class="absolute right-8 bottom-8 hidden lg:block z-20 transition-all duration-300">
-                <img id="flyingLogo" src="" alt="Badge Logo" class="h-24 w-24 object-cover rounded-2xl border-2 border-amber-500/40 shadow-2xl animate-bounce-slow">
+                <span id="heroBadge" class="px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-xs font-semibold tracking-wider uppercase">Artisanal Journal & Stories</span>
+                <h2 id="heroTitle" class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">Welcome to Our Journal</h2>
+                <p id="heroSubtitle" class="text-stone-300 text-sm sm:text-base leading-relaxed">Discover behind-the-scenes baking notes, seasonal stories, and kitchen philosophies.</p>
             </div>
         </section>
 
-        <!-- MENU CATALOG & FILTER BAR -->
-        <section id="menuSection" class="space-y-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#1e293b] p-4 rounded-2xl border border-zinc-800">
-                <!-- Dynamic Category Filter Bar -->
-                <div id="filterBarContainer" class="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-                    <button onclick="filterCategory('ALL')" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-black transition shadow">ALL</button>
-                    <button onclick="filterCategory('Favourite')" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-stone-300 hover:bg-zinc-800 transition">Favourite</button>
-                    <button onclick="filterCategory('Promo')" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-stone-300 hover:bg-zinc-800 transition">Promo</button>
-                </div>
-
-                <!-- View Layout Switcher (Grid vs Menu Book) -->
-                <div class="flex items-center space-x-2 self-end md:self-auto bg-zinc-900 p-1 rounded-xl border border-zinc-800">
-                    <button onclick="setLayoutView('grid')" id="btnGridView" class="px-3 py-1.5 rounded-lg bg-zinc-800 text-amber-400 text-xs font-semibold transition"><i class="fa-solid fa-grip mr-1"></i>Grid</button>
-                    <button onclick="setLayoutView('book')" id="btnBookView" class="px-3 py-1.5 rounded-lg text-stone-400 text-xs font-semibold transition"><i class="fa-solid fa-book-open mr-1"></i>Book</button>
-                </div>
+        <!-- ARTICLES / POSTS SECTION -->
+        <section id="articlesSection" class="space-y-6">
+            <div class="flex items-center justify-between bg-[#1e293b] p-4 rounded-2xl border border-zinc-800">
+                <h3 class="text-base font-bold text-white tracking-tight flex items-center space-x-2">
+                    <i class="fa-solid fa-feather-pointed text-amber-400"></i>
+                    <span>Latest Published Stories</span>
+                </h3>
+                <span id="articleCountBadge" class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-mono text-stone-400">0 posts</span>
             </div>
 
-            <!-- Product Items Container -->
-            <div id="menuCatalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Articles Grid Container -->
+            <div id="articlesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Populated dynamically via JS -->
                 <div class="col-span-full py-16 text-center text-stone-500 font-mono text-sm">
                     <i class="fa-solid fa-spinner fa-spin text-amber-500 text-2xl mb-2"></i>
-                    <p>Loading menu catalog from Firestore...</p>
+                    <p>Loading journal stories from Firestore...</p>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- CART & CHECKOUT MODAL -->
-    <div id="cartModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-[#1e293b] border border-zinc-800 rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-scale-up">
-            <!-- Modal Header -->
-            <div class="p-6 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/50">
-                <div class="flex items-center space-x-3">
-                    <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-xl"><i class="fa-solid fa-shopping-cart"></i></div>
-                    <h3 class="font-bold text-lg text-white">Your Shopping Cart</h3>
-                </div>
-                <button onclick="toggleCartModal()" class="text-stone-400 hover:text-white p-2 rounded-xl hover:bg-zinc-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-
-            <!-- Modal Body: Cart Items & Form -->
-            <div class="p-6 overflow-y-auto space-y-6 flex-grow">
-                <div id="cartItemsList" class="space-y-3 divide-y divide-zinc-800/50">
-                    <!-- Dynamic cart items -->
-                </div>
-
-                <!-- Customer Details Form -->
-                <div class="space-y-4 pt-4 border-t border-zinc-800">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400">Customer Details</h4>
-                    <div>
-                        <label class="block text-xs text-stone-400 mb-1">Full Name</label>
-                        <input type="text" id="custName" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-stone-200 focus:outline-none focus:border-amber-500 transition" placeholder="Enter your name">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-stone-400 mb-1">Phone Number</label>
-                        <input type="tel" id="custPhone" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-stone-200 focus:outline-none focus:border-amber-500 transition" placeholder="Enter phone number">
-                    </div>
-                </div>
-
-                <!-- Price Summary -->
-                <div class="bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800 space-y-2 text-xs">
-                    <div class="flex justify-between text-stone-400"><span>Subtotal:</span><span id="cartSubtotal" class="font-mono text-stone-200">$0.00</span></div>
-                    <div class="flex justify-between text-stone-400"><span>15% NZ GST:</span><span id="cartTax" class="font-mono text-stone-200">$0.00</span></div>
-                    <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-zinc-800"><span>Grand Total:</span><span id="cartGrandTotal" class="font-mono text-amber-400">$0.00</span></div>
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="p-6 border-t border-zinc-800 bg-zinc-900/50 flex space-x-3">
-                <button onclick="toggleCartModal()" class="w-1/3 py-3 bg-zinc-800 hover:bg-zinc-700 text-stone-300 font-semibold rounded-xl text-xs transition">Cancel</button>
-                <button onclick="submitCheckoutOrder()" class="w-2/3 py-3 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl text-xs transition shadow-lg shadow-amber-500/20">Confirm & Send Order</button>
-            </div>
-        </div>
-    </div>
-
     <!-- FOOTER & OPERATING HOURS -->
     <footer class="bg-zinc-950 border-t border-zinc-900 mt-16 text-stone-400 text-xs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="space-y-3">
-                <h4 id="footerStoreName" class="font-bold text-sm text-white tracking-wide">RestoSync Storefront</h4>
+                <h4 id="footerStoreName" class="font-bold text-sm text-white tracking-wide">RestoSync Journal</h4>
                 <p id="footerStoreAddress" class="text-stone-400 leading-relaxed">Powered by RestoSync SaaS multi-tenant cloud architecture.</p>
             </div>
             <div>
@@ -193,7 +125,7 @@
                 <details class="text-[11px] text-stone-500 font-mono bg-zinc-900 p-3 rounded-xl border border-zinc-800">
                     <summary class="cursor-pointer hover:text-amber-400 font-bold">RESTOSYNC TRACE & DIAGNOSTIC CONSOLE</summary>
                     <div id="diagnosticConsole" class="mt-2 space-y-1 text-stone-400 max-h-32 overflow-y-auto">
-                        <p>[INIT] Initializing storefront runtime...</p>
+                        <p>[INIT] Initializing journal module...</p>
                     </div>
                 </details>
             </div>
@@ -218,16 +150,11 @@
         }
         const db = firebase.firestore();
 
-        // URL Tenant Parameter Resolver
+        // URL Tenant Parameter Resolver (Default fallback ke boluhalus)
         const urlParams = new URLSearchParams(window.location.search);
-        const TENANT_ID = (urlParams.get('tenant') || 'bangkokthaipalmy').trim().toLowerCase();
+        const TENANT_ID = (urlParams.get('tenant') || 'boluhalus').trim().toLowerCase();
 
-        // Application State
         let tenantData = {};
-        let currentMenuProducts = [];
-        let activeCategory = 'ALL';
-        let currentLayoutView = 'grid';
-        let shoppingCart = [];
 
         function logDiagnostic(message) {
             const consoleEl = document.getElementById('diagnosticConsole');
@@ -239,56 +166,53 @@
         }
 
         // Live Firestore Snapshot Listener
-        function initStorefrontListener() {
-            logDiagnostic(`Connecting to Firestore tenant: [${TENANT_ID}]`);
+        function initJournalListener() {
+            logDiagnostic(`Connecting to Firestore tenant for journal: [${TENANT_ID}]`);
             db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
                 if (doc.exists) {
                     tenantData = doc.data();
-                    logDiagnostic(`Data successfully synced for tenant: ${tenantData.tenantName || TENANT_ID}`);
-                    renderStorefrontData();
+                    logDiagnostic(`Data successfully synced for tenant journal: ${tenantData.tenantName || TENANT_ID}`);
+                    renderJournalContent();
                 } else {
                     logDiagnostic(`ERROR: Tenant document [${TENANT_ID}] not found in database.`);
-                    document.getElementById('storeNameHeader').innerText = `Tenant [${TENANT_ID}] Not Found`;
+                    document.getElementById('blogTitleHeader').innerText = `Tenant [${TENANT_ID}] Not Found`;
                 }
             }, (error) => {
                 logDiagnostic(`Firestore error: ${error.message}`);
             });
         }
 
-        // Render Data to DOM
-        function renderStorefrontData() {
-            const shopConf = tenantData.shopConfig || {};
+        // Render Journal Content to DOM
+        function renderJournalContent() {
             const blogConf = tenantData.blogConfig || {};
+            const shopConf = tenantData.shopConfig || {};
             const enabledMods = tenantData.enabledModules || {};
 
             // Header Branding
-            const storeName = shopConf.storeName || tenantData.tenantName || TENANT_ID;
-            document.getElementById('pageTitle').innerText = `${storeName} - RestoSync Storefront`;
-            document.getElementById('storeNameHeader').innerText = storeName;
-            document.getElementById('footerStoreName').innerText = storeName;
+            const blogTitle = blogConf.siteTitle || tenantData.tenantName || TENANT_ID;
+            document.getElementById('pageTitle').innerText = `${blogTitle} - RestoSync Journal`;
+            document.getElementById('blogTitleHeader').innerText = blogTitle;
+            document.getElementById('footerStoreName').innerText = `${blogTitle} Journal`;
             document.getElementById('footerStoreAddress').innerText = shopConf.address || tenantData.address || 'New Zealand';
 
-            // Tenant Logo & Global RS Logo
-            if (shopConf.logoUrl || tenantData.logoUrl) {
+            // Tenant Logo
+            if (blogConf.logoUrl || tenantData.logoUrl) {
                 const logoEl = document.getElementById('tenantLogo');
-                logoEl.src = shopConf.logoUrl || tenantData.logoUrl;
+                logoEl.src = blogConf.logoUrl || tenantData.logoUrl;
                 logoEl.classList.remove('hidden');
-                
-                const flyingLogo = document.getElementById('flyingLogo');
-                flyingLogo.src = shopConf.logoUrl || tenantData.logoUrl;
             }
 
-            // Cross-Navigation Module Switcher (Shop ⇄ Blog)
-            if (enabledMods.blog !== false) {
+            // Cross-Navigation Module Switcher (Journal/Blog ⇄ Shop)
+            if (enabledMods.shop !== false) {
                 const switcher = document.getElementById('moduleSwitcher');
                 const mobileSwitcher = document.getElementById('mobileModuleSwitcher');
                 switcher.classList.remove('hidden');
                 switcher.classList.add('flex');
                 
-                document.getElementById('blogLinkNav').href = `blog.html?tenant=${TENANT_ID}`;
+                document.getElementById('shopLinkNav').href = `shop.html?tenant=${TENANT_ID}`;
                 mobileSwitcher.innerHTML = `
-                    <a href="shop.html?tenant=${TENANT_ID}" class="px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold text-xs"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
-                    <a href="blog.html?tenant=${TENANT_ID}" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white text-xs"><i class="fa-solid fa-blog mr-1.5"></i>Blog</a>
+                    <a href="blog.html?tenant=${TENANT_ID}" class="px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold text-xs"><i class="fa-solid fa-book-open mr-1.5"></i>Journal</a>
+                    <a href="shop.html?tenant=${TENANT_ID}" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white text-xs"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
                 `;
             }
 
@@ -296,19 +220,19 @@
             applyDynamicTheme(shopConf.uiStyles || tenantData.uiStyles);
 
             // Hero Section Rendering
-            document.getElementById('heroTitle').innerText = shopConf.heroTitle || `Welcome to ${storeName}`;
-            document.getElementById('heroSubtitle').innerText = shopConf.heroSubtitle || shopConf.description || 'Authentic flavors and fresh daily selections.';
-            if (shopConf.heroBannerUrl) {
-                document.getElementById('heroImage').src = shopConf.heroBannerUrl;
+            document.getElementById('heroTitle').innerText = blogConf.heroTitle || `Stories from ${blogTitle}`;
+            document.getElementById('heroSubtitle').innerText = blogConf.heroSubtitle || blogConf.description || 'Explore our articles, baking notes, and behind-the-scenes stories.';
+            if (blogConf.heroBannerUrl) {
+                document.getElementById('heroImage').src = blogConf.heroBannerUrl;
             }
 
             // Operating Hours Rendering
             renderOperatingHours(tenantData.officeHours || shopConf.operatingHours);
 
-            // Menu Products Catalog
-            currentMenuProducts = shopConf.products || shopConf.menuItems || [];
-            buildCategoryFilters(currentMenuProducts);
-            renderMenuCatalog();
+            // Articles / Posts Catalog
+            const articles = blogConf.articles || blogConf.posts || [];
+            document.getElementById('articleCountBadge').innerText = `${articles.length} posts`;
+            renderArticlesGrid(articles);
         }
 
         // Apply Custom UI Styles dynamically
@@ -316,10 +240,7 @@
             if (!styles) return;
             const header = document.getElementById('mainHeader');
             if (styles.headerBg) header.style.backgroundColor = styles.headerBg;
-            if (styles.primaryColor) {
-                document.documentElement.style.setProperty('--primary-accent', styles.primaryColor);
-            }
-            logDiagnostic("Dynamic UI styles applied successfully.");
+            logDiagnostic("Dynamic UI styles applied to journal header.");
         }
 
         // Operating Hours Fallback Handler
@@ -342,209 +263,33 @@
             }).join('');
         }
 
-        // Category Filter Generator
-        function buildCategoryFilters(products) {
-            const categories = ['ALL', 'Favourite', 'Promo'];
-            products.forEach(p => {
-                if (p.category && !categories.includes(p.category)) {
-                    categories.push(p.category);
-                }
-            });
+        // Render Articles / Journal Cards Grid
+        function renderArticlesGrid(articles) {
+            const grid = document.getElementById('articlesGrid');
 
-            const filterContainer = document.getElementById('filterBarContainer');
-            filterContainer.innerHTML = categories.map(cat => `
-                <button onclick="filterCategory('${cat}')" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold ${activeCategory === cat ? 'bg-amber-500 text-black shadow' : 'bg-zinc-900 text-stone-300 hover:bg-zinc-800'} transition">${cat}</button>
-            `).join('');
-        }
-
-        function filterCategory(cat) {
-            activeCategory = cat;
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                if (btn.innerText.trim() === cat) {
-                    btn.className = "cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-black shadow transition";
-                } else {
-                    btn.className = "cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-stone-300 hover:bg-zinc-800 transition";
-                }
-            });
-            renderMenuCatalog();
-        }
-
-        function setLayoutView(view) {
-            currentLayoutView = view;
-            document.getElementById('btnGridView').className = view === 'grid' ? "px-3 py-1.5 rounded-lg bg-zinc-800 text-amber-400 text-xs font-semibold transition" : "px-3 py-1.5 rounded-lg text-stone-400 text-xs font-semibold transition";
-            document.getElementById('btnBookView').className = view === 'book' ? "px-3 py-1.5 rounded-lg bg-zinc-800 text-amber-400 text-xs font-semibold transition" : "px-3 py-1.5 rounded-lg text-stone-400 text-xs font-semibold transition";
-            renderMenuCatalog();
-        }
-
-        // Render Menu Catalog Cards
-        function renderMenuCatalog() {
-            const grid = document.getElementById('menuCatalogGrid');
-            
-            let filtered = currentMenuProducts;
-            if (activeCategory !== 'ALL') {
-                if (activeCategory === 'Favourite') {
-                    filtered = currentMenuProducts.filter(p => p.isFavourite || p.favourite);
-                } else if (activeCategory === 'Promo') {
-                    filtered = currentMenuProducts.filter(p => p.isPromo || p.promo);
-                } else {
-                    filtered = currentMenuProducts.filter(p => p.category === activeCategory);
-                }
-            }
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-16 text-center text-stone-500 text-sm font-mono">No products available in this category.</div>`;
+            if (!articles || articles.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-16 text-center text-stone-500 text-sm font-mono">No journal stories published yet. Check back soon!</div>`;
                 return;
             }
 
-            if (currentLayoutView === 'grid') {
-                grid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
-                grid.innerHTML = filtered.map((item, idx) => `
-                    <div class="bg-[#1e293b] border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-lg hover:border-amber-500/50 transition duration-300">
-                        <div class="relative h-48 bg-zinc-900 overflow-hidden">
-                            <img src="${item.imageUrl || item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}" alt="${item.name}" class="w-full h-full object-cover transform hover:scale-105 transition duration-500">
-                            ${item.price ? `<span class="absolute top-3 right-3 px-3 py-1 bg-zinc-950/80 backdrop-blur-md text-amber-400 font-mono font-bold text-xs rounded-full border border-zinc-800">$${Number(item.price).toFixed(2)}</span>` : ''}
-                        </div>
-                        <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
-                            <div class="space-y-1">
-                                <h3 class="font-bold text-base text-white">${item.name || 'Unnamed Item'}</h3>
-                                <p class="text-xs text-stone-400 line-clamp-2">${item.description || 'Freshly prepared specialty dish.'}</p>
-                            </div>
-                            <button onclick="addToCart('${item.name || 'Item'}', ${item.price || 0})" class="w-full py-2.5 bg-zinc-900 hover:bg-amber-500 hover:text-black text-amber-400 border border-zinc-800 font-semibold rounded-xl text-xs transition flex items-center justify-center space-x-2">
-                                <i class="fa-solid fa-cart-plus"></i><span>Add to Cart</span>
-                            </button>
-                        </div>
+            grid.innerHTML = articles.map(item => `
+                <div class="bg-[#1e293b] border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-lg hover:border-amber-500/50 transition duration-300">
+                    <div class="relative h-48 bg-zinc-900 overflow-hidden">
+                        <img src="${item.imageUrl || item.image || 'https://images.unsplash.com/photo-1509440159596-0249088772ff'}" alt="${item.title}" class="w-full h-full object-cover transform hover:scale-105 transition duration-500">
+                        ${item.category ? `<span class="absolute top-3 right-3 px-3 py-1 bg-zinc-950/80 backdrop-blur-md text-amber-400 font-mono font-bold text-xs rounded-full border border-zinc-800">${item.category}</span>` : ''}
                     </div>
-                `).join('');
-            } else {
-                // Book View Layout
-                grid.className = "grid grid-cols-1 lg:grid-cols-2 gap-6";
-                grid.innerHTML = filtered.map((item, idx) => `
-                    <div class="bg-[#1e293b] border border-zinc-800 p-5 rounded-2xl flex items-center space-x-4 shadow-md">
-                        <img src="${item.imageUrl || item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}" class="w-20 h-20 object-cover rounded-xl border border-zinc-800 flex-shrink-0">
-                        <div class="flex-grow space-y-1">
-                            <div class="flex justify-between items-start">
-                                <h3 class="font-bold text-sm text-white">${item.name}</h3>
-                                <span class="font-mono font-bold text-amber-400 text-xs">$${Number(item.price || 0).toFixed(2)}</span>
-                            </div>
-                            <p class="text-xs text-stone-400 line-clamp-1">${item.description || ''}</p>
-                            <button onclick="addToCart('${item.name}', ${item.price || 0})" class="mt-2 px-3 py-1.5 bg-zinc-900 hover:bg-amber-500 hover:text-black text-amber-400 border border-zinc-800 font-semibold rounded-lg text-[11px] transition">
-                                <i class="fa-solid fa-cart-plus mr-1"></i>Add
-                            </button>
+                    <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
+                        <div class="space-y-2">
+                            <h3 class="font-bold text-base text-white">${item.title || 'Untitled Story'}</h3>
+                            <p class="text-xs text-stone-400 line-clamp-3">${item.summary || item.content || 'Read more about this story from our kitchen...'}</p>
                         </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        // Cart & Checkout Logic
-        function toggleCartModal() {
-            const modal = document.getElementById('cartModal');
-            modal.classList.toggle('hidden');
-            renderCartItems();
-        }
-
-        function addToCart(name, price) {
-            const existing = shoppingCart.find(i => i.name === name);
-            if (existing) {
-                existing.qty += 1;
-            } else {
-                shoppingCart.push({ name, price, qty: 1 });
-            }
-            updateCartBadge();
-            logDiagnostic(`Added item to cart: ${name} ($${price})`);
-        }
-
-        function updateCartBadge() {
-            const badge = document.getElementById('cartBadge');
-            const totalQty = shoppingCart.reduce((sum, i) => sum + i.qty, 0);
-            if (totalQty > 0) {
-                badge.innerText = totalQty;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
-
-        function renderCartItems() {
-            const list = document.getElementById('cartItemsList');
-            if (shoppingCart.length === 0) {
-                list.innerHTML = `<p class="text-center text-stone-500 text-xs py-8 font-mono">Your shopping cart is empty.</p>`;
-                document.getElementById('cartSubtotal').innerText = '$0.00';
-                document.getElementById('cartTax').innerText = '$0.00';
-                document.getElementById('cartGrandTotal').innerText = '$0.00';
-                return;
-            }
-
-            list.innerHTML = shoppingCart.map((item, idx) => `
-                <div class="py-3 flex items-center justify-between">
-                    <div>
-                        <h4 class="font-bold text-xs text-white">${item.name}</h4>
-                        <p class="text-[11px] text-stone-400">$${item.price.toFixed(2)} x ${item.qty}</p>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <span class="font-mono text-xs text-amber-400">$${(item.price * item.qty).toFixed(2)}</span>
-                        <button onclick="removeFromCart(${idx})" class="text-stone-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        <div class="pt-4 border-t border-zinc-800/60 flex items-center justify-between text-xs text-stone-500">
+                            <span><i class="fa-regular fa-calendar mr-1.5"></i>${item.date || 'Recent Note'}</span>
+                            <span class="text-amber-400 font-semibold hover:underline cursor-pointer">Read Full Story <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                        </div>
                     </div>
                 </div>
             `).join('');
-
-            const subtotal = shoppingCart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-            const taxRate = 0.15; // 15% NZ GST Standard
-            const tax = subtotal * taxRate;
-            const grandTotal = subtotal + tax;
-
-            document.getElementById('cartSubtotal').innerText = `$${subtotal.toFixed(2)}`;
-            document.getElementById('cartTax').innerText = `$${tax.toFixed(2)}`;
-            document.getElementById('cartGrandTotal').innerText = `$${grandTotal.toFixed(2)}`;
-        }
-
-        function removeFromCart(idx) {
-            shoppingCart.splice(idx, 1);
-            updateCartBadge();
-            renderCartItems();
-        }
-
-        function submitCheckoutOrder() {
-            const name = document.getElementById('custName').value.trim();
-            const phone = document.getElementById('custPhone').value.trim();
-
-            if (!name || !phone) {
-                alert('Please enter your full name and phone number to proceed.');
-                return;
-            }
-            if (shoppingCart.length === 0) {
-                alert('Your cart is empty.');
-                return;
-            }
-
-            const subtotal = shoppingCart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-            const tax = subtotal * 0.15;
-            const grandTotal = subtotal + tax;
-
-            const orderPayload = {
-                tenantId: TENANT_ID,
-                customerName: name,
-                customerPhone: phone,
-                items: shoppingCart,
-                subtotal: subtotal,
-                taxGST: tax,
-                grandTotal: grandTotal,
-                status: 'Pending',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            logDiagnostic(`Submitting order to Firestore for customer: ${name}`);
-            db.collection("orders").add(orderPayload).then(() => {
-                alert('Order successfully submitted! Thank you.');
-                shoppingCart = [];
-                updateCartBadge();
-                toggleCartModal();
-                document.getElementById('custName').value = '';
-                document.getElementById('custPhone').value = '';
-            }).catch(error => {
-                alert(`Order submission failed: ${error.message}`);
-                logDiagnostic(`Order error: ${error.message}`);
-            });
         }
 
         function toggleMobileMenu() {
@@ -554,7 +299,7 @@
 
         // Run initialization on load
         window.addEventListener('DOMContentLoaded', () => {
-            initStorefrontListener();
+            initJournalListener();
         });
     </script>
 </body>

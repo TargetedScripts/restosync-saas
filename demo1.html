@@ -68,7 +68,6 @@
       </div>
 
       <!-- Customer Contact Details Form -->
-      <!-- Customer Contact Details Form -->
       <div class="space-y-3 bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs">
         <p class="font-bold text-amber-400"><i class="fa-solid fa-user mr-1"></i> Customer Information</p>
         <div>
@@ -82,16 +81,16 @@
       </div>
 
       <div id="cartItemsList" class="flex-grow overflow-y-auto space-y-2 text-xs divide-y divide-zinc-800/50"></div>
-
-      <!-- Bagian Bawah: Ringkasan Harga & Tombol Checkout (Tanpa input ganda) -->
-      <div class="pt-4 border-t border-zinc-800 space-y-3 text-xs bg-zinc-950 p-4 rounded-2xl">
+      
+      <div class="pt-4 border-t border-zinc-800 space-y-2 text-xs bg-zinc-950 p-4 rounded-2xl">
         <div class="flex justify-between text-stone-400"><span>Subtotal (Excl. GST)</span><span id="cartSubtotal" class="font-mono text-stone-200">$0.00</span></div>
         <div class="flex justify-between text-stone-400"><span>NZ 15% GST (Included)</span><span id="cartGST" class="font-mono text-stone-200">$0.00</span></div>
         <div class="flex justify-between font-bold text-base text-amber-400 pt-2 border-t border-zinc-800"><span>Total (NZD)</span><span id="cartTotal" class="font-mono">$0.00</span></div>
-        <button onclick="processCheckout()" class="w-full mt-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-3 rounded-xl text-xs shadow-lg transition">Checkout & Send to Kitchen</button>
+        
+        <button onclick="processCheckout()" class="w-full mt-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-3 rounded-xl text-xs shadow-lg transition">
+          Checkout & Confirm Order
+        </button>
       </div>
-
-
     </div>
   </div>
 
@@ -170,6 +169,31 @@
         console.error("Firestore error:", error);
       });
     });
+
+    // Listen for postMessage from Admin Theme Customizer
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'UPDATE_UI_STYLES') {
+        const uiStyles = event.data.uiStyles || {};
+        applyBadgeStyles(uiStyles);
+      }
+    });
+
+    function applyBadgeStyles(uiStyles) {
+      if (!uiStyles) return;
+      if (uiStyles.badgeFavPromoBg) {
+        document.querySelectorAll('.fav-promo-badge').forEach(el => {
+          el.style.backgroundColor = uiStyles.badgeFavPromoBg;
+        });
+      }
+      if (uiStyles.badgeFavPromoTextColor) {
+        document.querySelectorAll('.fav-promo-badge').forEach(el => {
+          el.style.color = uiStyles.badgeFavPromoTextColor;
+          el.querySelectorAll('i, svg').forEach(icon => {
+            icon.style.color = uiStyles.badgeFavPromoTextColor;
+          });
+        });
+      }
+    }
 
     function loadTenantJsAsset(jsPath, callback) {
       if (document.querySelector(`script[src="${jsPath}"]`)) {
@@ -486,14 +510,14 @@
         let badgesHtml = '';
         const spice = Number(item.spiceLevel || 0);
         if (spice > 0) {
-          badgesHtml += `<span class="bg-red-950/80 text-red-400 border border-red-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Spice Level ${spice}"><i class="fa-solid fa-pepper-hot"></i><span>${spice}</span></span>`;
+          badgesHtml += `<span class="fav-promo-badge bg-red-950/80 text-red-400 border border-red-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Spice Level ${spice}"><i class="fa-solid fa-pepper-hot"></i><span>${spice}</span></span>`;
         }
         if (item.isFav || item.isFavorite) {
-          badgesHtml += `<span class="bg-amber-950/80 text-amber-400 border border-amber-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Favorite"><i class="fa-solid fa-star"></i><span>Fav</span></span>`;
+          badgesHtml += `<span class="fav-promo-badge bg-amber-950/80 text-amber-400 border border-amber-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Favorite"><i class="fa-solid fa-star"></i><span>Fav</span></span>`;
         }
         const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
         if (hasPromo) {
-          badgesHtml += `<span class="bg-orange-950/80 text-orange-400 border border-orange-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Promo Offer"><i class="fa-solid fa-fire"></i><span>Promo</span></span>`;
+          badgesHtml += `<span class="fav-promo-badge bg-orange-950/80 text-orange-400 border border-orange-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Promo Offer"><i class="fa-solid fa-fire"></i><span>Promo</span></span>`;
         }
         return badgesHtml ? `<div class="flex flex-wrap gap-1.5 mt-2">${badgesHtml}</div>` : '';
       };
@@ -557,6 +581,9 @@
           </div>
         `;
       }
+
+      // Apply dynamic custom badge colors after rendering
+      applyBadgeStyles(ui);
     }
 
     function addItemToCart(id) {
@@ -603,53 +630,72 @@
       document.getElementById('cartModal').classList.toggle('hidden');
     }
 
-    function processCheckout() {
-        if (cart.length === 0) {
-            alert("Your cart is empty!");
-            return;
-        }
+    // Integrated Firestore Checkout & Phone Confirmation Workflow
+    async function processCheckout() {
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('customerPhone').value.trim();
 
-        const customerName = document.getElementById('customerName').value.trim();
-        const customerPhone = document.getElementById('customerPhone').value.trim();
+      if (!name || !phone) {
+        alert('Please enter your Name and Phone Number before checkout.');
+        return;
+      }
 
-        if (!customerName || !customerPhone) {
-            alert("Please enter your Name and Phone Number before checkout!");
-            return;
-        }
+      if (cart.length === 0) {
+        alert('Your cart is empty.');
+        return;
+      }
 
-        const totalAmount = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+      try {
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        const gst = subtotal * 0.15;
+        const grandTotal = subtotal + gst;
+
+        const randomNum = Math.floor(1000 + Math.random() * 9000);
+        const orderId = `RS-${randomNum}`;
+
         const orderData = {
-            customerName: customerName,
-            customerPhone: customerPhone,
-            items: cart,
-            totalAmount: totalAmount,
-            status: "PENDING", // Status awal sesuai kesepakatan KDS
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          orderId: orderId,
+          customerName: name,
+          customerPhone: phone,
+          items: cart.map(item => ({
+            id: item.cartId || '',
+            name: item.name,
+            price: item.price,
+            quantity: item.qty,
+            notes: ''
+          })),
+          subtotal: Number(subtotal.toFixed(2)),
+          gst: Number(gst.toFixed(2)),
+          total: Number(grandTotal.toFixed(2)),
+          status: 'Pending',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        // Mengirim data ke sub-koleksi orders tenant di Firestore
-        db.collection("tenants").doc(TENANT_ID).collection("orders").add(orderData)
-          .then((docRef) => {
-              const orderId = docRef.id;
-              const trackingUrl = `track.html?tenant=${TENANT_ID}&orderId=${orderId}`;
+        const ordersRef = db.collection("tenants").doc(TENANT_ID).collection("orders");
+        await ordersRef.add(orderData);
 
-              // Konfirmasi sukses dengan opsi langsung membuka halaman live tracking
-              if (confirm(`Success! Order placed with ID: ${orderId}\n\nClick OK to open Live Order Tracking window.`)) {
-                  window.open(trackingUrl, '_blank');
-              }
+        const storePhone = tenantData.profile?.phone || 'our store phone';
 
-              cart = []; // Kosongkan keranjang
-              document.getElementById('cartCount').innerText = '0';
-              document.getElementById('customerName').value = '';
-              document.getElementById('customerPhone').value = '';
-              updateCartUI();
-              toggleCartModal();
-          })
-          .catch((error) => {
-              alert("Checkout failed: " + error.message);
-          });
+        const confirmationMsg = `Order Placed Successfully!\n\n` +
+          `Order ID: ${orderId}\n` +
+          `Customer Name: ${name}\n` +
+          `Phone Number: ${phone}\n\n` +
+          `IMPORTANT: Please call us now at [ ${storePhone} ] and mention your Order ID (${orderId}) to confirm your order and start kitchen processing!`;
+
+        alert(confirmationMsg);
+
+        cart = [];
+        document.getElementById('cartCount').innerText = '0';
+        document.getElementById('customerName').value = '';
+        document.getElementById('customerPhone').value = '';
+        updateCartUI();
+        toggleCartModal();
+
+      } catch (error) {
+        console.error("Error placing order to Firestore:", error);
+        alert("Failed to place order. Please check your connection and try again.");
+      }
     }
-
-</script>
+  </script>
 </body>
 </html>

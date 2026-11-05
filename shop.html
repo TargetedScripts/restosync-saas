@@ -23,18 +23,28 @@
   <!-- HEADER -->
   <header id="mainHeader" class="sticky top-0 z-50 w-full bg-black transition-colors duration-200 border-b border-zinc-800"> 
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <div class="flex items-center space-x-4 shrink-0">
-        <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
-        <div>
+      <div class="flex items-center space-x-3 shrink-0">
+        <!-- RestoSync Global Logo (Scaled 50%) -->
+        <a id="consoleLink" href="https://console.targetedscripts.com/index.html" class="flex items-center" title="Back to Console">
+          <img src="assets/images/RS.png" alt="RestoSync" class="h-5 w-auto object-contain">
+        </a>
+        <div class="h-5 w-[1px] bg-zinc-800"></div>
+        <!-- Tenant Logo & Extra Text -->
+        <div class="flex items-center space-x-3">
+          <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
           <span id="headerExtraText" class="font-bold text-xs uppercase tracking-wider block text-amber-400" style="display: none;"></span>
         </div>
       </div>
 
-      <!-- DESKTOP NAVIGATION & CROSS-LINKS -->
-      <nav class="hidden md:flex items-center space-x-6 text-xs font-bold">
-        <a href="#" class="text-amber-400 flex items-center space-x-1.5"><i class="fa-solid fa-utensils"></i><span>Shop Menu</span></a>
-        <div id="desktopBlogLinkContainer" style="display: none;">
-          <a id="navBlogLinkDesktop" href="#" class="text-stone-300 hover:text-amber-400 transition flex items-center space-x-1.5"><i class="fa-solid fa-blog"></i><span>Visit Blog</span></a>
+      <!-- DESKTOP NAVIGATION & SWITCH TO BLOG -->
+      <nav class="hidden md:flex items-center space-x-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs font-bold">
+        <a href="#" class="px-3 py-1.5 rounded-lg bg-amber-500 text-zinc-950 flex items-center space-x-1.5 shadow">
+          <i class="fa-solid fa-utensils"></i><span>Shop</span>
+        </a>
+        <div id="desktopBlogSwitchContainer" style="display: none;">
+          <a id="navBlogSwitchLink" href="#" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition flex items-center space-x-1.5">
+            <i class="fa-solid fa-blog"></i><span>Blog</span>
+          </a>
         </div>
       </nav>
 
@@ -52,8 +62,8 @@
     <!-- MOBILE DROPDOWN MENU -->
     <div id="mobileMenu" class="hidden md:hidden bg-zinc-950 border-t border-zinc-800 px-4 py-3 space-y-2 text-xs font-bold">
       <a href="#" class="block py-2 text-amber-400"><i class="fa-solid fa-utensils mr-2"></i> Shop Menu</a>
-      <div id="mobileBlogLinkContainer" style="display: none;">
-        <a id="navBlogLinkMobile" href="#" class="block py-2 text-stone-300 hover:text-amber-400"><i class="fa-solid fa-blog mr-2"></i> Visit Blog</a>
+      <div id="mobileBlogSwitchContainer" style="display: none;">
+        <a id="navBlogMobileLink" href="#" class="block py-2 text-stone-300 hover:text-amber-400"><i class="fa-solid fa-blog mr-2"></i> Switch to Blog</a>
       </div>
     </div>
   </header>
@@ -189,6 +199,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('adminPortalLink').href = `admin.html?tenant=${TENANT_ID}`;
+      document.getElementById('consoleLink').href = `https://console.targetedscripts.com/index.html?tenant=${TENANT_ID}`;
       logDiagnostic(`Fetching tenant document for [${TENANT_ID}] from Firestore...`);
 
       db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
@@ -226,13 +237,13 @@
       if (enabledMods.blog === true) {
         const blogUrl = `blog.html?tenant=${TENANT_ID}`;
         
-        const desktopLink = document.getElementById('navBlogLinkDesktop');
-        if (desktopLink) desktopLink.href = blogUrl;
-        document.getElementById('desktopBlogLinkContainer').style.display = 'block';
+        const desktopSwitch = document.getElementById('navBlogSwitchLink');
+        if (desktopSwitch) desktopSwitch.href = blogUrl;
+        document.getElementById('desktopBlogSwitchContainer').style.display = 'block';
 
-        const mobileLink = document.getElementById('navBlogLinkMobile');
+        const mobileLink = document.getElementById('navBlogMobileLink');
         if (mobileLink) mobileLink.href = blogUrl;
-        document.getElementById('mobileBlogLinkContainer').style.display = 'block';
+        document.getElementById('mobileBlogSwitchContainer').style.display = 'block';
       }
     }
 
@@ -293,7 +304,7 @@
       
       const storeName = profile.tenantName || config.store?.name || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.name : TENANT_ID);
       const address = profile.address || config.store?.address || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.address : '');
-      const phone = profile.phone || config.store?.phone || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.phone : '');
+      const phone = profile.phone || config.store?.phone || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.phone : '');
       const logoUrl = profile.logoUrl || config.branding?.logo || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.logo : '');
 
       const headerEl = document.getElementById('mainHeader');

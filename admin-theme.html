@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync SaaS - Theme & Branding Studio</title>
+    <title>RestoSync SaaS - Theme & Branding Studio (Shop & Blog)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -37,7 +37,7 @@
                 <img src="assets/images/RS.png" alt="RestoSync Logo" class="h-8 w-auto object-contain">
             </a>
             <div class="h-5 w-px bg-slate-700"></div>
-            <h1 class="text-lg font-semibold tracking-tight text-slate-200">Theme & Branding Studio</h1>
+            <h1 class="text-lg font-semibold tracking-tight text-slate-200">Theme & Branding Studio (Shop & Blog)</h1>
         </div>
         <div class="flex items-center space-x-4">
             <div id="tenant-badge" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-mono">
@@ -101,15 +101,17 @@
         <!-- Main Workspace: 2-Column Split Layout -->
         <form id="theme-form" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
             
-            <!-- Left Column: 100% Comprehensive UI Customization Form -->
+            <!-- Left Column: Comprehensive UI Customization Form (Shop & Blog) -->
             <div class="lg:col-span-5 space-y-6">
+                
+                <!-- SHOP / STOREFRONT UI STYLES -->
                 <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5">
                     <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
-                        <h2 class="text-sm font-bold text-slate-200">100% Element UI Customization</h2>
-                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-medium">uiStyles</span>
+                        <h2 class="text-sm font-bold text-slate-200">Shop / Storefront UI Styles</h2>
+                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-medium">shopConfig</span>
                     </div>
 
-                    <!-- 1. Header & Cart Styling -->
+                    <!-- Header & Cart Button -->
                     <div class="space-y-2">
                         <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-heading mr-1"></i> Header & Cart Button</h3>
                         <div class="grid grid-cols-2 gap-2">
@@ -132,19 +134,9 @@
                                 <input type="color" id="ui-cartButtonTextColor" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 pt-1">
-                            <div>
-                                <label class="block text-[10px] text-slate-400 mb-1">Header Border Size</label>
-                                <input type="text" id="ui-headerBorderSize" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white theme-input-item">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-slate-400 mb-1">Header Extra Text</label>
-                                <input type="text" id="ui-headerExtraText" placeholder="LIVE" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white theme-input-item">
-                            </div>
-                        </div>
                     </div>
 
-                    <!-- 2. Body & Main Page -->
+                    <!-- Body & Main Page -->
                     <div class="space-y-2 pt-3 border-t border-slate-800">
                         <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-desktop mr-1"></i> Body & Main Page</h3>
                         <div class="grid grid-cols-2 gap-2">
@@ -159,7 +151,7 @@
                         </div>
                     </div>
 
-                    <!-- 3. Hero Banner Section -->
+                    <!-- Hero Banner Section -->
                     <div class="space-y-2 pt-3 border-t border-slate-800">
                         <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-flag mr-1"></i> Hero Banner Section</h3>
                         <div class="grid grid-cols-2 gap-2">
@@ -182,7 +174,7 @@
                         </div>
                     </div>
 
-                    <!-- 4. Filter Bar & Categories -->
+                    <!-- Filter Bar & Categories -->
                     <div class="space-y-2 pt-3 border-t border-slate-800">
                         <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-filter mr-1"></i> Filter Bar & Pills</h3>
                         <div class="grid grid-cols-2 gap-2">
@@ -213,7 +205,7 @@
                         </div>
                     </div>
 
-                    <!-- 5. Menu Card Styling (Typography, Prices, Badges, Add to Order) -->
+                    <!-- Menu Card Styling (Typography, Prices, Badges, Add to Order) -->
                     <div class="space-y-2 pt-3 border-t border-slate-800">
                         <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-utensils mr-1"></i> Menu Card, Prices & Badges</h3>
                         <div class="grid grid-cols-2 gap-2">
@@ -254,59 +246,112 @@
                                 <input type="color" id="ui-badgeFavPromoTextColor" value="#fbbf24" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                         </div>
-                        <div class="pt-1">
-                            <label class="block text-[10px] text-slate-400 mb-1">Card Border Thickness</label>
-                            <input type="text" id="ui-cardBorderThickness" value="1px" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white theme-input-item">
+                    </div>
+                </section>
+
+                <!-- BLOG / JOURNAL STYLING (NEW) -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5">
+                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                        <h2 class="text-sm font-bold text-slate-200">Blog / Journal Styling</h2>
+                        <span class="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded border border-purple-500/20 font-medium">blogConfig</span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-purple-400"><i class="fa-solid fa-newspaper mr-1"></i> Blog Cards & Typography</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Blog Card Bg</label>
+                                <input type="color" id="blog-blogCardBg" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Blog Border Color</label>
+                                <input type="color" id="blog-blogCardBorderColor" value="#3f3f46" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Blog Title Color</label>
+                                <input type="color" id="blog-blogTitleColor" value="#ffffff" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Blog Desc Color</label>
+                                <input type="color" id="blog-blogDescColor" value="#a1a1aa" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 6. Footer Styling -->
                     <div class="space-y-2 pt-3 border-t border-slate-800">
-                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-shoe-prints mr-1"></i> Footer Styling</h3>
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-purple-400"><i class="fa-solid fa-tags mr-1"></i> Blog Categories & Buttons</h3>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-[10px] text-slate-400 mb-1">Footer Background</label>
-                                <input type="color" id="ui-footerBgColor" value="#000000" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                                <label class="block text-[10px] text-slate-400 mb-1">Active Pill Bg</label>
+                                <input type="color" id="blog-blogCatActiveBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-slate-400 mb-1">Footer Text Color</label>
-                                <input type="color" id="ui-footerTextColor" value="#a8a29e" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                                <label class="block text-[10px] text-slate-400 mb-1">Active Pill Text</label>
+                                <input type="color" id="blog-blogCatActiveText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Inactive Pill Bg</label>
+                                <input type="color" id="blog-blogCatInactiveBg" value="#1f2937" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Inactive Pill Text</label>
+                                <input type="color" id="blog-blogCatInactiveText" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Read More Bg</label>
+                                <input type="color" id="blog-blogReadMoreBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Read More Text</label>
+                                <input type="color" id="blog-blogReadMoreText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
                             </div>
                         </div>
                     </div>
                 </section>
             </div>
 
-            <!-- Right Column: Real-Time Storefront Preview (demo1.html Iframe) (Col span 7) -->
-            <div class="lg:col-span-7 sticky top-24 space-y-4">
+            <!-- Right Column: Dual Live Previews (Shop Preview & Blog Preview) -->
+            <div class="lg:col-span-7 sticky top-24 space-y-6">
                 
-                <!-- Mobile/Responsive Save Button -->
-                <div class="lg:hidden flex justify-end">
-                    <button type="button" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl shadow-lg transition flex items-center space-x-2 text-xs">
-                        <span>Save Theme Settings</span>
-                    </button>
-                </div>
-
+                <!-- Storefront Preview Box -->
                 <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col space-y-3">
                     <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
                         <div>
-                            <h2 class="text-sm font-bold text-slate-200">Real-Time Storefront Preview</h2>
-                            <p class="text-[11px] text-slate-400">Live preview of demo1.html reflecting theme edits instantly.</p>
+                            <h2 class="text-sm font-bold text-slate-200">Real-Time Storefront Preview (demo1.html)</h2>
+                            <p class="text-[11px] text-slate-400">Live preview of shop storefront reflecting theme edits instantly.</p>
                         </div>
-                        <button type="button" onclick="refreshIframe()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium border border-slate-700 transition">
+                        <button type="button" onclick="refreshShopIframe()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium border border-slate-700 transition">
                             <i class="fa-solid fa-rotate mr-1"></i> Refresh
                         </button>
                     </div>
 
-                    <div class="w-full h-[720px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-inner">
+                    <div class="w-full h-[500px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-inner">
                         <iframe id="live-storefront-iframe" src="" class="w-full h-full border-0"></iframe>
                     </div>
                 </section>
+
+                <!-- Blog Live Preview Box (NEW) -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col space-y-3">
+                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-sm font-bold text-slate-200">Real-Time Blog Preview (blog.html)</h2>
+                            <p class="text-[11px] text-slate-400">Live preview of journal/blog module reflecting blog theme edits.</p>
+                        </div>
+                        <button type="button" onclick="refreshBlogIframe()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium border border-slate-700 transition">
+                            <i class="fa-solid fa-rotate mr-1"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="w-full h-[400px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-inner">
+                        <iframe id="live-blog-iframe" src="" class="w-full h-full border-0"></iframe>
+                    </div>
+                </section>
+
             </div>
 
         </form>
 
-        <!-- Truly Floating Dynamic Save Action Button (Murni teks, posisi fixed melayang dinamis berjalan mengikuti input aktif) -->
+        <!-- Truly Floating Dynamic Save Action Button -->
         <div id="dynamic-save-container" class="hidden lg:block fixed z-50 transition-all duration-300 ease-out pointer-events-auto" style="top: 150px; left: 400px;">
             <button type="button" id="save-btn" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl shadow-2xl transition flex items-center text-xs border border-amber-300/60 whitespace-nowrap">
                 <span>Save Theme Settings</span>
@@ -323,7 +368,7 @@
                 <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing 100% full element control studio...
+                Initializing Unified Shop & Blog Theme Studio...
             </div>
         </div>
     </footer>
@@ -375,15 +420,24 @@
         document.getElementById('logo-link').href = `index.html?tenant=${encodeURIComponent(tenantId)}`;
 
         document.getElementById('live-storefront-iframe').src = `demo1.html?tenant=${encodeURIComponent(tenantId)}`;
+        document.getElementById('live-blog-iframe').src = `blog.html?tenant=${encodeURIComponent(tenantId)}`;
 
-        function refreshIframe() {
+        function refreshShopIframe() {
             const iframe = document.getElementById('live-storefront-iframe');
             iframe.src = iframe.src;
-            logTrace(`Refreshed storefront iframe display.`, 'info');
+            logTrace(`Refreshed shop storefront iframe.`, 'info');
+        }
+
+        function refreshBlogIframe() {
+            const iframe = document.getElementById('live-blog-iframe');
+            iframe.src = iframe.src;
+            logTrace(`Refreshed blog journal iframe.`, 'info');
         }
 
         let fetchedDocumentData = {};
-        const uiKeys = [
+        
+        // Shop UI Keys
+        const shopUiKeys = [
             'headerBgColor', 'headerBorderColor', 'headerBorderSize', 'headerTextColor', 'headerExtraText',
             'cartButtonBg', 'cartButtonTextColor',
             'bodyBgColor', 'bodyTextColor',
@@ -393,6 +447,13 @@
             'cardTitleColor', 'cardPriceColor', 'cardStrikethroughPriceColor',
             'cardButtonBg', 'cardButtonTextColor', 'badgeFavPromoBg', 'badgeFavPromoTextColor',
             'footerBgColor', 'footerTextColor'
+        ];
+
+        // Blog UI Keys
+        const blogUiKeys = [
+            'blogCardBg', 'blogCardBorderColor', 'blogTitleColor', 'blogDescColor',
+            'blogCatActiveBg', 'blogCatActiveText', 'blogCatInactiveBg', 'blogCatInactiveText',
+            'blogReadMoreBg', 'blogReadMoreText'
         ];
 
         let activeTargetElement = null;
@@ -410,26 +471,34 @@
         }
 
         window.addEventListener('scroll', () => {
-            if (activeTargetElement) {
-                positionSaveButtonNear(activeTargetElement);
-            }
+            if (activeTargetElement) positionSaveButtonNear(activeTargetElement);
         });
 
         window.addEventListener('resize', () => {
-            if (activeTargetElement) {
-                positionSaveButtonNear(activeTargetElement);
-            }
+            if (activeTargetElement) positionSaveButtonNear(activeTargetElement);
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            logTrace(`Initializing 100% Full Control Theme Studio for tenant: [${tenantId}]`, 'info');
+            logTrace(`Initializing Unified Shop & Blog Studio for tenant: [${tenantId}]`, 'info');
             fetchStorageAssetLists();
             fetchAndRenderThemeData();
 
-            uiKeys.forEach(key => {
+            // Shop inputs listener
+            shopUiKeys.forEach(key => {
                 const el = document.getElementById(`ui-${key}`);
                 if (el) {
-                    el.addEventListener('input', () => sendRealtimeThemeToIframe());
+                    el.addEventListener('input', () => sendRealtimeShopThemeToIframe());
+                    el.addEventListener('focus', () => positionSaveButtonNear(el));
+                    el.addEventListener('click', () => positionSaveButtonNear(el));
+                    el.addEventListener('change', () => positionSaveButtonNear(el));
+                }
+            });
+
+            // Blog inputs listener
+            blogUiKeys.forEach(key => {
+                const el = document.getElementById(`blog-${key}`);
+                if (el) {
+                    el.addEventListener('input', () => sendRealtimeBlogThemeToIframe());
                     el.addEventListener('focus', () => positionSaveButtonNear(el));
                     el.addEventListener('click', () => positionSaveButtonNear(el));
                     el.addEventListener('change', () => positionSaveButtonNear(el));
@@ -449,12 +518,12 @@
                 if (firstInput) positionSaveButtonNear(firstInput);
             }, 300);
 
-            document.getElementById('shop-name-input').addEventListener('input', () => sendRealtimeThemeToIframe());
+            document.getElementById('shop-name-input').addEventListener('input', () => sendRealtimeShopThemeToIframe());
             document.getElementById('logo-url-input').addEventListener('input', (e) => {
                 document.getElementById('logo-preview').src = e.target.value.trim();
-                sendRealtimeThemeToIframe();
+                sendRealtimeShopThemeToIframe();
             });
-            document.getElementById('logo-scale-input').addEventListener('input', () => sendRealtimeThemeToIframe());
+            document.getElementById('logo-scale-input').addEventListener('input', () => sendRealtimeShopThemeToIframe());
 
             document.getElementById('logo-file-input').addEventListener('change', function(e) {
                 const file = e.target.files[0];
@@ -467,7 +536,7 @@
                             document.getElementById('logo-url-input').value = downloadURL;
                             document.getElementById('logo-preview').src = downloadURL;
                             fetchStorageAssetLists();
-                            sendRealtimeThemeToIframe();
+                            sendRealtimeShopThemeToIframe();
                             logTrace(`Logo uploaded and previewed successfully!`, 'success');
                         });
                     }).catch(err => {
@@ -480,7 +549,7 @@
                 if(e.target.value) {
                     document.getElementById('logo-url-input').value = e.target.value;
                     document.getElementById('logo-preview').src = e.target.value;
-                    sendRealtimeThemeToIframe();
+                    sendRealtimeShopThemeToIframe();
                     logTrace('Logo selected from storage dropdown.', 'success');
                 }
             });
@@ -506,16 +575,25 @@
             });
         }
 
-        function collectUiStylesPayload() {
+        function collectShopUiStylesPayload() {
             const uiStyles = {};
-            uiKeys.forEach(key => {
+            shopUiKeys.forEach(key => {
                 const el = document.getElementById(`ui-${key}`);
                 if (el) uiStyles[key] = el.value.trim();
             });
             return uiStyles;
         }
 
-        function sendRealtimeThemeToIframe() {
+        function collectBlogUiStylesPayload() {
+            const blogStyles = {};
+            blogUiKeys.forEach(key => {
+                const el = document.getElementById(`blog-${key}`);
+                if (el) blogStyles[key] = el.value.trim();
+            });
+            return blogStyles;
+        }
+
+        function sendRealtimeShopThemeToIframe() {
             const iframe = document.getElementById('live-storefront-iframe');
             if (!iframe || !iframe.contentWindow) return;
 
@@ -524,22 +602,37 @@
                 tenantName: document.getElementById('shop-name-input').value.trim(),
                 logoUrl: document.getElementById('logo-url-input').value.trim(),
                 logoScale: Number(document.getElementById('logo-scale-input').value) || 100,
-                uiStyles: collectUiStylesPayload()
+                uiStyles: collectShopUiStylesPayload()
+            };
+
+            iframe.contentWindow.postMessage(payload, '*');
+        }
+
+        function sendRealtimeBlogThemeToIframe() {
+            const iframe = document.getElementById('live-blog-iframe');
+            if (!iframe || !iframe.contentWindow) return;
+
+            const payload = {
+                type: 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE',
+                uiStyles: collectBlogUiStylesPayload()
             };
 
             iframe.contentWindow.postMessage(payload, '*');
         }
 
         function fetchAndRenderThemeData() {
-            logTrace(`Fetching Firestore document for "${tenantId}"...`, 'info');
+            logTrace(`Fetching Firestore unified document for "${tenantId}"...`, 'info');
             db.collection('tenants').doc(tenantId).get().then((doc) => {
                 if (doc.exists) {
                     fetchedDocumentData = doc.data();
-                    logTrace(`Document retrieved successfully. Populating uiStyles...`, 'success');
+                    logTrace(`Document retrieved successfully. Populating shop and blog styles...`, 'success');
 
                     const profile = fetchedDocumentData.profile || {};
                     const shopConfig = fetchedDocumentData.shopConfig || {};
-                    const uiStyles = profile.uiStyles || {};
+                    const blogConfig = fetchedDocumentData.blogConfig || {};
+                    
+                    const shopUiStyles = profile.uiStyles || shopConfig.uiStyles || {};
+                    const blogUiStyles = blogConfig.uiStyles || {};
 
                     const shopName = profile.tenantName || shopConfig.shopName || tenantId;
                     const logoUrl = profile.logoUrl || shopConfig.logoUrl || '';
@@ -553,10 +646,19 @@
                         document.getElementById('logo-preview').src = logoUrl;
                     }
 
-                    uiKeys.forEach(key => {
-                        if (uiStyles[key] !== undefined && uiStyles[key] !== '') {
+                    // Populate Shop UI fields
+                    shopUiKeys.forEach(key => {
+                        if (shopUiStyles[key] !== undefined && shopUiStyles[key] !== '') {
                             const el = document.getElementById(`ui-${key}`);
-                            if (el) el.value = uiStyles[key];
+                            if (el) el.value = shopUiStyles[key];
+                        }
+                    });
+
+                    // Populate Blog UI fields
+                    blogUiKeys.forEach(key => {
+                        if (blogUiStyles[key] !== undefined && blogUiStyles[key] !== '') {
+                            const el = document.getElementById(`blog-${key}`);
+                            if (el) el.value = blogUiStyles[key];
                         }
                     });
 
@@ -570,10 +672,10 @@
             });
         }
 
-        // Save Theme Settings to Firestore under profile.uiStyles
+        // Save Theme Settings to Firestore under unified profile/shopConfig and blogConfig
         document.getElementById('theme-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            logTrace(`Saving theme updates for tenant "${tenantId}"...`, 'info');
+            logTrace(`Saving unified theme updates for tenant "${tenantId}"...`, 'info');
 
             const saveBtn = document.getElementById('save-btn');
             saveBtn.disabled = true;
@@ -583,19 +685,24 @@
             updatedProfile.tenantName = document.getElementById('shop-name-input').value.trim();
             updatedProfile.logoUrl = document.getElementById('logo-url-input').value.trim();
             updatedProfile.logoScale = Number(document.getElementById('logo-scale-input').value) || 100;
-            updatedProfile.uiStyles = collectUiStylesPayload();
+            updatedProfile.uiStyles = collectShopUiStylesPayload();
+
+            const updatedBlogConfig = fetchedDocumentData.blogConfig || {};
+            updatedBlogConfig.uiStyles = collectBlogUiStylesPayload();
 
             const updatePayload = {
                 profile: updatedProfile,
+                blogConfig: updatedBlogConfig,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             db.collection('tenants').doc(tenantId).set(updatePayload, { merge: true })
                 .then(() => {
-                    logTrace(`Theme settings for "${tenantId}" successfully saved!`, 'success');
-                    showAlert('Theme styles successfully saved to Firestore!', 'success');
+                    logTrace(`Unified theme settings for "${tenantId}" successfully saved!`, 'success');
+                    showAlert('Shop & Blog theme styles successfully saved to Firestore!', 'success');
                     
-                    refreshIframe();
+                    refreshShopIframe();
+                    refreshBlogIframe();
 
                     saveBtn.disabled = false;
                     saveBtn.innerHTML = `<span>Save Theme Settings</span>`;

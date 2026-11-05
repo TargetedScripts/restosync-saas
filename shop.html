@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RestoSync SaaS - Live Store Enterprise</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .hero-slide { opacity: 0; transition: opacity 1s ease-in-out; position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+    .hero-slide.active { opacity: 1; display: block; }
+    @keyframes floatLogo {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .flying-logo { animation: floatLogo 3s ease-in-out infinite; }
+  </style>
+</head>
+<body id="mainBody" class="bg-zinc-900 text-stone-200 flex flex-col min-h-screen pb-16">
+
+  <!-- HEADER -->
+  <header id="mainHeader" class="sticky top-0 z-50 w-full bg-black transition-colors duration-200"> 
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center space-x-3 shrink-0">
+        <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
+        <div>
+          <span id="headerExtraText" class="font-bold text-xs uppercase tracking-wider block" style="display: none;"></span>
+        </div>
+      </div>
+      <button onclick="toggleCartModal()" id="cartBtn" class="font-bold px-3.5 py-2 rounded-xl text-xs flex items-center space-x-2 bg-amber-500 text-zinc-950 shadow-lg transition hover:bg-amber-400">
+        <i class="fa-solid fa-basket-shopping"></i><span>Cart</span><span id="cartCount" class="bg-zinc-950 text-amber-400 text-xs px-2 py-0.5 rounded-full font-mono">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section id="heroSection" class="relative w-full h-[360px] md:h-[460px] bg-zinc-950 overflow-hidden flex items-center justify-center">
+    <div id="heroSlidesContainer" class="absolute inset-0 w-full h-full"></div>
+    <div id="heroOverlay" class="absolute inset-0 bg-black/40 z-10"></div>
+    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6 z-20 max-w-2xl mx-auto">
+      <img id="heroFlyingLogo" src="" alt="Flying Logo" class="h-16 md:h-20 w-auto object-contain mb-3 flying-logo drop-shadow-2xl" style="display: none;" onerror="this.style.display='none'">
+      <p id="heroTextBelowLogo" class="text-xs md:text-sm font-semibold tracking-wide drop-shadow-md uppercase"></p>
+    </div>
+    <div id="heroDots" class="absolute bottom-4 z-30 flex space-x-2"></div>
+  </section>
+
+  <!-- MENU SECTION -->
+  <section class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
+    <!-- FILTER BAR CONTAINER -->
+    <div id="filterBarContainer" class="sticky top-[57px] z-35 bg-zinc-900/95 py-3 -mx-4 px-4 mb-6 border-b border-zinc-800 backdrop-blur-md flex flex-wrap justify-between items-center gap-4 transition-colors duration-200">
+      <div id="categoryPills" class="flex space-x-2 overflow-x-auto no-scrollbar py-1"></div>
+      <div id="layoutToggleBox" class="flex items-center space-x-1 bg-zinc-800 p-1 rounded-xl border border-zinc-700 text-xs">
+        <button onclick="switchLayout('grid')" id="btnLayoutGrid" class="px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-zinc-950 transition"><i class="fa-solid fa-grip mr-1"></i> Grid</button>
+        <button onclick="switchLayout('list')" id="btnLayoutList" class="px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition"><i class="fa-solid fa-book-open mr-1"></i> Menu Book</button>
+      </div>
+    </div>
+    <div id="menuContentBox" class="w-full"></div>
+  </section>
+
+  <!-- CART MODAL -->
+  <div id="cartModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-end">
+    <div class="bg-zinc-900 w-full max-w-md h-full flex flex-col shadow-2xl p-6 space-y-4 border-l border-zinc-800">
+      <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+        <h3 class="font-bold text-base text-white flex items-center space-x-2"><i class="fa-solid fa-basket-shopping text-amber-400"></i><span>Your Order Cart</span></h3>
+        <button onclick="toggleCartModal()" class="text-stone-400 hover:text-white text-xl font-bold">&times;</button>
+      </div>
+
+      <!-- Customer Contact Details Form -->
+      <div class="space-y-3 bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs">
+        <p class="font-bold text-amber-400"><i class="fa-solid fa-user mr-1"></i> Customer Information</p>
+        <div>
+          <label class="block text-stone-400 mb-1">Your Name *</label>
+          <input type="text" id="customerName" placeholder="e.g. John Doe" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-stone-400 mb-1">Phone Number *</label>
+          <input type="tel" id="customerPhone" placeholder="e.g. 021 123 4567" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+        </div>
+      </div>
+
+      <div id="cartItemsList" class="flex-grow overflow-y-auto space-y-2 text-xs divide-y divide-zinc-800/50"></div>
+      
+      <div class="pt-4 border-t border-zinc-800 space-y-2 text-xs bg-zinc-950 p-4 rounded-2xl">
+        <div class="flex justify-between text-stone-400"><span>Subtotal (Excl. GST)</span><span id="cartSubtotal" class="font-mono text-stone-200">$0.00</span></div>
+        <div class="flex justify-between text-stone-400"><span>NZ 15% GST (Included)</span><span id="cartGST" class="font-mono text-stone-200">$0.00</span></div>
+        <div class="flex justify-between font-bold text-base text-amber-400 pt-2 border-t border-zinc-800"><span>Total (NZD)</span><span id="cartTotal" class="font-mono">$0.00</span></div>
+        
+        <button onclick="processCheckout()" class="w-full mt-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-3 rounded-xl text-xs shadow-lg transition">
+          Checkout & Confirm Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer id="mainFooter" class="text-xs py-8 border-t border-zinc-800 mt-12 bg-black text-stone-400">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div>
+        <h4 id="footerStoreName" class="font-bold text-sm mb-1 text-stone-200">Store Name</h4>
+        <p id="footerAddress" class="mb-1 text-xs">Address...</p>
+        <p class="text-xs">Phone: <a id="footerPhone" href="#" class="underline text-amber-400">Phone...</a></p>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm mb-1 text-stone-200"><i class="fa-solid fa-clock mr-1 text-amber-400"></i> Operating Hours</h4>
+        <div id="footerOperatingHours" class="space-y-1 text-xs"><p>Loading hours...</p></div>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm mb-1 text-stone-200"><i class="fa-solid fa-toolbox mr-1 text-amber-400"></i> Quick Links</h4>
+        <div class="flex flex-col space-y-1 text-xs">
+          <a id="adminPortalLink" href="admin.html" class="text-amber-400 hover:underline"><i class="fa-solid fa-user-gear mr-1"></i> Open Manager Portal</a>
+        </div>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 mt-8 pt-4 border-t border-zinc-900 text-center text-[11px] text-stone-600">
+      Powered & Developed by <span class="text-stone-500 font-semibold">TargetedScripts.com Ecosystem</span> &bull; RestoSync SaaS Enterprise
+    </div>
+  </footer>
+
+  <!-- FIREBASE COMPAT SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
+      authDomain: "restosync-saas.firebaseapp.com",
+      projectId: "restosync-saas",
+      storageBucket: "restosync-saas.firebasestorage.app",
+      messagingSenderId: "780544019719",
+      appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const TENANT_ID = urlParams.get('tenant') || 'bangkokthaipalmy';
+
+    let tenantData = {};
+    let currentFilter = 'ALL';
+    let currentLayout = 'grid';
+    let cart = [];
+    let heroSlideIndex = 0;
+    let heroTimer = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('adminPortalLink').href = `admin.html?tenant=${TENANT_ID}`;
+
+      db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
+        if (doc.exists) {
+          tenantData = doc.data();
+          const profile = tenantData.profile || {};
+          const jsPath = profile.jsAssetUrl;
+
+          if (jsPath) {
+            loadTenantJsAsset(jsPath, () => {
+              initializeStoreUI();
+            });
+          } else {
+            initializeStoreUI();
+          }
+        } else {
+          console.error("Tenant not found in Firestore.");
+        }
+      }, (error) => {
+        console.error("Firestore error:", error);
+      });
+    });
+
+    // Listen for postMessage from Admin Theme Customizer
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'UPDATE_UI_STYLES') {
+        const uiStyles = event.data.uiStyles || {};
+        applyBadgeStyles(uiStyles);
+      }
+    });
+
+    function applyBadgeStyles(uiStyles) {
+      if (!uiStyles) return;
+      if (uiStyles.badgeFavPromoBg) {
+        document.querySelectorAll('.fav-promo-badge').forEach(el => {
+          el.style.backgroundColor = uiStyles.badgeFavPromoBg;
+        });
+      }
+      if (uiStyles.badgeFavPromoTextColor) {
+        document.querySelectorAll('.fav-promo-badge').forEach(el => {
+          el.style.color = uiStyles.badgeFavPromoTextColor;
+          el.querySelectorAll('i, svg').forEach(icon => {
+            icon.style.color = uiStyles.badgeFavPromoTextColor;
+          });
+        });
+      }
+    }
+
+    function loadTenantJsAsset(jsPath, callback) {
+      if (document.querySelector(`script[src="${jsPath}"]`)) {
+        if (typeof callback === 'function') callback();
+        return;
+      }
+      const scriptTag = document.createElement('script');
+      scriptTag.src = jsPath;
+      scriptTag.onload = () => { if (typeof callback === 'function') callback(); };
+      scriptTag.onerror = () => { if (typeof callback === 'function') callback(); };
+      document.head.appendChild(scriptTag);
+    }
+
+    function initializeStoreUI() {
+      initStoreBranding();
+      initHeroSlider();
+      renderCategoryPills();
+      renderMenuContentBox();
+    }
+
+    function initStoreBranding() {
+      const profile = tenantData.profile || {};
+      const ui = profile.uiStyles || {};
+      const config = tenantData.config || {};
+      
+      const storeName = profile.tenantName || config.store?.name || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.name : TENANT_ID);
+      const address = profile.address || config.store?.address || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.address : '');
+      const phone = profile.phone || config.store?.phone || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.phone : '');
+      const logoUrl = profile.logoUrl || config.branding?.logo || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.logo : '');
+
+      const headerEl = document.getElementById('mainHeader');
+      if (ui.headerBgColor) headerEl.style.backgroundColor = ui.headerBgColor;
+      if (ui.headerBorderColor && ui.headerBorderSize && ui.headerBorderSize !== '0px') {
+        headerEl.style.borderBottom = `${ui.headerBorderSize} solid ${ui.headerBorderColor}`;
+      }
+
+      const mainBodyEl = document.getElementById('mainBody');
+      if (ui.bodyBgColor && mainBodyEl) {
+        mainBodyEl.style.backgroundColor = ui.bodyBgColor;
+      }
+      if (ui.bodyTextColor && mainBodyEl) {
+        mainBodyEl.style.color = ui.bodyTextColor;
+      }
+
+      const filterBar = document.getElementById('filterBarContainer');
+      if (filterBar) {
+        if (ui.filterBarBg) filterBar.style.backgroundColor = ui.filterBarBg;
+        if (ui.filterBarBorderColor) {
+          filterBar.style.borderBottom = `1px solid ${ui.filterBarBorderColor}`;
+        }
+      }
+
+      const extraTextEl = document.getElementById('headerExtraText');
+      if (ui.headerExtraText) {
+        extraTextEl.innerText = ui.headerExtraText;
+        extraTextEl.style.display = 'block';
+        if (ui.headerTextColor) extraTextEl.style.color = ui.headerTextColor;
+      } else {
+        extraTextEl.style.display = 'none';
+      }
+
+      const logoEl = document.getElementById('storeLogo');
+      if (logoUrl) {
+        logoEl.src = logoUrl;
+        logoEl.style.display = 'block';
+        const scale = profile.logoScale ? profile.logoScale / 100 : 1;
+        logoEl.style.transform = `scale(${scale})`;
+      } else {
+        logoEl.style.display = 'none';
+      }
+
+      document.getElementById('footerStoreName').innerText = storeName;
+      document.getElementById('footerAddress').innerText = address;
+      document.getElementById('footerPhone').innerText = phone;
+      document.getElementById('footerPhone').href = `tel:${phone}`;
+
+      const footerEl = document.getElementById('mainFooter');
+      if (footerEl) {
+        if (ui.footerBgColor) footerEl.style.backgroundColor = ui.footerBgColor;
+        if (ui.footerTextColor) footerEl.style.color = ui.footerTextColor;
+      }
+
+      const op = tenantData.officeHours || config.operatingHours || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.operatingHours : {});
+      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      const shortDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+      
+      const hoursHtml = days.map((day, idx) => {
+        const val = op[day] || op[day.toLowerCase()] || op[shortDays[idx]] || 'Closed';
+        return `<div class="flex justify-between"><span>${day}:</span><span class="font-mono">${val}</span></div>`;
+      }).join('');
+      document.getElementById('footerOperatingHours').innerHTML = hoursHtml || '<p>Hours not set</p>';
+    }
+
+    function initHeroSlider() {
+      const profile = tenantData.profile || {};
+      const ui = profile.uiStyles || {};
+      
+      let slidesData = [];
+
+      const defaultHeroImages = [
+        profile.heroImage1,
+        profile.heroImage2,
+        profile.heroImage3
+      ].filter(img => img && img.trim() !== '' && !img.includes('undefined') && !img.includes('null'));
+
+      defaultHeroImages.forEach(img => {
+        slidesData.push({
+          image: img,
+          title: '',
+          description: '',
+          price: null,
+          isMenuHero: false
+        });
+      });
+
+      const menuItems = tenantData.menuItems || [];
+      const heroMenuItems = menuItems.filter(i => i.isHero === true || i.isHero === 'true');
+
+      heroMenuItems.forEach(item => {
+        const imgSrc = item.image || item.imageUrl || '';
+        if (imgSrc) {
+          slidesData.push({
+            image: imgSrc,
+            title: item.name,
+            description: item.description,
+            price: item.promoPrice && Number(item.promoPrice) < Number(item.price) ? item.promoPrice : item.price,
+            isMenuHero: true
+          });
+        }
+      });
+
+      if (slidesData.length === 0) {
+        slidesData.push({
+          image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+          title: '',
+          description: '',
+          price: null,
+          isMenuHero: false
+        });
+      }
+
+      const container = document.getElementById('heroSlidesContainer');
+      container.innerHTML = slidesData.map((slide, idx) => `
+        <div class="hero-slide ${idx === 0 ? 'active' : ''} relative" data-is-menu-hero="${slide.isMenuHero}">
+          <img src="${slide.image}" class="w-full h-full object-cover">
+          ${slide.isMenuHero ? `
+            <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-6 md:p-12 z-20">
+              <span class="bg-amber-500 text-zinc-950 text-xs font-bold px-2.5 py-1 rounded-md w-max mb-2"><i class="fa-solid fa-fire mr-1"></i> Featured Hero Menu</span>
+              <h2 class="text-2xl md:text-4xl font-extrabold text-white">${slide.title}</h2>
+              <p class="text-stone-300 text-xs md:text-sm mt-1 max-w-xl line-clamp-2">${slide.description || ''}</p>
+              <span class="text-amber-400 font-mono font-black text-lg mt-2">$${Number(slide.price).toFixed(2)}</span>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+
+      const tintColor = ui.heroOverlayColor || '#ffffff';
+      const textBelowEl = document.getElementById('heroTextBelowLogo');
+      textBelowEl.style.color = tintColor;
+
+      const flyingEnabled = ui.heroFlyingLogoEnabled === 'yes' || profile.heroFlyingLogoEnabled === 'yes';
+      const logoUrl = profile.logoUrl || '';
+      const flyingLogoEl = document.getElementById('heroFlyingLogo');
+      const textBelow = ui.heroFlyingLogoText || profile.heroFlyingLogoText || '';
+      textBelowEl.innerText = textBelow;
+
+      function updateFlyingLogoVisibility() {
+        const activeSlide = document.querySelector('.hero-slide.active');
+        if (!activeSlide) return;
+
+        const isMenuHero = activeSlide.getAttribute('data-is-menu-hero') === 'true';
+
+        if (flyingEnabled && logoUrl && !isMenuHero) {
+          flyingLogoEl.src = logoUrl;
+          flyingLogoEl.style.display = 'block';
+          textBelowEl.style.display = 'block';
+        } else {
+          flyingLogoEl.style.display = 'none';
+          textBelowEl.style.display = 'none';
+        }
+      }
+
+      updateFlyingLogoVisibility();
+
+      if (heroTimer) clearInterval(heroTimer);
+      if (slidesData.length > 1) {
+        heroSlideIndex = 0;
+        heroTimer = setInterval(() => {
+          const slides = document.querySelectorAll('.hero-slide');
+          if (slides.length === 0) return;
+          slides[heroSlideIndex].classList.remove('active');
+          heroSlideIndex = (heroSlideIndex + 1) % slides.length;
+          slides[heroSlideIndex].classList.add('active');
+
+          updateFlyingLogoVisibility();
+        }, 4500);
+      }
+    }
+
+    function getActiveMenuItems() {
+      let items = [];
+      if (tenantData.menuItems && tenantData.menuItems.length > 0) {
+        items = tenantData.menuItems;
+      } else if (tenantData.config?.menuItems && tenantData.config.menuItems.length > 0) {
+        items = tenantData.config.menuItems;
+      } else {
+        items = (typeof RESTOSYNC_CONFIG !== 'undefined' && RESTOSYNC_CONFIG.menuItems) ? RESTOSYNC_CONFIG.menuItems : [];
+      }
+      return items.filter(i => i.isAvailable !== false && i.isHidden !== true && i.hide !== true && i.isHidden !== 'true');
+    }
+
+    function renderCategoryPills() {
+      const items = getActiveMenuItems();
+      const categories = [...new Set(items.map(i => i.category || 'General'))];
+      const pills = document.getElementById('categoryPills');
+      
+      const profile = tenantData.profile || {};
+      const ui = profile.uiStyles || {};
+      
+      const activeBg = ui.catBtnActiveBg || '#f59e0b';
+      const activeText = ui.catBtnActiveText || '#030712';
+      const inactiveBg = ui.catBtnInactiveBg || '#1f2937';
+      const inactiveText = ui.catBtnInactiveText || '#f1f5f9';
+      const borderColor = ui.catBtnBorderColor || '#374151';
+
+      const getBtnStyle = (isActive) => {
+        if (isActive) {
+          return `style="background-color: ${activeBg}; color: ${activeText}; border: 1px solid ${borderColor};"`;
+        }
+        return `style="background-color: ${inactiveBg}; color: ${inactiveText}; border: 1px solid ${borderColor};"`;
+      };
+
+      let html = `<button onclick="filterCategory('ALL')" ${getBtnStyle(currentFilter === 'ALL')} class="px-4 py-2 rounded-full text-xs font-bold transition shadow-sm">ALL</button>`;
+      
+      html += `<button onclick="filterCategory('FAVOURITE')" ${getBtnStyle(currentFilter === 'FAVOURITE')} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap shadow-sm"><i class="fa-solid fa-star mr-1"></i> Favourite</button>`;
+      html += `<button onclick="filterCategory('PROMO')" ${getBtnStyle(currentFilter === 'PROMO')} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap shadow-sm"><i class="fa-solid fa-fire mr-1"></i> Promo</button>`;
+
+      html += categories.map(c => `
+        <button onclick="filterCategory('${c}')" ${getBtnStyle(currentFilter === c)} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap shadow-sm">${c}</button>
+      `).join('');
+      
+      pills.innerHTML = html;
+    }
+
+    function filterCategory(cat) {
+      currentFilter = cat;
+      renderCategoryPills();
+      renderMenuContentBox();
+    }
+
+    function switchLayout(layout) {
+      currentLayout = layout;
+      const profile = tenantData.profile || {};
+      const ui = profile.uiStyles || {};
+      
+      const activeBg = ui.catBtnActiveBg || '#f59e0b';
+      const activeText = ui.catBtnActiveText || '#030712';
+      const inactiveBg = ui.catBtnInactiveBg || '#1f2937';
+      const inactiveText = ui.catBtnInactiveText || '#f1f5f9';
+      const borderColor = ui.catBtnBorderColor || '#374151';
+
+      const gridBtn = document.getElementById('btnLayoutGrid');
+      const listBtn = document.getElementById('btnLayoutList');
+      const layoutToggleBox = document.getElementById('layoutToggleBox');
+
+      if (layoutToggleBox && borderColor) {
+        layoutToggleBox.style.borderColor = borderColor;
+        if (ui.filterBarBg) layoutToggleBox.style.backgroundColor = inactiveBg;
+      }
+
+      if (layout === 'grid') {
+        gridBtn.style.backgroundColor = activeBg;
+        gridBtn.style.color = activeText;
+        gridBtn.style.border = `1px solid ${borderColor}`;
+        
+        listBtn.style.backgroundColor = inactiveBg;
+        listBtn.style.color = inactiveText;
+        listBtn.style.border = `1px solid transparent`;
+      } else {
+        listBtn.style.backgroundColor = activeBg;
+        listBtn.style.color = activeText;
+        listBtn.style.border = `1px solid ${borderColor}`;
+
+        gridBtn.style.backgroundColor = inactiveBg;
+        gridBtn.style.color = inactiveText;
+        gridBtn.style.border = `1px solid transparent`;
+      }
+
+      renderMenuContentBox();
+    }
+
+    function renderMenuContentBox() {
+      let items = getActiveMenuItems();
+      
+      if (currentFilter === 'FAVOURITE') {
+        items = items.filter(i => i.isFav === true || i.isFavorite === true || i.isFav === 'true');
+      } else if (currentFilter === 'PROMO') {
+        items = items.filter(i => (i.promoPrice && Number(i.promoPrice) < Number(i.price)) || i.isPromo === true);
+      } else if (currentFilter !== 'ALL') {
+        items = items.filter(i => (i.category || 'General') === currentFilter);
+      }
+      
+      if (items.length === 0) {
+        document.getElementById('menuContentBox').innerHTML = `<div class="text-center py-16 text-stone-500 text-xs font-mono">No active menu items found for [${currentFilter}].</div>`;
+        return;
+      }
+
+      const profile = tenantData.profile || {};
+      const ui = profile.uiStyles || {};
+      const cardBgStyle = ui.cardMenuBg ? `background-color: ${ui.cardMenuBg};` : '';
+      const cardBorder = ui.cardBorderColor ? `border: ${ui.cardBorderThickness || '1px'} solid ${ui.cardBorderColor};` : '';
+
+      const renderBadges = (item) => {
+        let badgesHtml = '';
+        const spice = Number(item.spiceLevel || 0);
+        if (spice > 0) {
+          badgesHtml += `<span class="fav-promo-badge bg-red-950/80 text-red-400 border border-red-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Spice Level ${spice}"><i class="fa-solid fa-pepper-hot"></i><span>${spice}</span></span>`;
+        }
+        if (item.isFav || item.isFavorite) {
+          badgesHtml += `<span class="fav-promo-badge bg-amber-950/80 text-amber-400 border border-amber-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Favorite"><i class="fa-solid fa-star"></i><span>Fav</span></span>`;
+        }
+        const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
+        if (hasPromo) {
+          badgesHtml += `<span class="fav-promo-badge bg-orange-950/80 text-orange-400 border border-orange-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Promo Offer"><i class="fa-solid fa-fire"></i><span>Promo</span></span>`;
+        }
+        return badgesHtml ? `<div class="flex flex-wrap gap-1.5 mt-2">${badgesHtml}</div>` : '';
+      };
+
+      if (currentLayout === 'grid') {
+        document.getElementById('menuContentBox').innerHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            ${items.map((item, idx) => {
+              const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
+              const itemId = item.id || 'item_' + idx;
+              const imgSrc = item.image || item.imageUrl || '';
+
+              return `
+                <div style="${cardBgStyle} ${cardBorder}" class="bg-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-xl text-xs transition">
+                  <div>
+                    ${imgSrc ? `<div class="w-full h-40 bg-zinc-950 mb-3.5 rounded-xl overflow-hidden"><img src="${imgSrc}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'"></div>` : ''}
+                    <h3 class="font-bold text-stone-100 text-sm leading-snug">${item.name}</h3>
+                    <p class="text-[11px] text-stone-400 mt-1.5 leading-relaxed">${item.description || ''}</p>
+                    ${renderBadges(item)}
+                    <div class="mt-3 flex items-baseline space-x-2">
+                      <span class="${hasPromo ? 'line-through text-zinc-500 text-xs font-mono' : 'font-black text-amber-400 text-base font-mono'}">$${Number(item.price || 0).toFixed(2)}</span>
+                      ${hasPromo ? `<span class="font-black text-amber-400 text-base font-mono">$${Number(item.promoPrice).toFixed(2)}</span>` : ''}
+                    </div>
+                  </div>
+                  <button onclick="addItemToCart('${itemId}')" class="mt-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-plus"></i><span>Add to Order</span>
+                  </button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      } else {
+        document.getElementById('menuContentBox').innerHTML = `
+          <div style="${cardBgStyle} ${cardBorder}" class="bg-zinc-800/60 rounded-3xl p-6 shadow-xl space-y-4 max-w-4xl mx-auto">
+            <h3 class="text-amber-400 font-bold text-xs uppercase tracking-widest border-b border-zinc-700 pb-2 mb-4"><i class="fa-solid fa-book-open mr-2"></i>Classic Menu Book &bull; [${currentFilter}]</h3>
+            <div class="divide-y divide-zinc-700/50">
+              ${items.map((item, idx) => {
+                const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
+                const itemId = item.id || 'item_' + idx;
+                return `
+                  <div class="py-4 flex justify-between items-start gap-4 hover:bg-zinc-800/40 px-3 rounded-xl transition">
+                    <div class="space-y-1 flex-grow">
+                      <h4 class="font-bold text-stone-100 text-sm">${item.name}</h4>
+                      <p class="text-xs text-stone-400 leading-relaxed max-w-xl">${item.description || ''}</p>
+                      ${renderBadges(item)}
+                    </div>
+                    <div class="text-right shrink-0 flex flex-col items-end space-y-2">
+                      <div class="flex items-baseline space-x-2">
+                        <span class="${hasPromo ? 'line-through text-zinc-500 text-xs font-mono' : 'font-black text-amber-400 text-sm font-mono'}">$${Number(item.price || 0).toFixed(2)}</span>
+                        ${hasPromo ? `<span class="font-black text-amber-400 text-sm font-mono">$${Number(item.promoPrice).toFixed(2)}</span>` : ''}
+                      </div>
+                      <button onclick="addItemToCart('${itemId}')" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-3 py-1.5 rounded-lg text-[11px] shadow transition">
+                        <i class="fa-solid fa-plus"></i> Add
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // Apply dynamic custom badge colors after rendering
+      applyBadgeStyles(ui);
+    }
+
+    function addItemToCart(id) {
+      const items = getActiveMenuItems();
+      const item = items.find((i, idx) => (i.id || 'item_' + idx) === id);
+      if (!item) return;
+
+      const finalPrice = item.promoPrice && Number(item.promoPrice) < Number(item.price) ? Number(item.promoPrice) : Number(item.price);
+      const existing = cart.find(c => c.cartId === id);
+      
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ cartId: id, name: item.name, price: finalPrice, qty: 1 });
+      }
+
+      document.getElementById('cartCount').innerText = cart.reduce((sum, i) => sum + i.qty, 0);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+      const subtotal = total / 1.15;
+      const gst = total - subtotal;
+
+      document.getElementById('cartSubtotal').innerText = `$${subtotal.toFixed(2)}`;
+      document.getElementById('cartGST').innerText = `$${gst.toFixed(2)}`;
+      document.getElementById('cartTotal').innerText = `$${total.toFixed(2)}`;
+      
+      document.getElementById('cartItemsList').innerHTML = cart.length === 0 
+        ? `<div class="text-center py-8 text-stone-500">Your cart is empty.</div>`
+        : cart.map(i => `
+            <div class="flex justify-between items-center py-2.5">
+              <div>
+                <strong class="block text-stone-200">${i.name}</strong>
+                <span class="text-[10px] text-stone-400 font-mono">Qty: ${i.qty} &times; $${i.price.toFixed(2)}</span>
+              </div>
+              <span class="text-amber-400 font-bold font-mono">$${(i.price * i.qty).toFixed(2)}</span>
+            </div>
+          `).join('');
+    }
+
+    function toggleCartModal() {
+      document.getElementById('cartModal').classList.toggle('hidden');
+    }
+
+    // Integrated Firestore Checkout & Phone Confirmation Workflow
+    async function processCheckout() {
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('customerPhone').value.trim();
+
+      if (!name || !phone) {
+        alert('Please enter your Name and Phone Number before checkout.');
+        return;
+      }
+
+      if (cart.length === 0) {
+        alert('Your cart is empty.');
+        return;
+      }
+
+      try {
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        const gst = subtotal * 0.15;
+        const grandTotal = subtotal + gst;
+
+        const randomNum = Math.floor(1000 + Math.random() * 9000);
+        const orderId = `RS-${randomNum}`;
+
+        const orderData = {
+          orderId: orderId,
+          customerName: name,
+          customerPhone: phone,
+          items: cart.map(item => ({
+            id: item.cartId || '',
+            name: item.name,
+            price: item.price,
+            quantity: item.qty,
+            notes: ''
+          })),
+          subtotal: Number(subtotal.toFixed(2)),
+          gst: Number(gst.toFixed(2)),
+          total: Number(grandTotal.toFixed(2)),
+          status: 'Pending',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        const ordersRef = db.collection("tenants").doc(TENANT_ID).collection("orders");
+        await ordersRef.add(orderData);
+
+        const storePhone = tenantData.profile?.phone || 'our store phone';
+
+        const confirmationMsg = `Order Placed Successfully!\n\n` +
+          `Order ID: ${orderId}\n` +
+          `Customer Name: ${name}\n` +
+          `Phone Number: ${phone}\n\n` +
+          `IMPORTANT: Please call us now at [ ${storePhone} ] and mention your Order ID (${orderId}) to confirm your order and start kitchen processing!`;
+
+        alert(confirmationMsg);
+
+        cart = [];
+        document.getElementById('cartCount').innerText = '0';
+        document.getElementById('customerName').value = '';
+        document.getElementById('customerPhone').value = '';
+        updateCartUI();
+        toggleCartModal();
+
+      } catch (error) {
+        console.error("Error placing order to Firestore:", error);
+        alert("Failed to place order. Please check your connection and try again.");
+      }
+    }
+  </script>
+</body>
+</html>

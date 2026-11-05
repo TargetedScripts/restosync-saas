@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RestoSync SaaS - Live Store Enterprise</title>
+  <title>RestoSync SaaS - Enterprise Shop Storefront</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -21,17 +21,40 @@
 <body id="mainBody" class="bg-zinc-900 text-stone-200 flex flex-col min-h-screen pb-16">
 
   <!-- HEADER -->
-  <header id="mainHeader" class="sticky top-0 z-50 w-full bg-black transition-colors duration-200"> 
+  <header id="mainHeader" class="sticky top-0 z-50 w-full bg-black transition-colors duration-200 border-b border-zinc-800"> 
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <div class="flex items-center space-x-3 shrink-0">
+      <div class="flex items-center space-x-4 shrink-0">
         <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
         <div>
-          <span id="headerExtraText" class="font-bold text-xs uppercase tracking-wider block" style="display: none;"></span>
+          <span id="headerExtraText" class="font-bold text-xs uppercase tracking-wider block text-amber-400" style="display: none;"></span>
         </div>
       </div>
-      <button onclick="toggleCartModal()" id="cartBtn" class="font-bold px-3.5 py-2 rounded-xl text-xs flex items-center space-x-2 bg-amber-500 text-zinc-950 shadow-lg transition hover:bg-amber-400">
-        <i class="fa-solid fa-basket-shopping"></i><span>Cart</span><span id="cartCount" class="bg-zinc-950 text-amber-400 text-xs px-2 py-0.5 rounded-full font-mono">0</span>
-      </button>
+
+      <!-- DESKTOP NAVIGATION & CROSS-LINKS -->
+      <nav class="hidden md:flex items-center space-x-6 text-xs font-bold">
+        <a href="#" class="text-amber-400 flex items-center space-x-1.5"><i class="fa-solid fa-utensils"></i><span>Shop Menu</span></a>
+        <div id="desktopBlogLinkContainer" style="display: none;">
+          <a id="navBlogLinkDesktop" href="#" class="text-stone-300 hover:text-amber-400 transition flex items-center space-x-1.5"><i class="fa-solid fa-blog"></i><span>Visit Blog</span></a>
+        </div>
+      </nav>
+
+      <div class="flex items-center space-x-3">
+        <button onclick="toggleCartModal()" id="cartBtn" class="font-bold px-3.5 py-2 rounded-xl text-xs flex items-center space-x-2 bg-amber-500 text-zinc-950 shadow-lg transition hover:bg-amber-400">
+          <i class="fa-solid fa-basket-shopping"></i><span>Cart</span><span id="cartCount" class="bg-zinc-950 text-amber-400 text-xs px-2 py-0.5 rounded-full font-mono">0</span>
+        </button>
+        <!-- MOBILE HAMBURGER TOGGLE -->
+        <button onclick="toggleMobileMenu()" class="md:hidden text-stone-300 hover:text-white p-2 text-base">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- MOBILE DROPDOWN MENU -->
+    <div id="mobileMenu" class="hidden md:hidden bg-zinc-950 border-t border-zinc-800 px-4 py-3 space-y-2 text-xs font-bold">
+      <a href="#" class="block py-2 text-amber-400"><i class="fa-solid fa-utensils mr-2"></i> Shop Menu</a>
+      <div id="mobileBlogLinkContainer" style="display: none;">
+        <a id="navBlogLinkMobile" href="#" class="block py-2 text-stone-300 hover:text-amber-400"><i class="fa-solid fa-blog mr-2"></i> Visit Blog</a>
+      </div>
     </div>
   </header>
 
@@ -113,15 +136,26 @@
         </div>
       </div>
     </div>
-    <div class="max-w-7xl mx-auto px-4 mt-8 pt-4 border-t border-zinc-900 text-center text-[11px] text-stone-600">
+    
+    <!-- TRACE & DIAGNOSTIC CONSOLE -->
+    <div class="max-w-7xl mx-auto px-4 mt-8 pt-4 border-t border-zinc-900">
+      <details class="text-[11px] text-stone-500 font-mono">
+        <summary class="cursor-pointer hover:text-amber-400 font-bold">RESTOSYNC TRACE & DIAGNOSTIC CONSOLE</summary>
+        <div id="diagnosticConsole" class="mt-2 p-3 bg-zinc-950 rounded-xl border border-zinc-800 text-stone-400 space-y-1">
+          <p>[INIT] Loading shop.html storefront...</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 mt-4 text-center text-[11px] text-stone-600">
       Powered & Developed by <span class="text-stone-500 font-semibold">TargetedScripts.com Ecosystem</span> &bull; RestoSync SaaS Enterprise
     </div>
   </footer>
 
-  <!-- FIREBASE COMPAT SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <!-- FIREBASE COMPAT SDKs (v9.22.0) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -146,12 +180,24 @@
     let heroSlideIndex = 0;
     let heroTimer = null;
 
+    function logDiagnostic(msg) {
+      const consoleBox = document.getElementById('diagnosticConsole');
+      if (consoleBox) {
+        consoleBox.innerHTML += `<p>[${new Date().toLocaleTimeString()}] ${msg}</p>`;
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('adminPortalLink').href = `admin.html?tenant=${TENANT_ID}`;
+      logDiagnostic(`Fetching tenant document for [${TENANT_ID}] from Firestore...`);
 
       db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
         if (doc.exists) {
           tenantData = doc.data();
+          logDiagnostic(`Tenant document successfully loaded. Processing configuration...`);
+          
+          checkModulesAndNavigation();
+
           const profile = tenantData.profile || {};
           const jsPath = profile.jsAssetUrl;
 
@@ -163,12 +209,37 @@
             initializeStoreUI();
           }
         } else {
+          logDiagnostic(`ERROR: Tenant [${TENANT_ID}] not found in Firestore.`);
           console.error("Tenant not found in Firestore.");
         }
       }, (error) => {
+        logDiagnostic(`Firestore Error: ${error.message}`);
         console.error("Firestore error:", error);
       });
     });
+
+    // Check enabledModules and configure cross-navigation (Shop <-> Blog)
+    function checkModulesAndNavigation() {
+      const enabledMods = tenantData.enabledModules || {};
+      logDiagnostic(`Module Status -> Shop: ${enabledMods.shop !== false}, Blog: ${enabledMods.blog === true}`);
+
+      if (enabledMods.blog === true) {
+        const blogUrl = `blog.html?tenant=${TENANT_ID}`;
+        
+        const desktopLink = document.getElementById('navBlogLinkDesktop');
+        if (desktopLink) desktopLink.href = blogUrl;
+        document.getElementById('desktopBlogLinkContainer').style.display = 'block';
+
+        const mobileLink = document.getElementById('navBlogLinkMobile');
+        if (mobileLink) mobileLink.href = blogUrl;
+        document.getElementById('mobileBlogLinkContainer').style.display = 'block';
+      }
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
 
     // Listen for postMessage from Admin Theme Customizer
     window.addEventListener('message', (event) => {
@@ -212,6 +283,7 @@
       initHeroSlider();
       renderCategoryPills();
       renderMenuContentBox();
+      logDiagnostic(`Store UI initialized successfully.`);
     }
 
     function initStoreBranding() {
@@ -582,7 +654,6 @@
         `;
       }
 
-      // Apply dynamic custom badge colors after rendering
       applyBadgeStyles(ui);
     }
 
@@ -671,6 +742,7 @@
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
+        logDiagnostic(`Submitting order ${orderId} to Firestore...`);
         const ordersRef = db.collection("tenants").doc(TENANT_ID).collection("orders");
         await ordersRef.add(orderData);
 
@@ -683,6 +755,7 @@
           `IMPORTANT: Please call us now at [ ${storePhone} ] and mention your Order ID (${orderId}) to confirm your order and start kitchen processing!`;
 
         alert(confirmationMsg);
+        logDiagnostic(`Order ${orderId} successfully placed.`);
 
         cart = [];
         document.getElementById('cartCount').innerText = '0';
@@ -692,6 +765,7 @@
         toggleCartModal();
 
       } catch (error) {
+        logDiagnostic(`Checkout Error: ${error.message}`);
         console.error("Error placing order to Firestore:", error);
         alert("Failed to place order. Please check your connection and try again.");
       }

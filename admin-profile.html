@@ -66,17 +66,20 @@
 
     <!-- NAVIGATION TABS (Tab-based Card Layout) -->
     <nav class="bg-slate-950 border-b border-slate-800 px-6 flex space-x-2 overflow-x-auto shadow-inner">
-        <button onclick="switchTab('tab-branding')" id="btn-tab-branding" class="tab-btn px-5 py-3.5 text-xs font-bold text-accent border-b-2 border-accent flex items-center space-x-2 transition">
-            <i class="fa-solid fa-paintbrush"></i><span>Store Branding & Logo</span>
+        <button onclick="switchTab('tab-branding')" id="btn-tab-branding" class="tab-btn px-4 py-3.5 text-xs font-bold text-accent border-b-2 border-accent flex items-center space-x-2 transition whitespace-nowrap">
+            <i class="fa-solid fa-paintbrush"></i><span>Branding & Logo</span>
         </button>
-        <button onclick="switchTab('tab-shop')" id="btn-tab-shop" class="tab-btn px-5 py-3.5 text-xs font-bold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 transition">
+        <button onclick="switchTab('tab-shop')" id="btn-tab-shop" class="tab-btn px-4 py-3.5 text-xs font-bold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 transition whitespace-nowrap">
             <i class="fa-solid fa-store"></i><span>Shop & Modules</span>
         </button>
-        <button onclick="switchTab('tab-staff')" id="btn-tab-staff" class="tab-btn px-5 py-3.5 text-xs font-bold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 transition">
-            <i class="fa-solid fa-users-gear"></i><span>Staff & User Logon</span>
+        <button onclick="switchTab('tab-staff')" id="btn-tab-staff" class="tab-btn px-4 py-3.5 text-xs font-bold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 transition whitespace-nowrap">
+            <i class="fa-solid fa-users-gear"></i><span>Staff & Logon</span>
         </button>
-        <button onclick="switchTab('tab-security')" id="btn-tab-security" class="tab-btn px-5 py-3.5 text-xs font-bold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 transition">
-            <i class="fa-solid fa-shield-halved"></i><span>Security & System</span>
+        <button onclick="switchTab('tab-hours')" id="btn-tab-hours" class="tab-btn px-4 py-3.5 text-xs font-bold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 transition whitespace-nowrap">
+            <i class="fa-solid fa-clock"></i><span>Working Hours</span>
+        </button>
+        <button onclick="switchTab('tab-security')" id="btn-tab-security" class="tab-btn px-4 py-3.5 text-xs font-bold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 transition whitespace-nowrap">
+            <i class="fa-solid fa-shield-halved"></i><span>Security</span>
         </button>
     </nav>
 
@@ -201,7 +204,24 @@
                 </section>
             </div>
 
-            <!-- TAB 4: SECURITY & SYSTEM -->
+            <!-- TAB 4: WORKING HOURS MANAGER -->
+            <div id="tab-hours" class="tab-content space-y-6">
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                    <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-200">Working Hours Manager (Office Hours)</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Configure operating hours for each day of the week. Synchronized in real-time with tenant footer display.</p>
+                        </div>
+                        <span class="text-xs bg-amber-500/10 text-accent px-2.5 py-1 rounded-md border border-amber-500/20 font-medium">officeHours</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="working-hours-container">
+                        <!-- Populated dynamically -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 5: SECURITY & SYSTEM -->
             <div id="tab-security" class="tab-content space-y-6">
                 <section class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
                     <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
@@ -239,7 +259,7 @@
                 <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing header updates & scanning database...
+                Initializing working hours manager & scanning database...
             </div>
         </div>
     </footer>
@@ -308,9 +328,12 @@
         let passwordFieldName = 'adminPassword';
         let currentLogoScale = 100;
         let staffList = [];
+        let workingHoursData = {};
+
+        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
         document.addEventListener('DOMContentLoaded', () => {
-            logTrace(`Initializing header updates & panel for tenant: [${tenantId}]`, 'info');
+            logTrace(`Initializing panel with Working Hours for tenant: [${tenantId}]`, 'info');
             fetchStorageAssetLists();
             fetchAndRenderTenantData();
         });
@@ -372,7 +395,7 @@
             db.collection('tenants').doc(tenantId).get().then((doc) => {
                 if (doc.exists) {
                     fetchedDocumentData = doc.data();
-                    logTrace(`Document retrieved successfully. Rendering all tabs...`, 'success');
+                    logTrace(`Document retrieved successfully. Rendering tabs...`, 'success');
                     
                     document.getElementById('locked-tenant-id').value = tenantId;
                     document.getElementById('locked-expiry-date').value = fetchedDocumentData.expiryDate || fetchedDocumentData.contractExpiry || '2027-12-31 (Active)';
@@ -417,10 +440,23 @@
                     renderShopFields(shopConfig);
                     renderModuleToggles(fetchedDocumentData.enabledModules || { shop: true, blog: false });
 
+                    // Staff Users
                     staffList = fetchedDocumentData.staffUsers || fetchedDocumentData.users || [
                         { name: "Store Manager", email: "manager@restosync.com", password: "admin", role: "floor" }
                     ];
                     renderStaffManager();
+
+                    // Working Hours (Office Hours) with Fallbacks
+                    workingHoursData = fetchedDocumentData.officeHours || shopConfig.operatingHours || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.operatingHours : {}) || {
+                        Monday: "11:00 AM - 9:30 PM",
+                        Tuesday: "11:00 AM - 9:30 PM",
+                        Wednesday: "11:00 AM - 9:30 PM",
+                        Thursday: "11:00 AM - 9:30 PM",
+                        Friday: "11:00 AM - 10:00 PM",
+                        Saturday: "11:00 AM - 10:00 PM",
+                        Sunday: "Closed"
+                    };
+                    renderWorkingHoursManager();
 
                     let existingPassword = '';
                     if (profile.adminPassword !== undefined) {
@@ -443,6 +479,16 @@
                     renderModuleToggles({ shop: true, blog: false });
                     staffList = [{ name: "Default Manager", email: "manager@restosync.com", password: "admin", role: "floor" }];
                     renderStaffManager();
+                    workingHoursData = {
+                        Monday: "11:00 AM - 9:30 PM",
+                        Tuesday: "11:00 AM - 9:30 PM",
+                        Wednesday: "11:00 AM - 9:30 PM",
+                        Thursday: "11:00 AM - 9:30 PM",
+                        Friday: "11:00 AM - 10:00 PM",
+                        Saturday: "11:00 AM - 10:00 PM",
+                        Sunday: "Closed"
+                    };
+                    renderWorkingHoursManager();
                 }
             }).catch((error) => {
                 logTrace(`Firestore read error: ${error.message}`, 'error');
@@ -462,7 +508,7 @@
             };
 
             for (let key in shopConfig) {
-                if (!(key in fields) && key !== 'logoUrl' && key !== 'logo' && key !== 'adminPassword') {
+                if (!(key in fields) && key !== 'logoUrl' && key !== 'logo' && key !== 'adminPassword' && key !== 'operatingHours') {
                     fields[key] = shopConfig[key];
                 }
             }
@@ -547,6 +593,23 @@
             });
         }
 
+        // Working Hours Manager Render Function
+        function renderWorkingHoursManager() {
+            const container = document.getElementById('working-hours-container');
+            container.innerHTML = '';
+
+            daysOfWeek.forEach(day => {
+                const val = workingHoursData[day] || workingHoursData[day.toLowerCase()] || 'Closed';
+                const div = document.createElement('div');
+                div.className = 'bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col space-y-2';
+                div.innerHTML = `
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">${day}</label>
+                    <input type="text" id="hours_${day}" value="${val}" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs font-mono focus:outline-none focus:border-accent transition" placeholder="e.g. 11:00 AM - 9:30 PM or Closed">
+                `;
+                container.appendChild(div);
+            });
+        }
+
         function addNewStaffMember() {
             staffList.push({ name: "", email: "", password: "", role: "floor" });
             renderStaffManager();
@@ -596,6 +659,15 @@
                 updatedModules[key] = input.checked;
             });
 
+            // Gather Working Hours Data
+            const updatedOfficeHours = {};
+            daysOfWeek.forEach(day => {
+                const inputEl = document.getElementById(`hours_${day}`);
+                if(inputEl) {
+                    updatedOfficeHours[day] = inputEl.value.trim();
+                }
+            });
+
             const passwordVal = document.getElementById('admin-password').value.trim();
 
             const updatePayload = {
@@ -603,6 +675,7 @@
                 profile: updatedProfile,
                 enabledModules: updatedModules,
                 staffUsers: staffList,
+                officeHours: updatedOfficeHours, // Menyimpan working hours ke Firestore
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -614,8 +687,8 @@
 
             db.collection('tenants').doc(tenantId).set(updatePayload, { merge: true })
                 .then(() => {
-                    logTrace(`Tenant "${tenantId}" successfully updated in Firestore!`, 'success');
-                    showAlert('Perubahan profil, logo, dan staff logon berhasil disimpan!', 'success');
+                    logTrace(`Tenant "${tenantId}" successfully updated with working hours in Firestore!`, 'success');
+                    showAlert('Perubahan profil, logo, staff logon, dan working hours berhasil disimpan!', 'success');
                     saveBtn.disabled = false;
                     saveBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Simpan Perubahan</span>`;
                 })

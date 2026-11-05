@@ -33,21 +33,17 @@
     <header id="mainHeader" class="sticky top-0 z-40 bg-[#1e293b]/90 backdrop-blur-md border-b border-zinc-800 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
-            <!-- Left: Tenant Logo & Identity (Logo RestoSync dihapus, diganti Logo Tenant) -->
+            <!-- Left: Tenant Full Logo (Text Removed) -->
             <div class="flex items-center space-x-3">
-                <img id="tenantLogo" src="" alt="Tenant Logo" class="h-11 w-11 object-cover rounded-full border border-amber-500/30 hidden shadow-md">
-                <div>
-                    <h1 id="blogTitleHeader" class="font-bold text-lg text-white tracking-tight">Loading Journal...</h1>
-                    <p id="headerExtraText" class="text-xs text-stone-400 hidden"></p>
-                </div>
+                <img id="tenantLogo" src="" alt="Tenant Logo" class="h-10 w-auto object-contain hidden max-h-12">
             </div>
 
             <!-- Right Nav: Switcher & Mobile Menu -->
             <div class="flex items-center space-x-4">
                 <!-- Cross-Navigation Switcher (Journal/Blog ⇄ Shop) -->
                 <div id="moduleSwitcher" class="hidden items-center space-x-2 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800 text-xs">
-                    <a id="blogLinkNav" href="#" class="px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold transition"><i class="fa-solid fa-book-open mr-1.5"></i>Journal</a>
-                    <a id="shopLinkNav" href="#" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
+                    <a id="blogLinkNav" href="#" class="blog-pill-active px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold transition"><i class="fa-solid fa-book-open mr-1.5"></i>Journal</a>
+                    <a id="shopLinkNav" href="#" class="blog-pill-inactive px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
                 </div>
 
                 <!-- Mobile Menu Toggle -->
@@ -67,7 +63,7 @@
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-10">
 
         <!-- HERO SECTION / FEATURED STORY -->
-        <section id="heroSection" class="relative rounded-3xl overflow-hidden bg-[#1e293b] border border-zinc-800 min-h-[380px] flex items-center p-8 lg:p-12 shadow-2xl transition-all duration-500">
+        <section id="heroSection" class="blog-card-element relative rounded-3xl overflow-hidden bg-[#1e293b] border border-zinc-800 min-h-[380px] flex items-center p-8 lg:p-12 shadow-2xl transition-all duration-500">
             <div id="heroBgOverlay" class="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent z-10"></div>
             <img id="heroImage" src="" alt="Hero Banner" class="absolute inset-0 w-full h-full object-cover opacity-30 transform hover:scale-105 transition duration-1000">
             
@@ -138,7 +134,6 @@
             appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
         };
 
-        // Safe Firebase Initialization (Compat SDK v9.22.0)
         if (typeof firebase !== 'undefined' && !firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -169,7 +164,6 @@
                     renderJournalContent();
                 } else {
                     logDiagnostic(`ERROR: Tenant document [${TENANT_ID}] not found in database.`);
-                    document.getElementById('blogTitleHeader').innerText = `Tenant [${TENANT_ID}] Not Found`;
                 }
             }, (error) => {
                 logDiagnostic(`Firestore error: ${error.message}`);
@@ -182,20 +176,18 @@
             const shopConf = tenantData.shopConfig || {};
             const enabledMods = tenantData.enabledModules || {};
 
-            // Header Branding
             const blogTitle = blogConf.siteTitle || shopConf.storeName || tenantData.tenantName || TENANT_ID;
             document.getElementById('pageTitle').innerText = `${blogTitle} - RestoSync Journal`;
-            document.getElementById('blogTitleHeader').innerText = blogTitle;
             document.getElementById('footerStoreName').innerText = `${blogTitle} Journal`;
             document.getElementById('footerStoreAddress').innerText = shopConf.address || tenantData.address || 'New Zealand';
 
-            // Tenant Logo Resolver (Menggantikan posisi logo RestoSync di kiri atas)[cite: 1]
+            // Tenant Full Logo (Menampilkan logo asli tanpa crop lingkaran)
             const logoUrl = blogConf.logoUrl || shopConf.logoUrl || tenantData.logoUrl;
             if (logoUrl) {
                 const logoEl = document.getElementById('tenantLogo');
                 logoEl.src = logoUrl;
                 logoEl.classList.remove('hidden');
-                logDiagnostic("Tenant logo successfully loaded on top-left.");
+                logDiagnostic("Tenant full logo successfully loaded.");
             }
 
             // Cross-Navigation Module Switcher (Journal/Blog ⇄ Shop)
@@ -212,8 +204,11 @@
                 `;
             }
 
-            // Theme & Dynamic Styles Injection
-            applyDynamicTheme(shopConf.uiStyles || blogConf.uiStyles || tenantData.uiStyles);
+            // Theme & Dynamic Styles Injection dari Firestore
+            const activeStyles = shopConf.uiStyles || blogConf.uiStyles || tenantData.uiStyles;
+            if (activeStyles) {
+                applyDynamicTheme(activeStyles);
+            }
 
             // Hero Section Rendering
             document.getElementById('heroTitle').innerText = blogConf.heroTitle || `Stories from ${blogTitle}`;
@@ -237,6 +232,36 @@
             const header = document.getElementById('mainHeader');
             if (styles.headerBg) header.style.backgroundColor = styles.headerBg;
             if (styles.bodyBg) document.body.style.backgroundColor = styles.bodyBg;
+            if (styles.textColor) document.body.style.color = styles.textColor;
+
+            document.querySelectorAll('.blog-card-element').forEach(el => {
+                if (styles.blogCardBg) el.style.backgroundColor = styles.blogCardBg;
+                if (styles.blogCardBorderColor) el.style.borderColor = styles.blogCardBorderColor;
+            });
+
+            document.querySelectorAll('.blog-title-element').forEach(el => {
+                if (styles.blogTitleColor) el.style.color = styles.blogTitleColor;
+            });
+
+            document.querySelectorAll('.blog-desc-element').forEach(el => {
+                if (styles.blogDescColor) el.style.color = styles.blogDescColor;
+            });
+
+            document.querySelectorAll('.blog-pill-active').forEach(el => {
+                if (styles.blogCatActiveBg) el.style.backgroundColor = styles.blogCatActiveBg;
+                if (styles.blogCatActiveText) el.style.color = styles.blogCatActiveText;
+            });
+
+            document.querySelectorAll('.blog-pill-inactive').forEach(el => {
+                if (styles.blogCatInactiveBg) el.style.backgroundColor = styles.blogCatInactiveBg;
+                if (styles.blogCatInactiveText) el.style.color = styles.blogCatInactiveText;
+            });
+
+            document.querySelectorAll('.blog-readmore-btn').forEach(el => {
+                if (styles.blogReadMoreBg) el.style.backgroundColor = styles.blogReadMoreBg;
+                if (styles.blogReadMoreText) el.style.color = styles.blogReadMoreText;
+            });
+
             logDiagnostic("Dynamic UI styles applied successfully.");
         }
 
@@ -250,36 +275,7 @@
             if (!styles) return;
 
             logDiagnostic("Received live theme update message from admin studio.");
-
-            // 1. Blog Card Background & Border
-            document.querySelectorAll('.blog-card-element').forEach(el => {
-                if (styles.blogCardBg) el.style.backgroundColor = styles.blogCardBg;
-                if (styles.blogCardBorderColor) el.style.borderColor = styles.blogCardBorderColor;
-            });
-
-            // 2. Blog Title & Description
-            document.querySelectorAll('.blog-title-element').forEach(el => {
-                if (styles.blogTitleColor) el.style.color = styles.blogTitleColor;
-            });
-            document.querySelectorAll('.blog-desc-element').forEach(el => {
-                if (styles.blogDescColor) el.style.color = styles.blogDescColor;
-            });
-
-            // 3. Category Filter Pills (Active & Inactive)
-            document.querySelectorAll('.blog-pill-active').forEach(el => {
-                if (styles.blogCatActiveBg) el.style.backgroundColor = styles.blogCatActiveBg;
-                if (styles.blogCatActiveText) el.style.color = styles.blogCatActiveText;
-            });
-            document.querySelectorAll('.blog-pill-inactive').forEach(el => {
-                if (styles.blogCatInactiveBg) el.style.backgroundColor = styles.blogCatInactiveBg;
-                if (styles.blogCatInactiveText) el.style.color = styles.blogCatInactiveText;
-            });
-
-            // 4. Read More Button
-            document.querySelectorAll('.blog-readmore-btn').forEach(el => {
-                if (styles.blogReadMoreBg) el.style.backgroundColor = styles.blogReadMoreBg;
-                if (styles.blogReadMoreText) el.style.color = styles.blogReadMoreText;
-            });
+            applyDynamicTheme(styles);
         });
 
         // Operating Hours Fallback Handler
@@ -302,7 +298,7 @@
             }).join('');
         }
 
-        // Render Articles / Journal Cards Grid with Class Hooks
+        // Render Articles / Journal Cards Grid
         function renderArticlesGrid(articles) {
             const grid = document.getElementById('articlesGrid');
 
@@ -325,7 +321,7 @@
                         <div class="pt-4 border-t border-zinc-800/60 flex items-center justify-between text-xs text-stone-500">
                             <span><i class="fa-regular fa-calendar mr-1.5"></i>${item.date || 'Recent Note'}</span>
                             <span class="blog-readmore-btn text-amber-400 font-semibold hover:underline cursor-pointer px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 transition">Read Full Story <i class="fa-solid fa-arrow-right ml-1"></i></span>
-                        </div>
+    </div>
                     </div>
                 </div>
             `).join('');
@@ -336,7 +332,6 @@
             menu.classList.toggle('hidden');
         }
 
-        // Run initialization on load
         window.addEventListener('DOMContentLoaded', () => {
             initJournalListener();
         });

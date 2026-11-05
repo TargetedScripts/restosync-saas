@@ -33,14 +33,14 @@
     <header id="mainHeader" class="sticky top-0 z-40 bg-[#1e293b]/90 backdrop-blur-md border-b border-zinc-800 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
-            <!-- Left: Global RestoSync Logo (50% scale) & Tenant Blog Identity -->
+            <!-- Left: Global RestoSync Logo (50% scale / 0.5) & Tenant Logo / Identity -->
             <div class="flex items-center space-x-4">
-                <a href="index.html" class="flex items-center space-x-2 focus:outline-none">
-                    <img src="assets/images/RS.png" alt="RestoSync Logo" class="h-8 w-auto opacity-90 hover:opacity-100 transition" style="transform: scale(0.9);">
+                <a href="index.html?tenant=" id="globalRsLogoLink" class="flex items-center space-x-2 focus:outline-none">
+                    <img src="assets/images/RS.png" alt="RestoSync Logo" class="h-8 w-auto opacity-90 hover:opacity-100 transition" style="transform: scale(0.5); transform-origin: left center;">
                 </a>
                 <div class="h-6 w-px bg-zinc-700"></div>
                 <div class="flex items-center space-x-3">
-                    <img id="tenantLogo" src="" alt="Blog Logo" class="h-10 w-10 object-cover rounded-full border border-amber-500/30 hidden">
+                    <img id="tenantLogo" src="" alt="Store Logo" class="h-10 w-10 object-cover rounded-full border border-amber-500/30 hidden">
                     <div>
                         <h1 id="blogTitleHeader" class="font-bold text-lg text-white tracking-tight">Loading Journal...</h1>
                         <p id="headerExtraText" class="text-xs text-stone-400 hidden"></p>
@@ -50,7 +50,7 @@
 
             <!-- Right Nav: Switcher & Mobile Menu -->
             <div class="flex items-center space-x-4">
-                <!-- Cross-Navigation Switcher (Blog ⇄ Shop) -->
+                <!-- Cross-Navigation Switcher (Journal/Blog ⇄ Shop) -->
                 <div id="moduleSwitcher" class="hidden items-center space-x-2 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800 text-xs">
                     <a id="blogLinkNav" href="#" class="px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold transition"><i class="fa-solid fa-book-open mr-1.5"></i>Journal</a>
                     <a id="shopLinkNav" href="#" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
@@ -150,9 +150,12 @@
         }
         const db = firebase.firestore();
 
-        // URL Tenant Parameter Resolver (Default fallback ke boluhalus)
+        // URL Tenant Parameter Resolver
         const urlParams = new URLSearchParams(window.location.search);
         const TENANT_ID = (urlParams.get('tenant') || 'boluhalus').trim().toLowerCase();
+
+        // Update back-to-console link with tenant context
+        document.getElementById('globalRsLogoLink').href = `index.html?tenant=${TENANT_ID}`;
 
         let tenantData = {};
 
@@ -188,18 +191,20 @@
             const shopConf = tenantData.shopConfig || {};
             const enabledMods = tenantData.enabledModules || {};
 
-            // Header Branding
-            const blogTitle = blogConf.siteTitle || tenantData.tenantName || TENANT_ID;
+            // Header Branding (Mendukung fallback fleksibel dari shopConfig atau root tenant)
+            const blogTitle = blogConf.siteTitle || shopConf.storeName || tenantData.tenantName || TENANT_ID;
             document.getElementById('pageTitle').innerText = `${blogTitle} - RestoSync Journal`;
             document.getElementById('blogTitleHeader').innerText = blogTitle;
             document.getElementById('footerStoreName').innerText = `${blogTitle} Journal`;
             document.getElementById('footerStoreAddress').innerText = shopConf.address || tenantData.address || 'New Zealand';
 
-            // Tenant Logo
-            if (blogConf.logoUrl || tenantData.logoUrl) {
+            // Tenant Logo Resolver (Membaca dari blogConf, shopConf, maupun root tenant)
+            const logoUrl = blogConf.logoUrl || shopConf.logoUrl || tenantData.logoUrl;
+            if (logoUrl) {
                 const logoEl = document.getElementById('tenantLogo');
-                logoEl.src = blogConf.logoUrl || tenantData.logoUrl;
+                logoEl.src = logoUrl;
                 logoEl.classList.remove('hidden');
+                logDiagnostic("Tenant logo successfully loaded.");
             }
 
             // Cross-Navigation Module Switcher (Journal/Blog ⇄ Shop)
@@ -216,8 +221,8 @@
                 `;
             }
 
-            // Theme & Dynamic Styles Injection (uiStyles)
-            applyDynamicTheme(shopConf.uiStyles || tenantData.uiStyles);
+            // Theme & Dynamic Styles Injection (Sinkron dengan admin-theme.html)
+            applyDynamicTheme(shopConf.uiStyles || blogConf.uiStyles || tenantData.uiStyles);
 
             // Hero Section Rendering
             document.getElementById('heroTitle').innerText = blogConf.heroTitle || `Stories from ${blogTitle}`;
@@ -235,12 +240,22 @@
             renderArticlesGrid(articles);
         }
 
-        // Apply Custom UI Styles dynamically
+        // Apply Custom UI Styles dynamically (Mendukung kustomisasi warna dari admin-theme.html)
         function applyDynamicTheme(styles) {
             if (!styles) return;
             const header = document.getElementById('mainHeader');
+            
+            // Terapkan warna kustom jika tersedia di database
             if (styles.headerBg) header.style.backgroundColor = styles.headerBg;
-            logDiagnostic("Dynamic UI styles applied to journal header.");
+            if (styles.bodyBg) document.body.style.backgroundColor = styles.bodyBg;
+            if (styles.cardBg) {
+                document.querySelectorAll('.bg-\\[\\#1e293b\\]').forEach(el => {
+                    el.style.backgroundColor = styles.cardBg;
+                });
+            }
+            if (styles.textColor) document.body.style.color = styles.textColor;
+            
+            logDiagnostic("Dynamic UI styles from theme studio applied successfully.");
         }
 
         // Operating Hours Fallback Handler

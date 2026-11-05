@@ -33,18 +33,12 @@
     <header id="mainHeader" class="sticky top-0 z-40 bg-[#1e293b]/90 backdrop-blur-md border-b border-zinc-800 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
-            <!-- Left: Global RestoSync Logo (50% scale / 0.5) & Tenant Logo / Identity -->
-            <div class="flex items-center space-x-4">
-                <a href="index.html?tenant=" id="globalRsLogoLink" class="flex items-center space-x-2 focus:outline-none">
-                    <img src="assets/images/RS.png" alt="RestoSync Logo" class="h-8 w-auto opacity-90 hover:opacity-100 transition" style="transform: scale(0.5); transform-origin: left center;">
-                </a>
-                <div class="h-6 w-px bg-zinc-700"></div>
-                <div class="flex items-center space-x-3">
-                    <img id="tenantLogo" src="" alt="Store Logo" class="h-10 w-10 object-cover rounded-full border border-amber-500/30 hidden">
-                    <div>
-                        <h1 id="blogTitleHeader" class="font-bold text-lg text-white tracking-tight">Loading Journal...</h1>
-                        <p id="headerExtraText" class="text-xs text-stone-400 hidden"></p>
-                    </div>
+            <!-- Left: Tenant Logo & Identity (Logo RestoSync dihapus, diganti Logo Tenant) -->
+            <div class="flex items-center space-x-3">
+                <img id="tenantLogo" src="" alt="Tenant Logo" class="h-11 w-11 object-cover rounded-full border border-amber-500/30 hidden shadow-md">
+                <div>
+                    <h1 id="blogTitleHeader" class="font-bold text-lg text-white tracking-tight">Loading Journal...</h1>
+                    <p id="headerExtraText" class="text-xs text-stone-400 hidden"></p>
                 </div>
             </div>
 
@@ -78,20 +72,20 @@
             <img id="heroImage" src="" alt="Hero Banner" class="absolute inset-0 w-full h-full object-cover opacity-30 transform hover:scale-105 transition duration-1000">
             
             <div class="relative z-20 max-w-2xl space-y-4">
-                <span id="heroBadge" class="px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-xs font-semibold tracking-wider uppercase">Artisanal Journal & Stories</span>
-                <h2 id="heroTitle" class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">Welcome to Our Journal</h2>
-                <p id="heroSubtitle" class="text-stone-300 text-sm sm:text-base leading-relaxed">Discover behind-the-scenes baking notes, seasonal stories, and kitchen philosophies.</p>
+                <span id="heroBadge" class="blog-pill-active px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-xs font-semibold tracking-wider uppercase">Artisanal Journal & Stories</span>
+                <h2 id="heroTitle" class="blog-title-element text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">Welcome to Our Journal</h2>
+                <p id="heroSubtitle" class="blog-desc-element text-stone-300 text-sm sm:text-base leading-relaxed">Discover behind-the-scenes baking notes, seasonal stories, and kitchen philosophies.</p>
             </div>
         </section>
 
         <!-- ARTICLES / POSTS SECTION -->
         <section id="articlesSection" class="space-y-6">
-            <div class="flex items-center justify-between bg-[#1e293b] p-4 rounded-2xl border border-zinc-800">
-                <h3 class="text-base font-bold text-white tracking-tight flex items-center space-x-2">
+            <div class="blog-card-element flex items-center justify-between bg-[#1e293b] p-4 rounded-2xl border border-zinc-800">
+                <h3 class="blog-title-element text-base font-bold text-white tracking-tight flex items-center space-x-2">
                     <i class="fa-solid fa-feather-pointed text-amber-400"></i>
                     <span>Latest Published Stories</span>
                 </h3>
-                <span id="articleCountBadge" class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-mono text-stone-400">0 posts</span>
+                <span id="articleCountBadge" class="blog-pill-inactive px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-mono text-stone-400">0 posts</span>
             </div>
 
             <!-- Articles Grid Container -->
@@ -154,9 +148,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         const TENANT_ID = (urlParams.get('tenant') || 'boluhalus').trim().toLowerCase();
 
-        // Update back-to-console link with tenant context
-        document.getElementById('globalRsLogoLink').href = `index.html?tenant=${TENANT_ID}`;
-
         let tenantData = {};
 
         function logDiagnostic(message) {
@@ -191,20 +182,20 @@
             const shopConf = tenantData.shopConfig || {};
             const enabledMods = tenantData.enabledModules || {};
 
-            // Header Branding (Mendukung fallback fleksibel dari shopConfig atau root tenant)
+            // Header Branding
             const blogTitle = blogConf.siteTitle || shopConf.storeName || tenantData.tenantName || TENANT_ID;
             document.getElementById('pageTitle').innerText = `${blogTitle} - RestoSync Journal`;
             document.getElementById('blogTitleHeader').innerText = blogTitle;
             document.getElementById('footerStoreName').innerText = `${blogTitle} Journal`;
             document.getElementById('footerStoreAddress').innerText = shopConf.address || tenantData.address || 'New Zealand';
 
-            // Tenant Logo Resolver (Membaca dari blogConf, shopConf, maupun root tenant)
+            // Tenant Logo Resolver (Menggantikan posisi logo RestoSync di kiri atas)[cite: 1]
             const logoUrl = blogConf.logoUrl || shopConf.logoUrl || tenantData.logoUrl;
             if (logoUrl) {
                 const logoEl = document.getElementById('tenantLogo');
                 logoEl.src = logoUrl;
                 logoEl.classList.remove('hidden');
-                logDiagnostic("Tenant logo successfully loaded.");
+                logDiagnostic("Tenant logo successfully loaded on top-left.");
             }
 
             // Cross-Navigation Module Switcher (Journal/Blog ⇄ Shop)
@@ -221,7 +212,7 @@
                 `;
             }
 
-            // Theme & Dynamic Styles Injection (Sinkron dengan admin-theme.html)
+            // Theme & Dynamic Styles Injection
             applyDynamicTheme(shopConf.uiStyles || blogConf.uiStyles || tenantData.uiStyles);
 
             // Hero Section Rendering
@@ -240,23 +231,56 @@
             renderArticlesGrid(articles);
         }
 
-        // Apply Custom UI Styles dynamically (Mendukung kustomisasi warna dari admin-theme.html)
+        // Apply Custom UI Styles dynamically
         function applyDynamicTheme(styles) {
             if (!styles) return;
             const header = document.getElementById('mainHeader');
-            
-            // Terapkan warna kustom jika tersedia di database
             if (styles.headerBg) header.style.backgroundColor = styles.headerBg;
             if (styles.bodyBg) document.body.style.backgroundColor = styles.bodyBg;
-            if (styles.cardBg) {
-                document.querySelectorAll('.bg-\\[\\#1e293b\\]').forEach(el => {
-                    el.style.backgroundColor = styles.cardBg;
-                });
-            }
-            if (styles.textColor) document.body.style.color = styles.textColor;
-            
-            logDiagnostic("Dynamic UI styles from theme studio applied successfully.");
+            logDiagnostic("Dynamic UI styles applied successfully.");
         }
+
+        // ==========================================
+        // REAL-TIME POSTMESSAGE LISTENER (ADMIN-THEME SYNC)
+        // ==========================================
+        window.addEventListener('message', function(event) {
+            if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE') return;
+            
+            const styles = event.data.uiStyles;
+            if (!styles) return;
+
+            logDiagnostic("Received live theme update message from admin studio.");
+
+            // 1. Blog Card Background & Border
+            document.querySelectorAll('.blog-card-element').forEach(el => {
+                if (styles.blogCardBg) el.style.backgroundColor = styles.blogCardBg;
+                if (styles.blogCardBorderColor) el.style.borderColor = styles.blogCardBorderColor;
+            });
+
+            // 2. Blog Title & Description
+            document.querySelectorAll('.blog-title-element').forEach(el => {
+                if (styles.blogTitleColor) el.style.color = styles.blogTitleColor;
+            });
+            document.querySelectorAll('.blog-desc-element').forEach(el => {
+                if (styles.blogDescColor) el.style.color = styles.blogDescColor;
+            });
+
+            // 3. Category Filter Pills (Active & Inactive)
+            document.querySelectorAll('.blog-pill-active').forEach(el => {
+                if (styles.blogCatActiveBg) el.style.backgroundColor = styles.blogCatActiveBg;
+                if (styles.blogCatActiveText) el.style.color = styles.blogCatActiveText;
+            });
+            document.querySelectorAll('.blog-pill-inactive').forEach(el => {
+                if (styles.blogCatInactiveBg) el.style.backgroundColor = styles.blogCatInactiveBg;
+                if (styles.blogCatInactiveText) el.style.color = styles.blogCatInactiveText;
+            });
+
+            // 4. Read More Button
+            document.querySelectorAll('.blog-readmore-btn').forEach(el => {
+                if (styles.blogReadMoreBg) el.style.backgroundColor = styles.blogReadMoreBg;
+                if (styles.blogReadMoreText) el.style.color = styles.blogReadMoreText;
+            });
+        });
 
         // Operating Hours Fallback Handler
         function renderOperatingHours(opHours) {
@@ -278,7 +302,7 @@
             }).join('');
         }
 
-        // Render Articles / Journal Cards Grid
+        // Render Articles / Journal Cards Grid with Class Hooks
         function renderArticlesGrid(articles) {
             const grid = document.getElementById('articlesGrid');
 
@@ -288,19 +312,19 @@
             }
 
             grid.innerHTML = articles.map(item => `
-                <div class="bg-[#1e293b] border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-lg hover:border-amber-500/50 transition duration-300">
+                <div class="blog-card-element bg-[#1e293b] border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-lg hover:border-amber-500/50 transition duration-300">
                     <div class="relative h-48 bg-zinc-900 overflow-hidden">
                         <img src="${item.imageUrl || item.image || 'https://images.unsplash.com/photo-1509440159596-0249088772ff'}" alt="${item.title}" class="w-full h-full object-cover transform hover:scale-105 transition duration-500">
-                        ${item.category ? `<span class="absolute top-3 right-3 px-3 py-1 bg-zinc-950/80 backdrop-blur-md text-amber-400 font-mono font-bold text-xs rounded-full border border-zinc-800">${item.category}</span>` : ''}
+                        ${item.category ? `<span class="blog-pill-active absolute top-3 right-3 px-3 py-1 bg-zinc-950/80 backdrop-blur-md text-amber-400 font-mono font-bold text-xs rounded-full border border-zinc-800">${item.category}</span>` : ''}
                     </div>
                     <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
                         <div class="space-y-2">
-                            <h3 class="font-bold text-base text-white">${item.title || 'Untitled Story'}</h3>
-                            <p class="text-xs text-stone-400 line-clamp-3">${item.summary || item.content || 'Read more about this story from our kitchen...'}</p>
+                            <h3 class="blog-title-element font-bold text-base text-white">${item.title || 'Untitled Story'}</h3>
+                            <p class="blog-desc-element text-xs text-stone-400 line-clamp-3">${item.summary || item.content || 'Read more about this story from our kitchen...'}</p>
                         </div>
                         <div class="pt-4 border-t border-zinc-800/60 flex items-center justify-between text-xs text-stone-500">
                             <span><i class="fa-regular fa-calendar mr-1.5"></i>${item.date || 'Recent Note'}</span>
-                            <span class="text-amber-400 font-semibold hover:underline cursor-pointer">Read Full Story <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                            <span class="blog-readmore-btn text-amber-400 font-semibold hover:underline cursor-pointer px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 transition">Read Full Story <i class="fa-solid fa-arrow-right ml-1"></i></span>
                         </div>
                     </div>
                 </div>

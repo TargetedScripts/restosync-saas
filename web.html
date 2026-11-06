@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestoSync Gateway - Loading Tenant...</title>
+    <title>RestoSync Gateway</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,34 +17,22 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-6">
 
-    <!-- Top Spacer / Brand -->
+    <!-- Top Spacer -->
     <div class="w-full max-w-md text-center pt-8">
-        <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">RestoSync SaaS Gateway</span>
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">RestoSync SaaS Gateway</span>
     </div>
 
-    <!-- Main Loading & Status Container -->
-    <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl text-center space-y-6">
+    <!-- Main Container (Hidden by default, shows only if error/maintenance occurs) -->
+    <div class="w-full max-w-md">
         
-        <!-- Loading Spinner -->
-        <div id="loader-section" class="space-y-4">
-            <div class="inline-block relative w-16 h-16">
-                <div class="absolute inset-0 rounded-full border-4 border-slate-800"></div>
-                <div class="absolute inset-0 rounded-full border-4 border-[#f59e0b] border-t-transparent animate-spin"></div>
-            </div>
-            <div>
-                <h2 id="status-title" class="text-xl font-bold tracking-tight text-white">Initializing Gateway</h2>
-                <p id="status-subtitle" class="text-sm text-slate-400 mt-1">Connecting to RestoSync Cloud...</p>
-            </div>
-        </div>
-
-        <!-- Maintenance / Inactive Notice (Hidden by Default) -->
-        <div id="maintenance-section" class="hidden space-y-4">
+        <!-- Maintenance / Error Notice -->
+        <div id="maintenance-section" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl text-center space-y-4">
             <div class="w-12 h-12 rounded-full bg-amber-500/10 text-[#f59e0b] flex items-center justify-center mx-auto text-xl font-bold border border-amber-500/20">
                 !
             </div>
             <div>
-                <h2 class="text-xl font-bold tracking-tight text-white">Service Unavailable</h2>
-                <p class="text-sm text-slate-400 mt-2">The requested tenant services are currently inactive or undergoing maintenance.</p>
+                <h2 id="error-title" class="text-xl font-bold tracking-tight text-white">Service Unavailable</h2>
+                <p id="error-subtitle" class="text-sm text-slate-400 mt-2">The requested tenant services are currently inactive or undergoing maintenance.</p>
             </div>
             <div class="pt-2">
                 <a href="https://console.targetedscripts.com" class="inline-block w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium rounded-xl transition">
@@ -55,32 +43,43 @@
 
     </div>
 
-    <!-- Trace & Diagnostic Console (Collapsible/Hidden Bar at Bottom) -->
-    <div class="w-full max-w-md">
+    <!-- Trace & Diagnostic Console (Toggleable via URL ?debug=true) -->
+    <div id="debug-container" class="w-full max-w-md hidden">
         <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 text-left">
             <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/60">
                 <span class="text-[10px] uppercase font-mono text-slate-400 tracking-wider">Trace & Diagnostic Console</span>
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             </div>
             <div id="trace-console" class="font-mono text-[11px] text-slate-400 space-y-1 max-h-28 overflow-y-auto pr-1">
-                <div>[ROUTER] System initialized. Ready for tenant resolution.</div>
+                <div>[ROUTER] System initialized. Seamless routing active.</div>
             </div>
         </div>
-        <div class="text-center mt-4">
-            <span class="text-[11px] text-slate-400">&copy; TargetedScripts.com &bull; RestoSync SaaS Platform</span>
-        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center pb-2">
+        <span class="text-[11px] text-slate-500">&copy; TargetedScripts.com &bull; RestoSync SaaS Platform</span>
     </div>
 
     <!-- Router & Firebase Script -->
     <script>
-        // Diagnostic Logger
+        const urlParams = new URLSearchParams(window.location.search);
+        const tenantId = urlParams.get('tenant');
+        const isDebug = urlParams.get('debug') === 'true';
+
+        if (isDebug) {
+            document.getElementById('debug-container').classList.remove('hidden');
+        }
+
         function logTrace(message) {
             const consoleDiv = document.getElementById('trace-console');
-            const timestamp = new Date().toISOString().split('T')[1].slice(0, 8);
-            const line = document.createElement('div');
-            line.textContent = `[${timestamp}] ${message}`;
-            consoleDiv.appendChild(line);
-            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            if (consoleDiv) {
+                const timestamp = new Date().toISOString().split('T')[1].slice(0, 8);
+                const line = document.createElement('div');
+                line.textContent = `[${timestamp}] ${message}`;
+                consoleDiv.appendChild(line);
+                consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            }
             console.log(`[ROUTER] ${message}`);
         }
 
@@ -105,26 +104,18 @@
 
         const db = firebase.firestore();
 
-        // Parse URL Parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const tenantId = urlParams.get('tenant');
-
         window.addEventListener('DOMContentLoaded', () => {
             if (!tenantId) {
                 logTrace("ERROR: No 'tenant' parameter found in URL.");
-                document.getElementById('loader-section').classList.add('hidden');
-                document.getElementById('maintenance-section').classList.remove('hidden');
-                document.getElementById('status-title').textContent = "Missing Tenant Parameter";
+                showMaintenanceState("Missing Tenant Parameter", "Please provide a valid tenant identifier in the URL.");
                 return;
             }
 
             logTrace(`[ROUTER] Target Tenant ID detected: "${tenantId}"`);
-            document.getElementById('status-subtitle').textContent = `Resolving configuration for ${tenantId}...`;
-
             fetchTenantConfig(tenantId);
         });
 
-        // Fetch Tenant Document from Firestore
+        // Fetch Tenant Document from Firestore silently
         async function fetchTenantConfig(id) {
             try {
                 logTrace(`Fetching document: tenants/${id}`);
@@ -132,7 +123,7 @@
                 const docSnap = await docRef.get();
 
                 if (!docSnap.exists) {
-                    logTrace(`ERROR: Tenant "${id}" not found in Firestore database.`);
+                    logTrace(`ERROR: Tenant "${id}" not found in Firestore.`);
                     showMaintenanceState("Tenant Not Found", "The specified store configuration does not exist.");
                     return;
                 }
@@ -148,7 +139,7 @@
             }
         }
 
-        // Smart Routing Logic based on Feature Flags & Default Landing
+        // Smart Routing Logic
         function evaluateRouting(id, data) {
             const enabledModules = data.enabledModules || { shop: false, blog: false };
             const defaultLanding = data.defaultLanding || 'shop';
@@ -161,7 +152,7 @@
 
             let targetUrl = '';
 
-            // Condition C: Both modules inactive (false)
+            // Condition C: Both modules inactive
             if (!shopActive && !blogActive) {
                 logTrace("Routing Condition C: Both modules are disabled.");
                 showMaintenanceState("Service Inactive", "This tenant's storefront and journal are currently offline.");
@@ -170,39 +161,34 @@
 
             // Condition B: Only one module active
             if (shopActive && !blogActive) {
-                logTrace("Routing Condition B: Only 'shop' is active. Forcing redirect to shop.html.");
+                logTrace("Routing Condition B: Only 'shop' is active. Redirecting...");
                 targetUrl = `shop.html?tenant=${encodeURIComponent(id)}`;
             } else if (!shopActive && blogActive) {
-                logTrace("Routing Condition B: Only 'blog' is active. Forcing redirect to blog.html.");
+                logTrace("Routing Condition B: Only 'blog' is active. Redirecting...");
                 targetUrl = `blog.html?tenant=${encodeURIComponent(id)}`;
             } 
             // Condition A: Both active -> honor defaultLanding
             else {
                 logTrace("Routing Condition A: Both modules active. Evaluating defaultLanding...");
                 if (defaultLanding === 'blog') {
-                    logTrace("Redirecting to blog.html per defaultLanding preference.");
                     targetUrl = `blog.html?tenant=${encodeURIComponent(id)}`;
                 } else {
-                    logTrace("Redirecting to shop.html (default fallback).");
                     targetUrl = `shop.html?tenant=${encodeURIComponent(id)}`;
                 }
             }
 
-            // Execute redirect with short visual delay for diagnostic transparency
-            document.getElementById('status-subtitle').textContent = `Redirecting to destination...`;
-            logTrace(`[ROUTER] Navigating to -> ${targetUrl}`);
-
-            setTimeout(() => {
-                window.location.replace(targetUrl);
-            }, 600);
+            // Instant seamless redirect
+            logTrace(`[ROUTER] Instant redirect to -> ${targetUrl}`);
+            window.location.replace(targetUrl);
         }
 
         function showMaintenanceState(title, subtitle) {
-            document.getElementById('loader-section').classList.add('hidden');
-            const maintenanceDiv = document.getElementById('maintenance-section');
-            maintenanceDiv.classList.remove('hidden');
-            maintenanceDiv.querySelector('h2').textContent = title;
-            maintenanceDiv.querySelector('p').textContent = subtitle;
+            document.getElementById('maintenance-section').classList.remove('hidden');
+            document.getElementById('error-title').textContent = title;
+            document.getElementById('error-subtitle').textContent = subtitle;
+            if (isDebug) {
+                document.getElementById('debug-container').classList.remove('hidden');
+            }
         }
     </script>
 </body>

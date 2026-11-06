@@ -95,7 +95,21 @@
 
     </main>
 
-    <!-- FOOTER & OPERATING HOURS (Dengan Konsol Diagnostik Transparan) -->
+    <!-- MODAL BACA ARTIKEL PENUH (Tersinkronisasi Warna Database) -->
+    <div id="articleModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div id="modalCardBox" class="blog-card-element bg-[#1e293b] border border-zinc-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl relative transition-colors duration-300">
+            <button onclick="closeArticleModal()" class="absolute top-4 right-4 p-2 bg-zinc-900 border border-zinc-800 rounded-full text-stone-400 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="modalCategory" class="blog-pill-active inline-block px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-xs font-semibold uppercase"></div>
+            <h2 id="modalTitle" class="blog-title-element text-2xl sm:text-3xl font-extrabold text-white tracking-tight"></h2>
+            <p id="modalDate" class="text-xs text-stone-500 font-mono"></p>
+            <img id="modalImage" src="" alt="Article Banner" class="w-full h-64 object-cover rounded-2xl border border-zinc-800">
+            <div id="modalContent" class="blog-desc-element text-stone-300 text-sm sm:text-base leading-relaxed space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- FOOTER & OPERATING HOURS -->
     <footer class="blog-footer-element footer-element bg-zinc-950 border-t border-zinc-900 mt-16 text-stone-400 text-xs transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="space-y-3">
@@ -140,6 +154,7 @@
         const TENANT_ID = (urlParams.get('tenant') || 'boluhalus').trim().toLowerCase();
 
         let tenantData = {};
+        let cachedActiveStyles = {}; // Menyimpan cache gaya aktif untuk modal
 
         function logDiagnostic(message, type = 'info') {
             const consoleEl = document.getElementById('diagnosticConsole');
@@ -156,7 +171,7 @@
             console.log(`[Blog Diagnostic] ${message}`);
         }
 
-        // Inisialisasi utama saat halaman dimuat (Mengambil data dokumen utama & Sub-koleksi posts)
+        // Inisialisasi utama saat halaman dimuat
         document.addEventListener('DOMContentLoaded', () => {
             logDiagnostic(`Menghubungkan ke tenant: [${TENANT_ID}]`, 'info');
 
@@ -165,7 +180,6 @@
                 if (doc.exists) {
                     tenantData = doc.data();
                     logDiagnostic(`SUKSES: Dokumen tenant [${TENANT_ID}] terbaca.`, 'success');
-                    logDiagnostic(`Field dokumen tenant: [${Object.keys(tenantData).join(', ')}]`, 'info');
                     renderJournalContent();
                 } else {
                     logDiagnostic(`ERROR: Dokumen [${TENANT_ID}] tidak ditemukan di koleksi tenants.`, 'error');
@@ -186,7 +200,7 @@
                   });
 
                   if (postsArray.length === 0) {
-                      logDiagnostic(`WARNING: Sub-koleksi 'posts' kosong atau belum ada dokumen pos.`, 'warn');
+                      logDiagnostic(`WARNING: Sub-koleksi 'posts' kosong atau belum ada pos.`, 'warn');
                   }
 
                   tenantData.blogConfig = tenantData.blogConfig || {};
@@ -205,7 +219,7 @@
 
             const blogTitle = blogConf.siteTitle || shopConf.storeName || tenantData.tenantName || TENANT_ID;
             document.getElementById('pageTitle').innerText = `${blogTitle} - RestoSync Journal`;
-            document.getElementById('footerStoreName').innerText = `${blogTitle} Journal`;
+            document.getElementById('footerStoreName').innerText =`${blogTitle} Journal`;
             document.getElementById('footerStoreAddress').innerText = shopConf.address || tenantData.address || 'New Zealand';
 
             const logoUrl = blogConf.logoUrl || shopConf.logoUrl || profile.logoUrl || tenantData.logoUrl;
@@ -247,7 +261,7 @@
             const blogStyles = blogConf.uiStyles || {};
             const shopStyles = profile.uiStyles || shopConf.uiStyles || {};
             
-            const activeStyles = {
+            cachedActiveStyles = {
                 headerBg: blogStyles.headerBg || shopStyles.headerBgColor,
                 headerBorderColor: blogStyles.headerBorderColor || shopStyles.headerBorderColor,
                 bodyBg: blogStyles.bodyBg || shopStyles.bodyBgColor,
@@ -259,13 +273,11 @@
                 ...blogStyles
             };
 
-            applyDynamicTheme(activeStyles);
+            applyDynamicTheme(cachedActiveStyles);
 
-            // Ambil daftar artikel dari sub-koleksi posts
             const articles = blogConf.articles || blogConf.posts || [];
             logDiagnostic(`Jumlah total pos dimuat untuk grid: ${articles.length}`, 'info');
 
-            // Cari artikel Hero (`displayAsHero === true`) atau ambil pos pertama
             const heroPost = articles.find(p => p.displayAsHero === true) || articles[0];
 
             if (heroPost) {
@@ -297,7 +309,7 @@
             renderArticlesGrid(articles);
         }
 
-        // Fungsi Penerapan Gaya Dinamis ke Elemen HTML
+        // Fungsi Penerapan Gaya Dinamis ke Elemen HTML & Modal
         function applyDynamicTheme(styles) {
             if (!styles) return;
 
@@ -320,6 +332,7 @@
                 document.body.style.color = styles.textColor;
             }
 
+            // Kartu, Hero, Switcher Container, & Modal Box
             document.querySelectorAll('.blog-card, .blog-card-element, article, .card, .blog-hero-element, .blog-switcher-element').forEach(el => {
                 if (styles.blogCardBg && styles.blogCardBg.trim() !== '') el.style.backgroundColor = styles.blogCardBg;
                 if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') el.style.borderColor = styles.blogCardBorderColor;
@@ -380,7 +393,8 @@
             const styles = event.data.uiStyles;
             if (!styles) return;
 
-            applyDynamicTheme(styles);
+            cachedActiveStyles = { ...cachedActiveStyles, ...styles };
+            applyDynamicTheme(cachedActiveStyles);
         });
 
         function renderOperatingHours(opHours) {
@@ -427,8 +441,10 @@
                     dateStr = item.date;
                 }
 
+                const encodedItem = encodeURIComponent(JSON.stringify(item));
+
                 return `
-                    <div class="blog-card-element bg-[#1e293b] border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-lg hover:border-amber-500/50 transition duration-300">
+                    <div onclick="openArticleModal('${encodedItem}')" class="blog-card-element bg-[#1e293b] border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-lg hover:border-amber-500/50 transition duration-300 cursor-pointer">
                         <div class="relative h-48 bg-zinc-900 overflow-hidden">
                             <img src="${imageUrl}" alt="${title}" class="w-full h-full object-cover transform hover:scale-105 transition duration-500">
                             ${category ? `<span class="blog-pill-active absolute top-3 right-3 px-3 py-1 bg-zinc-950/80 backdrop-blur-md text-amber-400 font-mono font-bold text-xs rounded-full border border-zinc-800">${category}</span>` : ''}
@@ -440,12 +456,42 @@
                             </div>
                             <div class="pt-4 border-t border-zinc-800/60 flex items-center justify-between text-xs text-stone-500">
                                 <span><i class="fa-regular fa-calendar mr-1.5"></i>${dateStr}</span>
-                                <span class="blog-readmore-btn text-amber-400 font-semibold hover:underline cursor-pointer px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 transition">Read Full Story <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                                <span class="blog-readmore-btn text-amber-400 font-semibold hover:underline px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 transition">Read Full Story <i class="fa-solid fa-arrow-right ml-1"></i></span>
                             </div>
                         </div>
                     </div>
                 `;
             }).join('');
+        }
+
+        // Fungsi Membuka Modal Artikel Lengkap dengan Penyesuaian Tema Database
+        function openArticleModal(encodedJson) {
+            try {
+                const item = JSON.parse(decodeURIComponent(encodedJson));
+                
+                document.getElementById('modalTitle').innerText = item.title || item.heading || 'Untitled Story';
+                document.getElementById('modalCategory').innerText = item.category || 'Journal';
+                document.getElementById('modalContent').innerHTML = item.content || item.excerpt || item.summary || 'No content available.';
+                document.getElementById('modalImage').src = item.imageUrl || item.image || item.photoUrl || 'https://images.unsplash.com/photo-1509440159596-0249088772ff';
+                
+                let dateStr = 'Recent Note';
+                if (item.createdAt) {
+                    dateStr = typeof item.createdAt.toDate === 'function' ? item.createdAt.toDate().toLocaleDateString() : new Date(item.createdAt).toLocaleDateString();
+                }
+                document.getElementById('modalDate').innerText = `Published on: ${dateStr}`;
+
+                // Terapkan gaya warna aktif (cachedActiveStyles) langsung ke elemen modal
+                applyDynamicTheme(cachedActiveStyles);
+
+                document.getElementById('articleModal').classList.remove('hidden');
+            } catch (e) {
+                console.error("Gagal membuka artikel:", e);
+            }
+        }
+
+        // Fungsi Menutup Modal
+        function closeArticleModal() {
+            document.getElementById('articleModal').classList.add('hidden');
         }
 
         function toggleMobileMenu() {

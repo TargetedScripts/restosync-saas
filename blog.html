@@ -40,7 +40,7 @@
 
             <!-- Right Nav: Switcher & Mobile Menu -->
             <div class="flex items-center space-x-4">
-                <!-- Cross-Navigation Switcher (Journal/Blog ⇄ Shop) -->
+                <!-- Cross-Navigation Switcher (Journal/Blog ⇄ Shop)[cite: 1] -->
                 <div id="moduleSwitcher" class="blog-switcher-element hidden items-center space-x-2 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800 text-xs transition-colors duration-300">
                     <a id="blogLinkNav" href="#" class="blog-pill-active px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold transition"><i class="fa-solid fa-book-open mr-1.5"></i>Journal</a>
                     <a id="shopLinkNav" href="#" class="blog-pill-inactive px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
@@ -137,7 +137,7 @@
         const db = firebase.firestore();
 
         const urlParams = new URLSearchParams(window.location.search);
-        const TENANT_ID = (urlParams.get('tenant') || 'boluhalus').trim().toLowerCase();
+        const TENANT_ID = (urlParams.get('tenant') || 'bangkokthaipalmy').trim().toLowerCase();
 
         let tenantData = {};
 
@@ -150,9 +150,10 @@
             }
         }
 
-        // 1. Inisialisasi utama saat halaman dimuat (Mengambil data Firestore secara permanen)
-        function initJournalListener() {
+        // 1. Inisialisasi utama saat halaman dimuat (Mengambil data Firestore secara permanen)[cite: 1]
+        document.addEventListener('DOMContentLoaded', () => {
             logDiagnostic(`Connecting to Firestore tenant for journal: [${TENANT_ID}]`);
+            
             db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
                 if (doc.exists) {
                     tenantData = doc.data();
@@ -164,7 +165,7 @@
             }, (error) => {
                 logDiagnostic(`Firestore error: ${error.message}`);
             });
-        }
+        });
 
         function renderJournalContent() {
             const blogConf = tenantData.blogConfig || {};
@@ -198,11 +199,18 @@
                 `;
             }
 
-            // Ambil gaya dari blogConfig.uiStyles atau fallback ke shopConfig/profile uiStyles
-            const activeStyles = blogConf.uiStyles || shopConf.uiStyles || profile.uiStyles || tenantData.uiStyles;
-            if (activeStyles) {
-                applyDynamicTheme(activeStyles);
-            }
+            const blogStyles = blogConf.uiStyles || {};
+            const shopStyles = profile.uiStyles || shopConf.uiStyles || {};
+            
+            const activeStyles = {
+                headerBg: blogStyles.headerBg || shopStyles.headerBgColor,
+                headerBorderColor: blogStyles.headerBorderColor || shopStyles.headerBorderColor,
+                bodyBg: blogStyles.bodyBg || shopStyles.bodyBgColor,
+                textColor: blogStyles.textColor || shopStyles.bodyTextColor,
+                ...blogStyles
+            };
+
+            applyDynamicTheme(activeStyles);
 
             document.getElementById('heroTitle').innerText = blogConf.heroTitle || `Stories from ${blogTitle}`;
             document.getElementById('heroSubtitle').innerText = blogConf.heroSubtitle || blogConf.description || 'Explore our articles, baking notes, and behind-the-scenes stories.';
@@ -221,20 +229,18 @@
         function applyDynamicTheme(styles) {
             if (!styles) return;
 
-            // Header Background & Border
-            const headerBgVal = styles.headerBg || styles.blogHeaderBg;
-            if (headerBgVal && headerBgVal.trim() !== '') {
-                document.querySelectorAll('.blog-header-element').forEach(el => {
-                    el.style.backgroundColor = headerBgVal;
+            const headerColor = styles.headerBg || styles.blogHeaderBg;
+            if (headerColor && headerColor.trim() !== '') {
+                document.querySelectorAll('header, .blog-header-element, .bg-header').forEach(el => {
+                    el.style.backgroundColor = headerColor;
                 });
             }
             if (styles.headerBorderColor && styles.headerBorderColor.trim() !== '') {
-                document.querySelectorAll('.blog-header-element').forEach(el => {
+                document.querySelectorAll('header, .blog-header-element').forEach(el => {
                     el.style.borderColor = styles.headerBorderColor;
                 });
             }
 
-            // Body Background & Text Color
             if (styles.bodyBg && styles.bodyBg.trim() !== '') {
                 document.body.style.backgroundColor = styles.bodyBg;
             }
@@ -242,60 +248,40 @@
                 document.body.style.color = styles.textColor;
             }
 
-            // Hero Section & Card Elements
-            document.querySelectorAll('.blog-card-element, .blog-hero-element').forEach(el => {
+            document.querySelectorAll('.blog-card, .blog-card-element, article, .card, .blog-hero-element').forEach(el => {
                 if (styles.blogCardBg && styles.blogCardBg.trim() !== '') el.style.backgroundColor = styles.blogCardBg;
                 if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') el.style.borderColor = styles.blogCardBorderColor;
             });
 
-            // Typography (Titles)
             if (styles.blogTitleColor && styles.blogTitleColor.trim() !== '') {
-                document.querySelectorAll('.blog-title-element').forEach(el => {
+                document.querySelectorAll('h1, h2, h3, .blog-title').forEach(el => {
                     el.style.color = styles.blogTitleColor;
                 });
             }
-
-            // Typography (Descriptions)
             if (styles.blogDescColor && styles.blogDescColor.trim() !== '') {
-                document.querySelectorAll('.blog-desc-element').forEach(el => {
+                document.querySelectorAll('p, .blog-desc').forEach(el => {
                     el.style.color = styles.blogDescColor;
                 });
             }
 
-            // Active Category Pills
-            document.querySelectorAll('.blog-pill-active').forEach(el => {
+            document.querySelectorAll('.category-pill.active, .pill-active, .active-pill, .blog-pill-active').forEach(el => {
                 if (styles.blogCatActiveBg && styles.blogCatActiveBg.trim() !== '') el.style.backgroundColor = styles.blogCatActiveBg;
                 if (styles.blogCatActiveText && styles.blogCatActiveText.trim() !== '') el.style.color = styles.blogCatActiveText;
             });
-
-            // Inactive Category Pills
-            document.querySelectorAll('.blog-pill-inactive').forEach(el => {
+            document.querySelectorAll('.category-pill:not(.active), .pill-inactive, .inactive-pill, .blog-pill-inactive').forEach(el => {
                 if (styles.blogCatInactiveBg && styles.blogCatInactiveBg.trim() !== '') el.style.backgroundColor = styles.blogCatInactiveBg;
                 if (styles.blogCatInactiveText && styles.blogCatInactiveText.trim() !== '') el.style.color = styles.blogCatInactiveText;
             });
 
-            // Read More Buttons
-            document.querySelectorAll('.blog-readmore-btn').forEach(el => {
+            document.querySelectorAll('.read-more-btn, .btn-read-more, button, .blog-readmore-btn').forEach(el => {
                 if (styles.blogReadMoreBg && styles.blogReadMoreBg.trim() !== '') el.style.backgroundColor = styles.blogReadMoreBg;
                 if (styles.blogReadMoreText && styles.blogReadMoreText.trim() !== '') el.style.color = styles.blogReadMoreText;
-            });
-
-            // Footer & Switcher Styling
-            const footerBgVal = styles.footerBg || styles.headerBg;
-            if (footerBgVal && footerBgVal.trim() !== '') {
-                document.querySelectorAll('.blog-footer-element').forEach(el => {
-                    el.style.backgroundColor = footerBgVal;
-                });
-            }
-            document.querySelectorAll('.blog-switcher-element').forEach(el => {
-                if (styles.blogCardBg && styles.blogCardBg.trim() !== '') el.style.backgroundColor = styles.blogCardBg;
-                if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') el.style.borderColor = styles.blogCardBorderColor;
             });
 
             logDiagnostic("Dynamic UI styles applied comprehensively.");
         }
 
-        // 3. Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)
+        // 3. Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)[cite: 3]
         window.addEventListener('message', function(event) {
             if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE') return;
             
@@ -357,10 +343,6 @@
             const menu = document.getElementById('mobileMenu');
             menu.classList.toggle('hidden');
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            initJournalListener();
-        });
     </script>
 </body>
 </html>

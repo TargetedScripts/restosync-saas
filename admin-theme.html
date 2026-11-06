@@ -368,7 +368,7 @@
                 <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing Synchronized Shop & Blog Theme Studio...
+                Initializing Fully Synchronized Shop & Blog Theme Studio...
             </div>
         </div>
     </footer>
@@ -471,31 +471,27 @@
             if (activeTargetElement) positionSaveButtonNear(activeTargetElement);
         });
 
-        // Send Blog Theme Update via postMessage to blog.html (Only transmitting defined/active headerBg if present)
+        // Send Blog Theme Update via postMessage to blog.html
         function sendBlogThemeUpdate() {
             const iframe = document.getElementById('blogPreviewIframe');
             if (!iframe || !iframe.contentWindow) return;
 
-            const headerVal = document.getElementById('ui-headerBgColor')?.value;
-            const bodyVal = document.getElementById('ui-bodyBgColor')?.value;
-            const textVal = document.getElementById('ui-bodyTextColor')?.value;
-
             const blogStyles = {
-                blogCardBg: document.getElementById('blogCardBgInput')?.value,
-                blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value,
-                blogTitleColor: document.getElementById('blogTitleColorInput')?.value,
-                blogDescColor: document.getElementById('blogDescColorInput')?.value,
-                blogCatActiveBg: document.getElementById('blogCatActiveBgInput')?.value,
-                blogCatActiveText: document.getElementById('blogCatActiveTextInput')?.value,
-                blogCatInactiveBg: document.getElementById('blogCatInactiveBgInput')?.value,
-                blogCatInactiveText: document.getElementById('blogCatInactiveTextInput')?.value,
-                blogReadMoreBg: document.getElementById('blogReadMoreBgInput')?.value,
-                blogReadMoreText: document.getElementById('blogReadMoreTextInput')?.value
+                headerBg: document.getElementById('ui-headerBgColor')?.value || '',
+                headerBorderColor: document.getElementById('ui-headerBorderColor')?.value || '',
+                bodyBg: document.getElementById('ui-bodyBgColor')?.value || '',
+                textColor: document.getElementById('ui-bodyTextColor')?.value || '',
+                blogCardBg: document.getElementById('blogCardBgInput')?.value || '',
+                blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value || '',
+                blogTitleColor: document.getElementById('blogTitleColorInput')?.value || '',
+                blogDescColor: document.getElementById('blogDescColorInput')?.value || '',
+                blogCatActiveBg: document.getElementById('blogCatActiveBgInput')?.value || '',
+                blogCatActiveText: document.getElementById('blogCatActiveTextInput')?.value || '',
+                blogCatInactiveBg: document.getElementById('blogCatInactiveBgInput')?.value || '',
+                blogCatInactiveText: document.getElementById('blogCatInactiveTextInput')?.value || '',
+                blogReadMoreBg: document.getElementById('blogReadMoreBgInput')?.value || '',
+                blogReadMoreText: document.getElementById('blogReadMoreTextInput')?.value || ''
             };
-
-            if (headerVal) blogStyles.headerBg = headerVal;
-            if (bodyVal) blogStyles.bodyBg = bodyVal;
-            if (textVal) blogStyles.textColor = textVal;
 
             iframe.contentWindow.postMessage({
                 type: 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE',
@@ -504,7 +500,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            logTrace(`Initializing Synchronized Shop & Blog Studio for tenant: [${TENANT_ID}]`, 'info');
+            logTrace(`Initializing Fully Synchronized Shop & Blog Studio for tenant: [${TENANT_ID}]`, 'info');
             fetchStorageAssetLists();
             fetchAndRenderThemeData();
 
@@ -514,13 +510,13 @@
                 if (el) {
                     el.addEventListener('input', () => {
                         sendRealtimeShopThemeToIframe();
-                        if(key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor') {
+                        if(key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor' || key === 'headerBorderColor') {
                             sendBlogThemeUpdate();
                         }
                     });
                     el.addEventListener('change', () => {
                         sendRealtimeShopThemeToIframe();
-                        if(key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor') {
+                        if(key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor' || key === 'headerBorderColor') {
                             sendBlogThemeUpdate();
                         }
                     });
@@ -529,7 +525,7 @@
                 }
             });
 
-            // Blog color pickers listener (stable handling for input & change)
+            // Blog color pickers listener
             document.querySelectorAll('.blog-color-picker').forEach(input => {
                 input.addEventListener('input', sendBlogThemeUpdate);
                 input.addEventListener('change', sendBlogThemeUpdate);
@@ -665,7 +661,7 @@
                         }
                     });
 
-                    // Populate Blog UI fields using synchronized IDs
+                    // Populate Blog UI fields consistently from blogConfig.uiStyles
                     if(blogUiStyles.blogCardBg) document.getElementById('blogCardBgInput').value = blogUiStyles.blogCardBg;
                     if(blogUiStyles.blogCardBorderColor) document.getElementById('blogCardBorderInput').value = blogUiStyles.blogCardBorderColor;
                     if(blogUiStyles.blogTitleColor) document.getElementById('blogTitleColorInput').value = blogUiStyles.blogTitleColor;
@@ -690,7 +686,7 @@
             });
         }
 
-        // Save Theme Settings to Firestore (Safely persisting under blogConfig.uiStyles with merge: true)
+        // Save Theme Settings to Firestore with proper blogConfig.uiStyles structure and merge: true
         document.getElementById('theme-form').addEventListener('submit', function(e) {
             e.preventDefault();
             logTrace(`Saving unified theme updates for tenant "${TENANT_ID}"...`, 'info');
@@ -705,21 +701,19 @@
             updatedProfile.logoScale = Number(document.getElementById('logo-scale-input').value) || 100;
             updatedProfile.uiStyles = collectShopUiStylesPayload();
 
-            const blogStylesPayload = {
-                blogCardBg: document.getElementById('blogCardBgInput')?.value,
-                blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value,
-                blogTitleColor: document.getElementById('blogTitleColorInput')?.value,
-                blogDescColor: document.getElementById('blogDescColorInput')?.value,
-                blogCatActiveBg: document.getElementById('blogCatActiveBgInput')?.value,
-                blogCatActiveText: document.getElementById('blogCatActiveTextInput')?.value,
-                blogCatInactiveBg: document.getElementById('blogCatInactiveBgInput')?.value,
-                blogCatInactiveText: document.getElementById('blogCatInactiveTextInput')?.value,
-                blogReadMoreBg: document.getElementById('blogReadMoreBgInput')?.value,
-                blogReadMoreText: document.getElementById('blogReadMoreTextInput')?.value
-            };
-
             const updatedBlogConfig = fetchedDocumentData.blogConfig || {};
-            updatedBlogConfig.uiStyles = blogStylesPayload;
+            updatedBlogConfig.uiStyles = {
+                blogCardBg: document.getElementById('blogCardBgInput')?.value || '',
+                blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value || '',
+                blogTitleColor: document.getElementById('blogTitleColorInput')?.value || '',
+                blogDescColor: document.getElementById('blogDescColorInput')?.value || '',
+                blogCatActiveBg: document.getElementById('blogCatActiveBgInput')?.value || '',
+                blogCatActiveText: document.getElementById('blogCatActiveTextInput')?.value || '',
+                blogCatInactiveBg: document.getElementById('blogCatInactiveBgInput')?.value || '',
+                blogCatInactiveText: document.getElementById('blogCatInactiveTextInput')?.value || '',
+                blogReadMoreBg: document.getElementById('blogReadMoreBgInput')?.value || '',
+                blogReadMoreText: document.getElementById('blogReadMoreTextInput')?.value || ''
+            };
 
             const updatePayload = {
                 profile: updatedProfile,

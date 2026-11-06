@@ -9,40 +9,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Firebase Compat SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase Compat SDK v9.22.0 -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-stone-50 min-h-screen text-stone-800">
+<body class="bg-stone-50 min-h-screen text-stone-800 flex flex-col">
 
     <!-- Top Bar Admin -->
-    <header class="bg-white border-b border-stone-200 px-8 py-4 flex justify-between items-center sticky top-0 z-50">
-        <div class="flex items-center space-x-3">
-            <span class="bg-stone-900 text-white text-xs px-2.5 py-1 rounded-md font-mono uppercase tracking-wider">RestoSync Admin</span>
-            <h1 class="font-bold text-base text-stone-900">Post, Journal & Media Manager</h1>
+    <header class="bg-white border-b border-stone-200 px-8 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center space-x-4">
+            <a id="backBtn" href="admin.html" class="bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Kembali ke Admin</span>
+            </a>
+            <div class="flex items-center space-x-3">
+                <span class="bg-stone-900 text-white text-xs px-2.5 py-1 rounded-md font-mono uppercase tracking-wider">RestoSync Admin</span>
+                <h1 class="font-bold text-base text-stone-900">Post, Journal & Media Manager</h1>
+            </div>
         </div>
         <div class="flex items-center space-x-4">
+            <span class="text-xs text-stone-500">Tenant: <span id="tenantDisplay" class="font-mono text-stone-900 font-bold">loading...</span></span>
             <span id="blogStatus" class="text-xs text-stone-500 italic">Siap mengelola artikel</span>
-            <button onclick="saveBlogPost()" class="bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow-sm">
-                <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Publikasikan Artikel
+            <button onclick="saveBlogPost()" class="bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow-sm flex items-center space-x-1.5">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Publikasikan Artikel</span>
             </button>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-5xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <main class="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 flex-1 w-full">
         
         <!-- Sidebar Tenant & Post List -->
         <div class="space-y-6">
             <div class="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm space-y-4">
                 <h2 class="font-semibold text-sm text-stone-900 uppercase tracking-wider">Konfigurasi Tenant</h2>
                 <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Tenant ID</label>
-                    <input type="text" id="tenantIdInput" value="boluhalus" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-xs font-mono text-stone-800 focus:outline-none focus:border-stone-400">
+                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Tenant ID (URL Param)</label>
+                    <input type="text" id="tenantIdInput" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-xs font-mono text-stone-800 focus:outline-none focus:border-stone-400">
                 </div>
                 <button onclick="loadTenantPosts()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold py-2 rounded-xl transition">
                     Muat Daftar Post
@@ -50,9 +59,12 @@
             </div>
 
             <div class="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm space-y-3">
-                <h2 class="font-semibold text-sm text-stone-900 uppercase tracking-wider">Daftar Artikel Tersimpan</h2>
-                <div id="postListContainer" class="space-y-2 max-h-60 overflow-y-auto text-xs text-stone-600">
-                    <p class="text-stone-400 italic">Klik 'Muat Daftar Post' untuk melihat artikel.</p>
+                <div class="flex justify-between items-center">
+                    <h2 class="font-semibold text-sm text-stone-900 uppercase tracking-wider">Daftar Artikel</h2>
+                    <button onclick="resetEditorForm()" class="text-xs text-stone-500 hover:text-stone-900 underline">Buat Baru</button>
+                </div>
+                <div id="postListContainer" class="space-y-2 max-h-80 overflow-y-auto text-xs text-stone-600 pr-1">
+                    <p class="text-stone-400 italic">Memuat daftar artikel...</p>
                 </div>
             </div>
         </div>
@@ -61,19 +73,34 @@
         <div class="md:col-span-2 space-y-6">
             
             <div class="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm space-y-4">
-                <h2 class="font-semibold text-sm text-stone-900 uppercase tracking-wider border-b border-stone-100 pb-3">Detail Artikel & Jurnal</h2>
+                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                    <h2 class="font-semibold text-sm text-stone-900 uppercase tracking-wider">Detail Artikel & Jurnal</h2>
+                    <span id="activeEditingId" class="text-[11px] font-mono text-stone-400">Mode: Baru</span>
+                </div>
                 
                 <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Judul Artikel (Title)</label>
+                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Judul Artikel (Title) *</label>
                     <input type="text" id="postTitle" placeholder="Contoh: The Philosophy Behind Our Chiffon" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-stone-400">
                 </div>
 
-                <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1.5">URL Gambar Utama (Featured Image)</label>
-                    <input type="text" id="postImage" placeholder="https://images.unsplash.com/..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-stone-400">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-stone-600 mb-1.5">Kategori / Tags</label>
+                        <input type="text" id="postCategory" placeholder="e.g., Recipes, Announcements" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-stone-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-stone-600 mb-1.5">URL Gambar Utama (Featured Image)</label>
+                        <div class="flex space-x-2">
+                            <input type="text" id="postImage" placeholder="https://images.unsplash.com/..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-stone-400">
+                            <label class="bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl text-xs font-medium cursor-pointer transition flex items-center whitespace-nowrap">
+                                <i class="fa-solid fa-upload mr-1.5"></i> Unggah
+                                <input type="file" id="imageFile" accept="image/*" class="hidden" onchange="uploadFeaturedImage(this)">
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Bagian Kontrol Penempatan Gambar (Baru) -->
+                <!-- Bagian Kontrol Penempatan Gambar (Frontend Binding) -->
                 <div class="bg-stone-50 border border-stone-200/80 p-4 rounded-xl space-y-3">
                     <label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider">Opsi Penempatan Visual (Frontend Binding)</label>
                     
@@ -93,8 +120,13 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Isi Artikel / Ringkasan Cerita</label>
-                    <textarea id="postContent" rows="6" placeholder="Tulis cerita atau deskripsi jurnal di sini..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-stone-400 leading-relaxed"></textarea>
+                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Ringkasan Singkat (Excerpt)</label>
+                    <textarea id="postExcerpt" rows="2" placeholder="Ringkasan singkat yang tampil di kartu artikel..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-xs text-stone-800 focus:outline-none focus:border-stone-400"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Isi Artikel / Jurnal Lengkap</label>
+                    <textarea id="postContent" rows="8" placeholder="Tulis cerita atau deskripsi jurnal di sini..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-stone-400 leading-relaxed"></textarea>
                 </div>
             </div>
 
@@ -103,6 +135,14 @@
 
     <!-- Script Firebase & Logic Blog Editor -->
     <script>
+        // Tangkap parameter tenant dari URL (contoh: admin-blog.html?tenant=bangkokthaipalmy)
+        const urlParams = new URLSearchParams(window.location.search);
+        const tenantKey = urlParams.get('tenant') || 'boluhalus';
+        
+        document.getElementById('tenantIdInput').value = tenantKey;
+        document.getElementById('tenantDisplay').textContent = tenantKey;
+        document.getElementById('backBtn').href = `admin.html?tenant=${encodeURIComponent(tenantKey)}`;
+
         const firebaseConfig = {
             apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
             authDomain: "restosync-saas.firebaseapp.com",
@@ -114,6 +154,9 @@
 
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        let allPosts = [];
 
         function loadTenantPosts() {
             const tenantId = document.getElementById('tenantIdInput').value.trim().toLowerCase();
@@ -124,29 +167,78 @@
 
             db.collection("tenants").doc(tenantId).collection("posts").orderBy("createdAt", "desc").get().then((snapshot) => {
                 container.innerHTML = '';
+                allPosts = [];
+
                 if (snapshot.empty) {
                     container.innerHTML = '<p class="text-stone-400 italic">Belum ada artikel.</p>';
                     return;
                 }
 
                 snapshot.forEach((doc) => {
-                    const post = doc.data();
+                    const post = { id: doc.id, ...doc.data() };
+                    allPosts.push(post);
+
                     const item = document.createElement('div');
-                    item.className = "p-3 bg-stone-50 border border-stone-200 rounded-xl cursor-pointer hover:bg-stone-100 transition";
-                    item.innerHTML = `<p class="font-semibold text-stone-900">${post.title || 'Tanpa Judul'}</p>`;
-                    item.onclick = () => {
-                        document.getElementById('postTitle').value = post.title || '';
-                        document.getElementById('postImage').value = post.imageUrl || '';
-                        document.getElementById('postContent').value = post.content || '';
-                        document.getElementById('displayAsHero').checked = !!post.displayAsHero;
-                        document.getElementById('displayAsSlider').checked = !!post.displayAsSlider;
-                    };
+                    item.className = "p-3 bg-stone-50 border border-stone-200 rounded-xl cursor-pointer hover:bg-stone-100 transition flex justify-between items-center group";
+                    item.innerHTML = `
+                        <div class="truncate pr-2">
+                            <p class="font-semibold text-stone-900 truncate">${post.title || 'Tanpa Judul'}</p>
+                            <p class="text-[10px] text-stone-400 uppercase">${post.category || 'General'}</p>
+                        </div>
+                        <button onclick="event.stopPropagation(); deletePost('${post.id}')" class="text-stone-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition p-1" title="Hapus">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    `;
+                    item.onclick = () => populateEditor(post);
                     container.appendChild(item);
                 });
             }).catch(err => {
                 console.error(err);
                 container.innerHTML = '<p class="text-red-500">Gagal memuat post.</p>';
             });
+        }
+
+        function populateEditor(post) {
+            document.getElementById('activeEditingId').textContent = `ID: ${post.id}`;
+            document.getElementById('postTitle').value = post.title || '';
+            document.getElementById('postCategory').value = post.category || '';
+            document.getElementById('postImage').value = post.imageUrl || post.image || '';
+            document.getElementById('postExcerpt').value = post.excerpt || '';
+            document.getElementById('postContent').value = post.content || '';
+            document.getElementById('displayAsHero').checked = !!post.displayAsHero;
+            document.getElementById('displayAsSlider').checked = !!post.displayAsSlider;
+        }
+
+        function resetEditorForm() {
+            document.getElementById('activeEditingId').textContent = 'Mode: Baru';
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postCategory').value = '';
+            document.getElementById('postImage').value = '';
+            document.getElementById('postExcerpt').value = '';
+            document.getElementById('postContent').value = '';
+            document.getElementById('displayAsHero').checked = false;
+            document.getElementById('displayAsSlider').checked = false;
+        }
+
+        // Unggah Gambar ke Firebase Storage
+        async function uploadFeaturedImage(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+            const tenantId = document.getElementById('tenantIdInput').value.trim().toLowerCase();
+            const storageRef = storage.ref(`tenants/${tenantId}/blog/${Date.now()}_${file.name}`);
+            
+            setStatus("Mengunggah gambar ke Storage...", "text-amber-600");
+            try {
+                const snapshot = await storageRef.put(file);
+                const downloadURL = await snapshot.ref.getDownloadURL();
+                document.getElementById('postImage').value = downloadURL;
+                setStatus("Gambar berhasil diunggah!", "text-emerald-600");
+            } catch (err) {
+                console.error("Storage upload error:", err);
+                const localUrl = URL.createObjectURL(file);
+                document.getElementById('postImage').value = localUrl;
+                setStatus("Gambar dimuat secara lokal (Simulasi Storage)", "text-amber-600");
+            }
         }
 
         function saveBlogPost() {
@@ -156,31 +248,61 @@
             const title = document.getElementById('postTitle').value.trim();
             if (!title) return alert('Judul artikel wajib diisi!');
 
+            // Ambil ID dokumen yang sedang diedit atau buat slug baru dari judul
+            let docId = document.getElementById('activeEditingId').textContent;
+            if (docId.startsWith('ID: ')) {
+                docId = docId.replace('ID: ', '');
+            } else {
+                docId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            }
+
             const payload = {
                 title: title,
-                imageUrl: document.getElementById('postImage').value,
+                category: document.getElementById('postCategory').value.trim() || 'General',
+                imageUrl: document.getElementById('postImage').value.trim(),
+                excerpt: document.getElementById('postExcerpt').value.trim(),
                 displayAsHero: document.getElementById('displayAsHero').checked,
                 displayAsSlider: document.getElementById('displayAsSlider').checked,
                 content: document.getElementById('postContent').value,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            const docId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-            document.getElementById('blogStatus').innerText = "Menyimpan artikel...";
+            setStatus("Menyimpan artikel...", "text-stone-500");
 
-            db.collection("tenants").doc(tenantId).collection("posts").doc(docId).set(payload, { merge: true }).then(() => {
-                document.getElementById('blogStatus').innerText = "Artikel berhasil dipublikasikan!";
-                document.getElementById('blogStatus').className = "text-xs text-emerald-600 font-semibold";
+            db.collection("tenants").doc(tenantId).collection("posts").doc(docId).get().then(docSnap => {
+                if (!docSnap.exists) {
+                    payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                }
+                return db.collection("tenants").doc(tenantId).collection("posts").doc(docId).set(payload, { merge: true });
+            }).then(() => {
+                setStatus("Artikel berhasil dipublikasikan!", "text-emerald-600 font-semibold");
                 loadTenantPosts();
-                setTimeout(() => {
-                    document.getElementById('blogStatus').innerText = "Siap mengelola artikel";
-                    document.getElementById('blogStatus').className = "text-xs text-stone-500 italic";
-                }, 3000);
+                setTimeout(() => setStatus("Siap mengelola artikel", "text-stone-500 italic"), 3000);
             }).catch(err => {
                 console.error(err);
                 alert('Gagal menyimpan artikel.');
-                document.getElementById('blogStatus').innerText = "Gagal menyimpan";
+                setStatus("Gagal menyimpan", "text-red-500");
             });
+        }
+
+        function deletePost(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus artikel ini?')) return;
+            const tenantId = document.getElementById('tenantIdInput').value.trim().toLowerCase();
+            
+            db.collection("tenants").doc(tenantId).collection("posts").doc(id).delete().then(() => {
+                setStatus("Artikel berhasil dihapus", "text-emerald-600");
+                resetEditorForm();
+                loadTenantPosts();
+            }).catch(err => {
+                console.error(err);
+                alert('Gagal menghapus artikel.');
+            });
+        }
+
+        function setStatus(msg, className) {
+            const statusEl = document.getElementById('blogStatus');
+            statusEl.innerText = msg;
+            statusEl.className = `text-xs ${className}`;
         }
 
         window.addEventListener('DOMContentLoaded', () => {

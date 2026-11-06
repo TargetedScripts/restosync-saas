@@ -249,7 +249,7 @@
                     </div>
                 </section>
 
-                <!-- BLOG / JOURNAL STYLING (NEW) -->
+                <!-- BLOG / JOURNAL STYLING (SYNCHRONIZED ID MAPPING) -->
                 <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5">
                     <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
                         <h2 class="text-sm font-bold text-slate-200">Blog / Journal Styling</h2>
@@ -261,19 +261,19 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Blog Card Bg</label>
-                                <input type="color" id="blog-blogCardBg" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                                <input type="color" id="blogCardBgInput" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Blog Border Color</label>
-                                <input type="color" id="blog-blogCardBorderColor" value="#3f3f46" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                                <input type="color" id="blogCardBorderInput" value="#3f3f46" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Blog Title Color</label>
-                                <input type="color" id="blog-blogTitleColor" value="#ffffff" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                                <input type="color" id="blogTitleColorInput" value="#ffffff" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Blog Desc Color</label>
-                                <input type="color" id="blog-blogDescColor" value="#a1a1aa" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                                <input type="color" id="blogDescColorInput" value="#a1a1aa" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
                         </div>
                     </div>
@@ -283,27 +283,27 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Active Pill Bg</label>
-                                <input type="color" id="blog-blogCatActiveBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                                <input type="color" id="blogCatActiveBgInput" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Active Pill Text</label>
-                                <input type="color" id="blog-blogCatActiveText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                                <input type="color" id="blogCatActiveTextInput" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Inactive Pill Bg</label>
-                                <input type="color" id="blog-blogCatInactiveBg" value="#1f2937" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                                <input type="color" id="blogCatInactiveBgInput" value="#1f2937" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Inactive Pill Text</label>
-                                <input type="color" id="blog-blogCatInactiveText" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                                <input type="color" id="blogCatInactiveTextInput" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Read More Bg</label>
-                                <input type="color" id="blog-blogReadMoreBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                                <input type="color" id="blogReadMoreBgInput" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Read More Text</label>
-                                <input type="color" id="blog-blogReadMoreText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-input-item">
+                                <input type="color" id="blogReadMoreTextInput" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
                         </div>
                     </div>
@@ -325,12 +325,12 @@
                         </button>
                     </div>
 
-                    <div class="w-full h-[500px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-inner">
+                    <div class="w-full h-[450px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-inner">
                         <iframe id="live-storefront-iframe" src="" class="w-full h-full border-0"></iframe>
                     </div>
                 </section>
 
-                <!-- Blog Live Preview Box (NEW) -->
+                <!-- Blog Live Preview Box (blog.html) -->
                 <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col space-y-3">
                     <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
                         <div>
@@ -342,8 +342,8 @@
                         </button>
                     </div>
 
-                    <div class="w-full h-[400px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-inner">
-                        <iframe id="live-blog-iframe" src="" class="w-full h-full border-0"></iframe>
+                    <div class="w-full h-[450px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-inner">
+                        <iframe id="blogPreviewIframe" src="" class="w-full h-full border-0"></iframe>
                     </div>
                 </section>
 
@@ -368,7 +368,7 @@
                 <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing Unified Shop & Blog Theme Studio...
+                Initializing Synchronized Shop & Blog Theme Studio...
             </div>
         </div>
     </footer>
@@ -413,14 +413,14 @@
         }
 
         const urlParams = new URLSearchParams(window.location.search);
-        const tenantId = urlParams.get('tenant') || 'bangkokthaipalmy';
+        const TENANT_ID = urlParams.get('tenant') || 'bangkokthaipalmy';
 
-        document.getElementById('tenant-badge').textContent = `Tenant: ${tenantId}`;
-        document.getElementById('back-to-console').href = `index.html?tenant=${encodeURIComponent(tenantId)}`;
-        document.getElementById('logo-link').href = `index.html?tenant=${encodeURIComponent(tenantId)}`;
+        document.getElementById('tenant-badge').textContent = `Tenant: ${TENANT_ID}`;
+        document.getElementById('back-to-console').href = `index.html?tenant=${encodeURIComponent(TENANT_ID)}`;
+        document.getElementById('logo-link').href = `index.html?tenant=${encodeURIComponent(TENANT_ID)}`;
 
-        document.getElementById('live-storefront-iframe').src = `demo1.html?tenant=${encodeURIComponent(tenantId)}`;
-        document.getElementById('live-blog-iframe').src = `blog.html?tenant=${encodeURIComponent(tenantId)}`;
+        document.getElementById('live-storefront-iframe').src = `demo1.html?tenant=${encodeURIComponent(TENANT_ID)}`;
+        document.getElementById('blogPreviewIframe').src = `blog.html?tenant=${encodeURIComponent(TENANT_ID)}`;
 
         function refreshShopIframe() {
             const iframe = document.getElementById('live-storefront-iframe');
@@ -429,7 +429,7 @@
         }
 
         function refreshBlogIframe() {
-            const iframe = document.getElementById('live-blog-iframe');
+            const iframe = document.getElementById('blogPreviewIframe');
             iframe.src = iframe.src;
             logTrace(`Refreshed blog journal iframe.`, 'info');
         }
@@ -447,13 +447,6 @@
             'cardTitleColor', 'cardPriceColor', 'cardStrikethroughPriceColor',
             'cardButtonBg', 'cardButtonTextColor', 'badgeFavPromoBg', 'badgeFavPromoTextColor',
             'footerBgColor', 'footerTextColor'
-        ];
-
-        // Blog UI Keys
-        const blogUiKeys = [
-            'blogCardBg', 'blogCardBorderColor', 'blogTitleColor', 'blogDescColor',
-            'blogCatActiveBg', 'blogCatActiveText', 'blogCatInactiveBg', 'blogCatInactiveText',
-            'blogReadMoreBg', 'blogReadMoreText'
         ];
 
         let activeTargetElement = null;
@@ -478,8 +471,32 @@
             if (activeTargetElement) positionSaveButtonNear(activeTargetElement);
         });
 
+        // Send Blog Theme Update via postMessage to blog.html
+        function sendBlogThemeUpdate() {
+            const iframe = document.getElementById('blogPreviewIframe');
+            if (!iframe || !iframe.contentWindow) return;
+
+            const blogStyles = {
+                blogCardBg: document.getElementById('blogCardBgInput')?.value,
+                blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value,
+                blogTitleColor: document.getElementById('blogTitleColorInput')?.value,
+                blogDescColor: document.getElementById('blogDescColorInput')?.value,
+                blogCatActiveBg: document.getElementById('blogCatActiveBgInput')?.value,
+                blogCatActiveText: document.getElementById('blogCatActiveTextInput')?.value,
+                blogCatInactiveBg: document.getElementById('blogCatInactiveBgInput')?.value,
+                blogCatInactiveText: document.getElementById('blogCatInactiveTextInput')?.value,
+                blogReadMoreBg: document.getElementById('blogReadMoreBgInput')?.value,
+                blogReadMoreText: document.getElementById('blogReadMoreTextInput')?.value
+            };
+
+            iframe.contentWindow.postMessage({
+                type: 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE',
+                uiStyles: blogStyles
+            }, '*');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            logTrace(`Initializing Unified Shop & Blog Studio for tenant: [${tenantId}]`, 'info');
+            logTrace(`Initializing Synchronized Shop & Blog Studio for tenant: [${TENANT_ID}]`, 'info');
             fetchStorageAssetLists();
             fetchAndRenderThemeData();
 
@@ -494,15 +511,12 @@
                 }
             });
 
-            // Blog inputs listener
-            blogUiKeys.forEach(key => {
-                const el = document.getElementById(`blog-${key}`);
-                if (el) {
-                    el.addEventListener('input', () => sendRealtimeBlogThemeToIframe());
-                    el.addEventListener('focus', () => positionSaveButtonNear(el));
-                    el.addEventListener('click', () => positionSaveButtonNear(el));
-                    el.addEventListener('change', () => positionSaveButtonNear(el));
-                }
+            // Blog color pickers listener
+            document.querySelectorAll('.blog-color-picker').forEach(input => {
+                input.addEventListener('input', sendBlogThemeUpdate);
+                input.addEventListener('change', sendBlogThemeUpdate);
+                input.addEventListener('focus', () => positionSaveButtonNear(input));
+                input.addEventListener('click', () => positionSaveButtonNear(input));
             });
 
             ['shop-name-input', 'storageLogoDropdown', 'logo-url-input', 'logo-scale-input'].forEach(id => {
@@ -528,7 +542,7 @@
             document.getElementById('logo-file-input').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                    const storagePath = `tenants/${tenantId}/images/${Date.now()}_${file.name}`;
+                    const storagePath = `tenants/${TENANT_ID}/images/${Date.now()}_${file.name}`;
                     const storageRef = storage.ref().child(storagePath);
                     logTrace(`Uploading file to Storage...`, 'info');
                     storageRef.put(file).then(snapshot => {
@@ -556,7 +570,7 @@
         });
 
         function fetchStorageAssetLists() {
-            const listRef = storage.ref().child(`tenants/${tenantId}/images`);
+            const listRef = storage.ref().child(`tenants/${TENANT_ID}/images`);
             listRef.listAll().then((res) => {
                 const dropdown = document.getElementById('storageLogoDropdown');
                 dropdown.innerHTML = '<option value="">-- Choose from Firebase Storage --</option>';
@@ -584,15 +598,6 @@
             return uiStyles;
         }
 
-        function collectBlogUiStylesPayload() {
-            const blogStyles = {};
-            blogUiKeys.forEach(key => {
-                const el = document.getElementById(`blog-${key}`);
-                if (el) blogStyles[key] = el.value.trim();
-            });
-            return blogStyles;
-        }
-
         function sendRealtimeShopThemeToIframe() {
             const iframe = document.getElementById('live-storefront-iframe');
             if (!iframe || !iframe.contentWindow) return;
@@ -608,21 +613,9 @@
             iframe.contentWindow.postMessage(payload, '*');
         }
 
-        function sendRealtimeBlogThemeToIframe() {
-            const iframe = document.getElementById('live-blog-iframe');
-            if (!iframe || !iframe.contentWindow) return;
-
-            const payload = {
-                type: 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE',
-                uiStyles: collectBlogUiStylesPayload()
-            };
-
-            iframe.contentWindow.postMessage(payload, '*');
-        }
-
         function fetchAndRenderThemeData() {
-            logTrace(`Fetching Firestore unified document for "${tenantId}"...`, 'info');
-            db.collection('tenants').doc(tenantId).get().then((doc) => {
+            logTrace(`Fetching Firestore unified document for "${TENANT_ID}"...`, 'info');
+            db.collection('tenants').doc(TENANT_ID).get().then((doc) => {
                 if (doc.exists) {
                     fetchedDocumentData = doc.data();
                     logTrace(`Document retrieved successfully. Populating shop and blog styles...`, 'success');
@@ -634,7 +627,7 @@
                     const shopUiStyles = profile.uiStyles || shopConfig.uiStyles || {};
                     const blogUiStyles = blogConfig.uiStyles || {};
 
-                    const shopName = profile.tenantName || shopConfig.shopName || tenantId;
+                    const shopName = profile.tenantName || shopConfig.shopName || TENANT_ID;
                     const logoUrl = profile.logoUrl || shopConfig.logoUrl || '';
                     const logoScale = profile.logoScale || 100;
 
@@ -654,17 +647,24 @@
                         }
                     });
 
-                    // Populate Blog UI fields
-                    blogUiKeys.forEach(key => {
-                        if (blogUiStyles[key] !== undefined && blogUiStyles[key] !== '') {
-                            const el = document.getElementById(`blog-${key}`);
-                            if (el) el.value = blogUiStyles[key];
-                        }
-                    });
+                    // Populate Blog UI fields using synchronized IDs
+                    if(blogUiStyles.blogCardBg) document.getElementById('blogCardBgInput').value = blogUiStyles.blogCardBg;
+                    if(blogUiStyles.blogCardBorderColor) document.getElementById('blogCardBorderInput').value = blogUiStyles.blogCardBorderColor;
+                    if(blogUiStyles.blogTitleColor) document.getElementById('blogTitleColorInput').value = blogUiStyles.blogTitleColor;
+                    if(blogUiStyles.blogDescColor) document.getElementById('blogDescColorInput').value = blogUiStyles.blogDescColor;
+                    if(blogUiStyles.blogCatActiveBg) document.getElementById('blogCatActiveBgInput').value = blogUiStyles.blogCatActiveBg;
+                    if(blogUiStyles.blogCatActiveText) document.getElementById('blogCatActiveTextInput').value = blogUiStyles.blogCatActiveText;
+                    if(blogUiStyles.blogCatInactiveBg) document.getElementById('blogCatInactiveBgInput').value = blogUiStyles.blogCatInactiveBg;
+                    if(blogUiStyles.blogCatInactiveText) document.getElementById('blogCatInactiveTextInput').value = blogUiStyles.blogCatInactiveText;
+                    if(blogUiStyles.blogReadMoreBg) document.getElementById('blogReadMoreBgInput').value = blogUiStyles.blogReadMoreBg;
+                    if(blogUiStyles.blogReadMoreText) document.getElementById('blogReadMoreTextInput').value = blogUiStyles.blogReadMoreText;
+
+                    // Trigger initial update to blog preview iframe
+                    setTimeout(() => sendBlogThemeUpdate(), 500);
 
                 } else {
-                    logTrace(`Document for "${tenantId}" not found. Using defaults.`, 'warn');
-                    document.getElementById('shop-name-input').value = tenantId;
+                    logTrace(`Document for "${TENANT_ID}" not found. Using defaults.`, 'warn');
+                    document.getElementById('shop-name-input').value = TENANT_ID;
                 }
             }).catch((error) => {
                 logTrace(`Firestore read error: ${error.message}`, 'error');
@@ -672,10 +672,10 @@
             });
         }
 
-        // Save Theme Settings to Firestore under unified profile/shopConfig and blogConfig
+        // Save Theme Settings to Firestore (Shop & Blog unified payload)
         document.getElementById('theme-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            logTrace(`Saving unified theme updates for tenant "${tenantId}"...`, 'info');
+            logTrace(`Saving unified theme updates for tenant "${TENANT_ID}"...`, 'info');
 
             const saveBtn = document.getElementById('save-btn');
             saveBtn.disabled = true;
@@ -687,8 +687,21 @@
             updatedProfile.logoScale = Number(document.getElementById('logo-scale-input').value) || 100;
             updatedProfile.uiStyles = collectShopUiStylesPayload();
 
+            const blogStylesPayload = {
+                blogCardBg: document.getElementById('blogCardBgInput')?.value,
+                blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value,
+                blogTitleColor: document.getElementById('blogTitleColorInput')?.value,
+                blogDescColor: document.getElementById('blogDescColorInput')?.value,
+                blogCatActiveBg: document.getElementById('blogCatActiveBgInput')?.value,
+                blogCatActiveText: document.getElementById('blogCatActiveTextInput')?.value,
+                blogCatInactiveBg: document.getElementById('blogCatInactiveBgInput')?.value,
+                blogCatInactiveText: document.getElementById('blogCatInactiveTextInput')?.value,
+                blogReadMoreBg: document.getElementById('blogReadMoreBgInput')?.value,
+                blogReadMoreText: document.getElementById('blogReadMoreTextInput')?.value
+            };
+
             const updatedBlogConfig = fetchedDocumentData.blogConfig || {};
-            updatedBlogConfig.uiStyles = collectBlogUiStylesPayload();
+            updatedBlogConfig.uiStyles = blogStylesPayload;
 
             const updatePayload = {
                 profile: updatedProfile,
@@ -696,10 +709,10 @@
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            db.collection('tenants').doc(tenantId).set(updatePayload, { merge: true })
+            db.collection("tenants").doc(TENANT_ID).set(updatePayload, { merge: true })
                 .then(() => {
-                    logTrace(`Unified theme settings for "${tenantId}" successfully saved!`, 'success');
-                    showAlert('Shop & Blog theme styles successfully saved to Firestore!', 'success');
+                    logTrace(`Theme settings (Shop & Blog) successfully saved to Firestore!`, 'success');
+                    showAlert('Theme settings (Shop & Blog) successfully saved to Firestore!', 'success');
                     
                     refreshShopIframe();
                     refreshBlogIframe();

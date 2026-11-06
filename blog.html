@@ -22,7 +22,7 @@
     </script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Firebase Compat SDK v9.22.0 -->
+    <!-- Firebase Compat SDK v9.22.0[cite: 4] -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
@@ -33,14 +33,14 @@
     <header id="mainHeader" class="blog-header-element sticky top-0 z-40 bg-[#1e293b]/90 backdrop-blur-md border-b border-zinc-800 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
-            <!-- Left: Tenant Full Logo -->
+            <!-- Left: Tenant Logo with Dynamic Scale Support -->
             <div class="flex items-center space-x-3">
-                <img id="tenantLogo" src="" alt="Tenant Logo" class="h-10 w-auto object-contain hidden max-h-12">
+                <img id="tenantLogo" src="" alt="Tenant Logo" class="h-10 w-auto object-contain hidden transition-all duration-300">
             </div>
 
             <!-- Right Nav: Switcher & Mobile Menu -->
             <div class="flex items-center space-x-4">
-                <!-- Cross-Navigation Switcher (Journal/Blog ⇄ Shop) [Conditional Visibility via enabledModules] -->
+                <!-- Cross-Navigation Switcher (Journal/Blog ⇄ Shop) [Conditional Visibility via enabledModules][cite: 4] -->
                 <div id="moduleSwitcher" class="blog-switcher-element hidden items-center space-x-2 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800 text-xs transition-colors duration-300">
                     <a id="blogLinkNav" href="#" class="blog-pill-active px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold transition"><i class="fa-solid fa-book-open mr-1.5"></i>Journal</a>
                     <a id="shopLinkNav" href="#" class="blog-pill-inactive px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
@@ -114,7 +114,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="space-y-3">
                 <h4 id="footerStoreName" class="blog-title-element footer-text font-bold text-sm text-white tracking-wide">RestoSync Journal</h4>
-                <p id="footerStoreAddress" class="blog-desc-element footer-text text-stone-400 leading-relaxed">Powered by RestoSync SaaS multi-tenant cloud architecture.</p>
+                <p id="footerStoreAddress" class="blog-desc-element footer-text text-stone-400 leading-relaxed">Powered by RestoSync SaaS multi-tenant cloud architecture[cite: 4].</p>
             </div>
             <div>
                 <h4 class="blog-title-element footer-text font-bold text-sm text-white tracking-wide mb-3">Operating Hours</h4>
@@ -155,7 +155,7 @@
 
         let tenantData = {};
         let cachedActiveStyles = {};
-        let articlesCache = []; // Cache artikel untuk akses modal
+        let articlesCache = [];
 
         function logDiagnostic(message, type = 'info') {
             const consoleEl = document.getElementById('diagnosticConsole');
@@ -189,7 +189,7 @@
                 logDiagnostic(`GAGAL baca tenant: ${error.message}`, 'error');
             });
 
-            // 2. Ambil data pos dari sub-koleksi posts (tenants/{tenantId}/posts)
+            // 2. Ambil data pos dari sub-koleksi posts (tenants/{tenantId}/posts)[cite: 4]
             db.collection("tenants").doc(TENANT_ID).collection("posts")
               .orderBy("createdAt", "desc")
               .onSnapshot((snapshot) => {
@@ -223,14 +223,20 @@
             document.getElementById('footerStoreName').innerText = `${blogTitle} Journal`;
             document.getElementById('footerStoreAddress').innerText = shopConf.address || tenantData.address || 'New Zealand';
 
+            // Resolusi Logo & Skala Dinamis (mengikuti admin-theme.html)
             const logoUrl = blogConf.logoUrl || shopConf.logoUrl || profile.logoUrl || tenantData.logoUrl;
+            const logoScale = blogConf.logoScale || shopConf.logoScale || profile.logoScale || 100;
+
             if (logoUrl) {
                 const logoEl = document.getElementById('tenantLogo');
                 logoEl.src = logoUrl;
                 logoEl.classList.remove('hidden');
+                
+                const calculatedHeight = (40 * logoScale) / 100;
+                logoEl.style.height = `${calculatedHeight}px`;
             }
 
-            // Validasi visibilitas modul Switcher (Shop & Blog harus aktif bersamaan)
+            // Validasi visibilitas modul Switcher (Shop & Blog harus aktif bersamaan)[cite: 4]
             const isShopEnabled = enabledMods.shop !== false;
             const isBlogEnabled = enabledMods.blog !== false;
 
@@ -396,13 +402,21 @@
 
         // Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)[cite: 3]
         window.addEventListener('message', function(event) {
-            if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE') return;
+            if (!event.data) return;
             
             const styles = event.data.uiStyles;
-            if (!styles) return;
+            if (styles) {
+                cachedActiveStyles = { ...cachedActiveStyles, ...styles };
+                applyDynamicTheme(cachedActiveStyles);
+            }
 
-            cachedActiveStyles = { ...cachedActiveStyles, ...styles };
-            applyDynamicTheme(cachedActiveStyles);
+            if (event.data.logoScale) {
+                const logoEl = document.getElementById('tenantLogo');
+                if (logoEl) {
+                    const calculatedHeight = (40 * event.data.logoScale) / 100;
+                    logoEl.style.height = `${calculatedHeight}px`;
+                }
+            }
         });
 
         function renderOperatingHours(opHours) {
@@ -449,7 +463,6 @@
                     dateStr = item.date;
                 }
 
-                // Gunakan ID unik untuk memicu modal tanpa kendala karakter khusus string
                 const articleId = item.id || encodeURIComponent(title);
 
                 return `
@@ -472,7 +485,6 @@
                 `;
             }).join('');
 
-            // Terapkan ulang warna tema ke kartu pos yang baru saja dirender
             applyDynamicTheme(cachedActiveStyles);
         }
 

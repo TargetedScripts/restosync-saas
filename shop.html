@@ -32,8 +32,8 @@
       </div>
 
       <!-- DESKTOP NAVIGATION & SWITCH TO BLOG -->
-      <nav class="hidden md:flex items-center space-x-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs font-bold switcher-container">
-        <a href="#" class="px-3 py-1.5 rounded-lg bg-amber-500 text-zinc-950 flex items-center space-x-1.5 shadow switcher-active">
+      <nav id="switcherNav" class="hidden md:flex items-center space-x-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs font-bold switcher-container">
+        <a id="switcherActiveBtn" href="#" class="px-3 py-1.5 rounded-lg bg-amber-500 text-zinc-950 flex items-center space-x-1.5 shadow switcher-active">
           <i class="fa-solid fa-utensils"></i><span>Shop</span>
         </a>
         <div id="desktopBlogSwitchContainer" style="display: none;">
@@ -246,71 +246,71 @@
       menu.classList.toggle('hidden');
     }
 
-    // Listen for postMessage from Admin Theme Customizer (RESTOSYNC_LIVE_THEME_UPDATE)
+    // Comprehensive real-time postMessage listener supporting both event types
     window.addEventListener('message', function(event) {
-      if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_THEME_UPDATE') return;
-      
-      const payload = event.data;
-      const styles = payload.uiStyles || {};
+      if (!event.data) return;
+      const type = event.data.type;
+      if (type !== 'RESTOSYNC_LIVE_THEME_UPDATE' && type !== 'UPDATE_UI_STYLES') return;
 
-      // Apply Badge & General custom styles
+      const styles = event.data.uiStyles || event.data.shopConfig?.uiStyles || {};
+
+      // 1. Header Styling
+      const headerEl = document.getElementById('mainHeader');
+      if (headerEl && styles.headerBgColor) {
+        headerEl.style.backgroundColor = styles.headerBgColor;
+      }
+      if (headerEl && styles.headerBorderColor) {
+        headerEl.style.borderBottom = `${styles.headerBorderSize || '1px'} solid ${styles.headerBorderColor}`;
+      }
+
+      // 2. Cart Button Styling
+      const cartBtn = document.getElementById('cartBtn');
+      if (cartBtn) {
+        if (styles.cartBtnBg) cartBtn.style.backgroundColor = styles.cartBtnBg;
+        if (styles.cartBtnTextColor) cartBtn.style.color = styles.cartBtnTextColor;
+      }
+
+      // 3. Cart Badge Styling
+      const badgeBg = styles.cartBadgeBg || styles.cartBadgeBgColor;
+      const badgeText = styles.cartBadgeTextColor;
+      document.querySelectorAll('.cart-badge, #cartCount').forEach(el => {
+        if (badgeBg) el.style.backgroundColor = badgeBg;
+        if (badgeText) el.style.color = badgeText;
+      });
+
+      // 4. Switcher Shop & Blog Styling
+      const switcherNav = document.getElementById('switcherNav');
+      if (switcherNav && styles.switcherContainerBg) {
+        switcherNav.style.backgroundColor = styles.switcherContainerBg;
+      }
+      const activeBtn = document.getElementById('switcherActiveBtn');
+      if (activeBtn) {
+        if (styles.switcherActiveBg) activeBtn.style.backgroundColor = styles.switcherActiveBg;
+        if (styles.switcherActiveText) activeBtn.style.color = styles.switcherActiveText;
+      }
+      const inactiveLink = document.getElementById('navBlogSwitchLink');
+      if (inactiveLink && styles.switcherInactiveText) {
+        inactiveLink.style.color = styles.switcherInactiveText;
+      }
+
+      // 5. Grid & Menu Book View Switcher Styling
+      const layoutToggleBox = document.getElementById('layoutToggleBox');
+      if (layoutToggleBox && styles.viewSwitchContainerBg) {
+        layoutToggleBox.style.backgroundColor = styles.viewSwitchContainerBg;
+      }
+      const gridBtn = document.getElementById('btnLayoutGrid');
+      if (gridBtn && currentLayout === 'grid') {
+        if (styles.viewSwitchActiveBg) gridBtn.style.backgroundColor = styles.viewSwitchActiveBg;
+        if (styles.viewSwitchActiveText) gridBtn.style.color = styles.viewSwitchActiveText;
+      }
+      const listBtn = document.getElementById('btnLayoutList');
+      if (listBtn && currentLayout !== 'grid') {
+        if (styles.viewSwitchActiveBg) listBtn.style.backgroundColor = styles.viewSwitchActiveBg;
+        if (styles.viewSwitchActiveText) listBtn.style.color = styles.viewSwitchActiveText;
+      }
+
+      // 6. Apply Fav & Promo Badge Styles
       applyBadgeStyles(styles);
-
-      // 1. Tangkap perubahan warna Cart Badge (Angka/Jumlah di keranjang)
-      if (styles.cartBadgeBg) {
-        document.querySelectorAll('.cart-badge, .badge-count').forEach(el => {
-          el.style.backgroundColor = styles.cartBadgeBg;
-        });
-      }
-      if (styles.cartBadgeTextColor) {
-        document.querySelectorAll('.cart-badge, .badge-count').forEach(el => {
-          el.style.color = styles.cartBadgeTextColor;
-        });
-      }
-
-      // 2. Tangkap perubahan warna Switcher Shop & Blog
-      if (styles.switcherContainerBg) {
-        document.querySelectorAll('.switcher-container, nav .flex.rounded-full').forEach(el => {
-          el.style.backgroundColor = styles.switcherContainerBg;
-        });
-      }
-      if (styles.switcherActiveBg) {
-        document.querySelectorAll('.switcher-active, .shop-blog-switch .active').forEach(el => {
-          el.style.backgroundColor = styles.switcherActiveBg;
-        });
-      }
-      if (styles.switcherActiveText) {
-        document.querySelectorAll('.switcher-active, .shop-blog-switch .active').forEach(el => {
-          el.style.color = styles.switcherActiveText;
-        });
-      }
-      if (styles.switcherInactiveText) {
-        document.querySelectorAll('.switcher-inactive, .shop-blog-switch :not(.active)').forEach(el => {
-          el.style.color = styles.switcherInactiveText;
-        });
-      }
-
-      // 3. Tangkap perubahan warna Grid & Menu Book View Switcher
-      if (styles.viewSwitchContainerBg) {
-        document.querySelectorAll('.view-switch-container').forEach(el => {
-          el.style.backgroundColor = styles.viewSwitchContainerBg;
-        });
-      }
-      if (styles.viewSwitchActiveBg) {
-        document.querySelectorAll('.view-switch-active').forEach(el => {
-          el.style.backgroundColor = styles.viewSwitchActiveBg;
-        });
-      }
-      if (styles.viewSwitchActiveText) {
-        document.querySelectorAll('.view-switch-active').forEach(el => {
-          el.style.color = styles.viewSwitchActiveText;
-        });
-      }
-      if (styles.viewSwitchInactiveText) {
-        document.querySelectorAll('.view-switch-inactive').forEach(el => {
-          el.style.color = styles.viewSwitchInactiveText;
-        });
-      }
     });
 
     function applyBadgeStyles(uiStyles) {
@@ -366,6 +366,13 @@
         headerEl.style.borderBottom = `${ui.headerBorderSize} solid ${ui.headerBorderColor}`;
       }
 
+      // Apply initial cart button styling if available in profile.uiStyles
+      const cartBtn = document.getElementById('cartBtn');
+      if (cartBtn) {
+        if (ui.cartBtnBg) cartBtn.style.backgroundColor = ui.cartBtnBg;
+        if (ui.cartBtnTextColor) cartBtn.style.color = ui.cartBtnTextColor;
+      }
+
       const mainBodyEl = document.getElementById('mainBody');
       if (ui.bodyBgColor && mainBodyEl) {
         mainBodyEl.style.backgroundColor = ui.bodyBgColor;
@@ -412,6 +419,7 @@
         if (ui.footerTextColor) footerEl.style.color = ui.footerTextColor;
       }
 
+      // Fetch operating hours from Firestore (tenantData.officeHours) with fallback to config.operatingHours or RESTOSYNC_CONFIG.operatingHours
       const op = tenantData.officeHours || config.operatingHours || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.operatingHours : {});
       const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       const shortDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];

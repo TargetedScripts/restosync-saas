@@ -95,7 +95,7 @@
 
     </main>
 
-    <!-- FOOTER & OPERATING HOURS (System Trace Removed) -->
+    <!-- FOOTER & OPERATING HOURS -->
     <footer class="blog-footer-element footer-element bg-zinc-950 border-t border-zinc-900 mt-16 text-stone-400 text-xs transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="space-y-3">
@@ -132,7 +132,7 @@
 
         let tenantData = {};
 
-        // 1. Inisialisasi utama saat halaman dimuat (Mengambil data Firestore secara permanen)[cite: 1]
+        // Inisialisasi utama saat halaman dimuat (Mengambil data Firestore secara permanen)[cite: 1]
         document.addEventListener('DOMContentLoaded', () => {
             db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
                 if (doc.exists) {
@@ -205,7 +205,7 @@
             renderArticlesGrid(articles);
         }
 
-        // 2. Fungsi Penerapan Gaya Dinamis ke Elemen HTML
+        // Fungsi Penerapan Gaya Dinamis ke Elemen HTML (Termasuk Switcher Container)
         function applyDynamicTheme(styles) {
             if (!styles) return;
 
@@ -228,7 +228,8 @@
                 document.body.style.color = styles.textColor;
             }
 
-            document.querySelectorAll('.blog-card, .blog-card-element, article, .card, .blog-hero-element').forEach(el => {
+            // Kartu, Hero, dan Switcher Container
+            document.querySelectorAll('.blog-card, .blog-card-element, article, .card, .blog-hero-element, .blog-switcher-element').forEach(el => {
                 if (styles.blogCardBg && styles.blogCardBg.trim() !== '') el.style.backgroundColor = styles.blogCardBg;
                 if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') el.style.borderColor = styles.blogCardBorderColor;
             });
@@ -281,7 +282,7 @@
             }
         }
 
-        // 3. Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)
+        // Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)[cite: 3]
         window.addEventListener('message', function(event) {
             if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE') return;
             

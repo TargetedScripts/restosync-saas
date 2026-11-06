@@ -86,7 +86,6 @@
 
             <!-- Articles Grid Container -->
             <div id="articlesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Populated dynamically via JS -->
                 <div class="col-span-full py-16 text-center text-stone-500 font-mono text-sm">
                     <i class="fa-solid fa-spinner fa-spin text-amber-500 text-2xl mb-2"></i>
                     <p>Loading journal stories from Firestore...</p>
@@ -111,7 +110,6 @@
             </div>
             <div class="space-y-3">
                 <h4 class="blog-title-element font-bold text-sm text-white tracking-wide">System Trace</h4>
-                <!-- Trace & Diagnostic Console -->
                 <details class="text-[11px] text-stone-500 font-mono bg-zinc-900 p-3 rounded-xl border border-zinc-800">
                     <summary class="cursor-pointer hover:text-amber-400 font-bold">RESTOSYNC TRACE & DIAGNOSTIC CONSOLE</summary>
                     <div id="diagnosticConsole" class="mt-2 space-y-1 text-stone-400 max-h-32 overflow-y-auto">
@@ -152,6 +150,7 @@
             }
         }
 
+        // 1. Inisialisasi utama saat halaman dimuat (Mengambil data Firestore secara permanen)
         function initJournalListener() {
             logDiagnostic(`Connecting to Firestore tenant for journal: [${TENANT_ID}]`);
             db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
@@ -170,6 +169,7 @@
         function renderJournalContent() {
             const blogConf = tenantData.blogConfig || {};
             const shopConf = tenantData.shopConfig || {};
+            const profile = tenantData.profile || {};
             const enabledMods = tenantData.enabledModules || {};
 
             const blogTitle = blogConf.siteTitle || shopConf.storeName || tenantData.tenantName || TENANT_ID;
@@ -177,7 +177,7 @@
             document.getElementById('footerStoreName').innerText = `${blogTitle} Journal`;
             document.getElementById('footerStoreAddress').innerText = shopConf.address || tenantData.address || 'New Zealand';
 
-            const logoUrl = blogConf.logoUrl || shopConf.logoUrl || tenantData.logoUrl;
+            const logoUrl = blogConf.logoUrl || shopConf.logoUrl || profile.logoUrl || tenantData.logoUrl;
             if (logoUrl) {
                 const logoEl = document.getElementById('tenantLogo');
                 logoEl.src = logoUrl;
@@ -198,7 +198,8 @@
                 `;
             }
 
-            const activeStyles = shopConf.uiStyles || blogConf.uiStyles || tenantData.uiStyles;
+            // Ambil gaya dari blogConfig.uiStyles atau fallback ke shopConfig/profile uiStyles
+            const activeStyles = blogConf.uiStyles || shopConf.uiStyles || profile.uiStyles || tenantData.uiStyles;
             if (activeStyles) {
                 applyDynamicTheme(activeStyles);
             }
@@ -216,11 +217,11 @@
             renderArticlesGrid(articles);
         }
 
-        // Apply Custom UI Styles dynamically with strict validation to prevent fallback overwrites
+        // 2. Fungsi Penerapan Gaya Dinamis ke Elemen HTML
         function applyDynamicTheme(styles) {
             if (!styles) return;
 
-            // 1. Header Styling (Strict check to prevent empty value overwrites)
+            // Header Background & Border
             const headerBgVal = styles.headerBg || styles.blogHeaderBg;
             if (headerBgVal && headerBgVal.trim() !== '') {
                 document.querySelectorAll('.blog-header-element').forEach(el => {
@@ -233,7 +234,7 @@
                 });
             }
 
-            // 2. Body Background & Global Text Color
+            // Body Background & Text Color
             if (styles.bodyBg && styles.bodyBg.trim() !== '') {
                 document.body.style.backgroundColor = styles.bodyBg;
             }
@@ -241,57 +242,45 @@
                 document.body.style.color = styles.textColor;
             }
 
-            // 3. Hero Section Styling
-            if (styles.blogCardBg && styles.blogCardBg.trim() !== '') {
-                document.querySelectorAll('.blog-hero-element').forEach(el => {
-                    el.style.backgroundColor = styles.blogCardBg;
-                });
-            }
-            if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') {
-                document.querySelectorAll('.blog-hero-element').forEach(el => {
-                    el.style.borderColor = styles.blogCardBorderColor;
-                });
-            }
-
-            // 4. Card Elements (Articles & Section Header)
-            document.querySelectorAll('.blog-card-element').forEach(el => {
+            // Hero Section & Card Elements
+            document.querySelectorAll('.blog-card-element, .blog-hero-element').forEach(el => {
                 if (styles.blogCardBg && styles.blogCardBg.trim() !== '') el.style.backgroundColor = styles.blogCardBg;
                 if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') el.style.borderColor = styles.blogCardBorderColor;
             });
 
-            // 5. Typography (Titles)
+            // Typography (Titles)
             if (styles.blogTitleColor && styles.blogTitleColor.trim() !== '') {
                 document.querySelectorAll('.blog-title-element').forEach(el => {
                     el.style.color = styles.blogTitleColor;
                 });
             }
 
-            // 6. Typography (Descriptions)
+            // Typography (Descriptions)
             if (styles.blogDescColor && styles.blogDescColor.trim() !== '') {
                 document.querySelectorAll('.blog-desc-element').forEach(el => {
                     el.style.color = styles.blogDescColor;
                 });
             }
 
-            // 7. Active Category Pills
+            // Active Category Pills
             document.querySelectorAll('.blog-pill-active').forEach(el => {
                 if (styles.blogCatActiveBg && styles.blogCatActiveBg.trim() !== '') el.style.backgroundColor = styles.blogCatActiveBg;
                 if (styles.blogCatActiveText && styles.blogCatActiveText.trim() !== '') el.style.color = styles.blogCatActiveText;
             });
 
-            // 8. Inactive Category Pills
+            // Inactive Category Pills
             document.querySelectorAll('.blog-pill-inactive').forEach(el => {
                 if (styles.blogCatInactiveBg && styles.blogCatInactiveBg.trim() !== '') el.style.backgroundColor = styles.blogCatInactiveBg;
                 if (styles.blogCatInactiveText && styles.blogCatInactiveText.trim() !== '') el.style.color = styles.blogCatInactiveText;
             });
 
-            // 9. Read More Buttons
+            // Read More Buttons
             document.querySelectorAll('.blog-readmore-btn').forEach(el => {
                 if (styles.blogReadMoreBg && styles.blogReadMoreBg.trim() !== '') el.style.backgroundColor = styles.blogReadMoreBg;
                 if (styles.blogReadMoreText && styles.blogReadMoreText.trim() !== '') el.style.color = styles.blogReadMoreText;
             });
 
-            // 10. Footer & Switcher Styling
+            // Footer & Switcher Styling
             const footerBgVal = styles.footerBg || styles.headerBg;
             if (footerBgVal && footerBgVal.trim() !== '') {
                 document.querySelectorAll('.blog-footer-element').forEach(el => {
@@ -303,12 +292,10 @@
                 if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') el.style.borderColor = styles.blogCardBorderColor;
             });
 
-            logDiagnostic("Dynamic UI styles applied comprehensively across all components.");
+            logDiagnostic("Dynamic UI styles applied comprehensively.");
         }
 
-        // ==========================================
-        // REAL-TIME POSTMESSAGE LISTENER (ADMIN-THEME SYNC)
-        // ==========================================
+        // 3. Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)
         window.addEventListener('message', function(event) {
             if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE') return;
             

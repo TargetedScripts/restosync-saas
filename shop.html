@@ -23,7 +23,7 @@
   <!-- HEADER -->
   <header id="mainHeader" class="sticky top-0 z-50 w-full bg-black transition-colors duration-200 border-b border-zinc-800"> 
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <!-- TENANT LOGO & EXTRA TEXT (RestoSync logo removed) -->
+      <!-- TENANT LOGO & EXTRA TEXT -->
       <div class="flex items-center space-x-3 shrink-0">
         <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
         <div>
@@ -32,12 +32,12 @@
       </div>
 
       <!-- DESKTOP NAVIGATION & SWITCH TO BLOG -->
-      <nav class="hidden md:flex items-center space-x-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs font-bold">
-        <a href="#" class="px-3 py-1.5 rounded-lg bg-amber-500 text-zinc-950 flex items-center space-x-1.5 shadow">
+      <nav class="hidden md:flex items-center space-x-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs font-bold switcher-container">
+        <a href="#" class="px-3 py-1.5 rounded-lg bg-amber-500 text-zinc-950 flex items-center space-x-1.5 shadow switcher-active">
           <i class="fa-solid fa-utensils"></i><span>Shop</span>
         </a>
         <div id="desktopBlogSwitchContainer" style="display: none;">
-          <a id="navBlogSwitchLink" href="#" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition flex items-center space-x-1.5">
+          <a id="navBlogSwitchLink" href="#" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition flex items-center space-x-1.5 switcher-inactive">
             <i class="fa-solid fa-blog"></i><span>Blog</span>
           </a>
         </div>
@@ -45,7 +45,7 @@
 
       <div class="flex items-center space-x-3">
         <button onclick="toggleCartModal()" id="cartBtn" class="font-bold px-3.5 py-2 rounded-xl text-xs flex items-center space-x-2 bg-amber-500 text-zinc-950 shadow-lg transition hover:bg-amber-400">
-          <i class="fa-solid fa-basket-shopping"></i><span>Cart</span><span id="cartCount" class="bg-zinc-950 text-amber-400 text-xs px-2 py-0.5 rounded-full font-mono">0</span>
+          <i class="fa-solid fa-basket-shopping"></i><span>Cart</span><span id="cartCount" class="bg-zinc-950 text-amber-400 text-xs px-2 py-0.5 rounded-full font-mono cart-badge">0</span>
         </button>
         <!-- MOBILE HAMBURGER TOGGLE -->
         <button onclick="toggleMobileMenu()" class="md:hidden text-stone-300 hover:text-white p-2 text-base">
@@ -79,9 +79,9 @@
     <!-- FILTER BAR CONTAINER -->
     <div id="filterBarContainer" class="sticky top-[57px] z-35 bg-zinc-900/95 py-3 -mx-4 px-4 mb-6 border-b border-zinc-800 backdrop-blur-md flex flex-wrap justify-between items-center gap-4 transition-colors duration-200">
       <div id="categoryPills" class="flex space-x-2 overflow-x-auto no-scrollbar py-1"></div>
-      <div id="layoutToggleBox" class="flex items-center space-x-1 bg-zinc-800 p-1 rounded-xl border border-zinc-700 text-xs">
-        <button onclick="switchLayout('grid')" id="btnLayoutGrid" class="px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-zinc-950 transition"><i class="fa-solid fa-grip mr-1"></i> Grid</button>
-        <button onclick="switchLayout('list')" id="btnLayoutList" class="px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition"><i class="fa-solid fa-book-open mr-1"></i> Menu Book</button>
+      <div id="layoutToggleBox" class="flex items-center space-x-1 bg-zinc-800 p-1 rounded-xl border border-zinc-700 text-xs view-switch-container">
+        <button onclick="switchLayout('grid')" id="btnLayoutGrid" class="px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-zinc-950 transition view-switch-active"><i class="fa-solid fa-grip mr-1"></i> Grid</button>
+        <button onclick="switchLayout('list')" id="btnLayoutList" class="px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition view-switch-inactive"><i class="fa-solid fa-book-open mr-1"></i> Menu Book</button>
       </div>
     </div>
     <div id="menuContentBox" class="w-full"></div>
@@ -246,11 +246,70 @@
       menu.classList.toggle('hidden');
     }
 
-    // Listen for postMessage from Admin Theme Customizer
-    window.addEventListener('message', (event) => {
-      if (event.data && event.data.type === 'UPDATE_UI_STYLES') {
-        const uiStyles = event.data.uiStyles || {};
-        applyBadgeStyles(uiStyles);
+    // Listen for postMessage from Admin Theme Customizer (RESTOSYNC_LIVE_THEME_UPDATE)
+    window.addEventListener('message', function(event) {
+      if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_THEME_UPDATE') return;
+      
+      const payload = event.data;
+      const styles = payload.uiStyles || {};
+
+      // Apply Badge & General custom styles
+      applyBadgeStyles(styles);
+
+      // 1. Tangkap perubahan warna Cart Badge (Angka/Jumlah di keranjang)
+      if (styles.cartBadgeBg) {
+        document.querySelectorAll('.cart-badge, .badge-count').forEach(el => {
+          el.style.backgroundColor = styles.cartBadgeBg;
+        });
+      }
+      if (styles.cartBadgeTextColor) {
+        document.querySelectorAll('.cart-badge, .badge-count').forEach(el => {
+          el.style.color = styles.cartBadgeTextColor;
+        });
+      }
+
+      // 2. Tangkap perubahan warna Switcher Shop & Blog
+      if (styles.switcherContainerBg) {
+        document.querySelectorAll('.switcher-container, nav .flex.rounded-full').forEach(el => {
+          el.style.backgroundColor = styles.switcherContainerBg;
+        });
+      }
+      if (styles.switcherActiveBg) {
+        document.querySelectorAll('.switcher-active, .shop-blog-switch .active').forEach(el => {
+          el.style.backgroundColor = styles.switcherActiveBg;
+        });
+      }
+      if (styles.switcherActiveText) {
+        document.querySelectorAll('.switcher-active, .shop-blog-switch .active').forEach(el => {
+          el.style.color = styles.switcherActiveText;
+        });
+      }
+      if (styles.switcherInactiveText) {
+        document.querySelectorAll('.switcher-inactive, .shop-blog-switch :not(.active)').forEach(el => {
+          el.style.color = styles.switcherInactiveText;
+        });
+      }
+
+      // 3. Tangkap perubahan warna Grid & Menu Book View Switcher
+      if (styles.viewSwitchContainerBg) {
+        document.querySelectorAll('.view-switch-container').forEach(el => {
+          el.style.backgroundColor = styles.viewSwitchContainerBg;
+        });
+      }
+      if (styles.viewSwitchActiveBg) {
+        document.querySelectorAll('.view-switch-active').forEach(el => {
+          el.style.backgroundColor = styles.viewSwitchActiveBg;
+        });
+      }
+      if (styles.viewSwitchActiveText) {
+        document.querySelectorAll('.view-switch-active').forEach(el => {
+          el.style.color = styles.viewSwitchActiveText;
+        });
+      }
+      if (styles.viewSwitchInactiveText) {
+        document.querySelectorAll('.view-switch-inactive').forEach(el => {
+          el.style.color = styles.viewSwitchInactiveText;
+        });
       }
     });
 

@@ -31,12 +31,12 @@
         </div>
       </div>
 
-      <!-- DESKTOP NAVIGATION & SWITCH TO BLOG -->
-      <nav id="switcherNav" class="hidden md:flex items-center space-x-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs font-bold switcher-container">
+      <!-- DESKTOP NAVIGATION & SWITCH TO BLOG (Hidden by default until module check passes) -->
+      <nav id="moduleSwitcher" class="hidden items-center space-x-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs font-bold switcher-container">
         <a id="switcherActiveBtn" href="#" class="px-3 py-1.5 rounded-lg bg-amber-500 text-zinc-950 flex items-center space-x-1.5 shadow switcher-active">
           <i class="fa-solid fa-utensils"></i><span>Shop</span>
         </a>
-        <div id="desktopBlogSwitchContainer" style="display: none;">
+        <div>
           <a id="navBlogSwitchLink" href="#" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition flex items-center space-x-1.5 switcher-inactive">
             <i class="fa-solid fa-blog"></i><span>Blog</span>
           </a>
@@ -56,9 +56,8 @@
 
     <!-- MOBILE DROPDOWN MENU -->
     <div id="mobileMenu" class="hidden md:hidden bg-zinc-950 border-t border-zinc-800 px-4 py-3 space-y-2 text-xs font-bold">
-      <a href="#" class="block py-2 text-amber-400"><i class="fa-solid fa-utensils mr-2"></i> Shop Menu</a>
-      <div id="mobileBlogSwitchContainer" style="display: none;">
-        <a id="navBlogMobileLink" href="#" class="block py-2 text-stone-300 hover:text-amber-400"><i class="fa-solid fa-blog mr-2"></i> Switch to Blog</a>
+      <div id="mobileModuleSwitcher" class="space-y-1">
+        <!-- Dynamic mobile switcher items injected here -->
       </div>
     </div>
   </header>
@@ -227,20 +226,44 @@
       });
     });
 
+    // Pemeriksaan visibilitas modul Shop & Blog (Feature Flags)
     function checkModulesAndNavigation() {
       const enabledMods = tenantData.enabledModules || {};
-      logDiagnostic(`Module Status -> Shop: ${enabledMods.shop !== false}, Blog: ${enabledMods.blog === true}`);
+      const isShopEnabled = enabledMods.shop !== false;
+      const isBlogEnabled = enabledMods.blog === true;
+      
+      logDiagnostic(`Module Status -> Shop: ${isShopEnabled}, Blog: ${isBlogEnabled}`);
 
-      if (enabledMods.blog === true) {
+      const switcher = document.getElementById('moduleSwitcher');
+      const mobileSwitcher = document.getElementById('mobileModuleSwitcher');
+
+      // Tampilkan tombol switcher HANYA jika Shop DAN Blog aktif secara bersamaan
+      if (isShopEnabled && isBlogEnabled) {
+        if (switcher) {
+          switcher.classList.remove('hidden');
+          switcher.classList.add('flex');
+        }
         const blogUrl = `blog.html?tenant=${TENANT_ID}`;
-        
-        const desktopSwitch = document.getElementById('navBlogSwitchLink');
-        if (desktopSwitch) desktopSwitch.href = blogUrl;
-        document.getElementById('desktopBlogSwitchContainer').style.display = 'block';
+        const desktopBlogLink = document.getElementById('navBlogSwitchLink');
+        if (desktopBlogLink) desktopBlogLink.href = blogUrl;
 
-        const mobileLink = document.getElementById('navBlogMobileLink');
-        if (mobileLink) mobileLink.href = blogUrl;
-        document.getElementById('mobileBlogSwitchContainer').style.display = 'block';
+        if (mobileSwitcher) {
+          mobileSwitcher.innerHTML = `
+            <a href="shop.html?tenant=${TENANT_ID}" class="block py-2 text-amber-400"><i class="fa-solid fa-utensils mr-2"></i> Shop Menu</a>
+            <a href="${blogUrl}" class="block py-2 text-stone-300 hover:text-amber-400"><i class="fa-solid fa-blog mr-2"></i> Switch to Blog</a>
+          `;
+        }
+      } else {
+        // Sembunyikan switcher jika salah satu modul dimatikan
+        if (switcher) {
+          switcher.classList.add('hidden');
+          switcher.classList.remove('flex');
+        }
+        if (mobileSwitcher) {
+          mobileSwitcher.innerHTML = `
+            <a href="shop.html?tenant=${TENANT_ID}" class="block py-2 text-amber-400"><i class="fa-solid fa-utensils mr-2"></i> Shop Menu</a>
+          `;
+        }
       }
     }
 
@@ -277,7 +300,7 @@
         if (badgeText) el.style.color = badgeText;
       });
 
-      // 4. Switcher Shop & Blog Styling (Mendukung berbagai variasi penamaan key)
+      // 4. Switcher Shop & Blog Styling
       const switcherBg = styles.switcherContainerBg || styles.switchContainerBg;
       if (switcherBg) {
         document.querySelectorAll('.switcher-container, nav.switcher-container, nav .flex.rounded-full').forEach(el => {

@@ -95,7 +95,7 @@
 
     </main>
 
-    <!-- MODAL BACA ARTIKEL PENUH (Tersinkronisasi Warna Database) -->
+    <!-- MODAL BACA ARTIKEL PENUH -->
     <div id="articleModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div id="modalCardBox" class="blog-card-element bg-[#1e293b] border border-zinc-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl relative transition-colors duration-300">
             <button onclick="closeArticleModal()" class="absolute top-4 right-4 p-2 bg-zinc-900 border border-zinc-800 rounded-full text-stone-400 hover:text-white transition">
@@ -154,7 +154,8 @@
         const TENANT_ID = (urlParams.get('tenant') || 'boluhalus').trim().toLowerCase();
 
         let tenantData = {};
-        let cachedActiveStyles = {}; // Menyimpan cache gaya aktif untuk modal
+        let cachedActiveStyles = {};
+        let articlesCache = []; // Cache artikel untuk akses modal
 
         function logDiagnostic(message, type = 'info') {
             const consoleEl = document.getElementById('diagnosticConsole');
@@ -182,7 +183,7 @@
                     logDiagnostic(`SUKSES: Dokumen tenant [${TENANT_ID}] terbaca.`, 'success');
                     renderJournalContent();
                 } else {
-                    logDiagnostic(`ERROR: Dokumen [${TENANT_ID}] tidak ditemukan di koleksi tenants.`, 'error');
+                    logDiagnostic(`ERROR: Dokumen [${TENANT_ID}] tidak ditemukan.`, 'error');
                 }
             }, (error) => {
                 logDiagnostic(`GAGAL baca tenant: ${error.message}`, 'error');
@@ -200,7 +201,7 @@
                   });
 
                   if (postsArray.length === 0) {
-                      logDiagnostic(`WARNING: Sub-koleksi 'posts' kosong atau belum ada pos.`, 'warn');
+                      logDiagnostic(`WARNING: Sub-koleksi 'posts' kosong.`, 'warn');
                   }
 
                   tenantData.blogConfig = tenantData.blogConfig || {};
@@ -219,7 +220,7 @@
 
             const blogTitle = blogConf.siteTitle || shopConf.storeName || tenantData.tenantName || TENANT_ID;
             document.getElementById('pageTitle').innerText = `${blogTitle} - RestoSync Journal`;
-            document.getElementById('footerStoreName').innerText =`${blogTitle} Journal`;
+            document.getElementById('footerStoreName').innerText = `${blogTitle} Journal`;
             document.getElementById('footerStoreAddress').innerText = shopConf.address || tenantData.address || 'New Zealand';
 
             const logoUrl = blogConf.logoUrl || shopConf.logoUrl || profile.logoUrl || tenantData.logoUrl;
@@ -275,10 +276,10 @@
 
             applyDynamicTheme(cachedActiveStyles);
 
-            const articles = blogConf.articles || blogConf.posts || [];
-            logDiagnostic(`Jumlah total pos dimuat untuk grid: ${articles.length}`, 'info');
+            articlesCache = blogConf.articles || blogConf.posts || [];
+            logDiagnostic(`Jumlah total pos dimuat untuk grid: ${articlesCache.length}`, 'info');
 
-            const heroPost = articles.find(p => p.displayAsHero === true) || articles[0];
+            const heroPost = articlesCache.find(p => p.displayAsHero === true) || articlesCache[0];
 
             if (heroPost) {
                 logDiagnostic(`Pos Hero aktif: "${heroPost.title || heroPost.heading || 'Tanpa Judul'}"`, 'info');
@@ -305,11 +306,11 @@
 
             renderOperatingHours(tenantData.officeHours || shopConf.operatingHours);
 
-            document.getElementById('articleCountBadge').innerText = `${articles.length} posts`;
-            renderArticlesGrid(articles);
+            document.getElementById('articleCountBadge').innerText = `${articlesCache.length} posts`;
+            renderArticlesGrid(articlesCache);
         }
 
-        // Fungsi Penerapan Gaya Dinamis ke Elemen HTML & Modal
+        // Fungsi Penerapan Gaya Dinamis ke Seluruh Elemen (Termasuk Kartu Pos & Modal)
         function applyDynamicTheme(styles) {
             if (!styles) return;
 
@@ -332,23 +333,29 @@
                 document.body.style.color = styles.textColor;
             }
 
-            // Kartu, Hero, Switcher Container, & Modal Box
+            // Kartu, Hero, Switcher Container, & Modal Box Background / Border
             document.querySelectorAll('.blog-card, .blog-card-element, article, .card, .blog-hero-element, .blog-switcher-element').forEach(el => {
                 if (styles.blogCardBg && styles.blogCardBg.trim() !== '') el.style.backgroundColor = styles.blogCardBg;
                 if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') el.style.borderColor = styles.blogCardBorderColor;
             });
 
-            if (styles.blogTitleColor && styles.blogTitleColor.trim() !== '') {
-                document.querySelectorAll('h1, h2, h3, .blog-title').forEach(el => {
-                    el.style.color = styles.blogTitleColor;
-                });
-            }
-            if (styles.blogDescColor && styles.blogDescColor.trim() !== '') {
-                document.querySelectorAll('p, .blog-desc').forEach(el => {
-                    el.style.color = styles.blogDescColor;
+            // Judul Artikel & Kartu (blogTitleColor)
+            const titleColor = styles.blogTitleColor;
+            if (titleColor && titleColor.trim() !== '') {
+                document.querySelectorAll('h1, h2, h3, .blog-title, .blog-title-element').forEach(el => {
+                    el.style.color = titleColor;
                 });
             }
 
+            // Deskripsi / Konten Artikel (blogDescColor)
+            const descColor = styles.blogDescColor;
+            if (descColor && descColor.trim() !== '') {
+                document.querySelectorAll('p, .blog-desc, .blog-desc-element').forEach(el => {
+                    el.style.color = descColor;
+                });
+            }
+
+            // Kategori Pills (Active & Inactive)
             document.querySelectorAll('.category-pill.active, .pill-active, .active-pill, .blog-pill-active').forEach(el => {
                 if (styles.blogCatActiveBg && styles.blogCatActiveBg.trim() !== '') el.style.backgroundColor = styles.blogCatActiveBg;
                 if (styles.blogCatActiveText && styles.blogCatActiveText.trim() !== '') el.style.color = styles.blogCatActiveText;
@@ -358,6 +365,7 @@
                 if (styles.blogCatInactiveText && styles.blogCatInactiveText.trim() !== '') el.style.color = styles.blogCatInactiveText;
             });
 
+            // Tombol Read More
             document.querySelectorAll('.read-more-btn, .btn-read-more, button, .blog-readmore-btn').forEach(el => {
                 if (styles.blogReadMoreBg && styles.blogReadMoreBg.trim() !== '') el.style.backgroundColor = styles.blogReadMoreBg;
                 if (styles.blogReadMoreText && styles.blogReadMoreText.trim() !== '') el.style.color = styles.blogReadMoreText;
@@ -441,10 +449,11 @@
                     dateStr = item.date;
                 }
 
-                const encodedItem = encodeURIComponent(JSON.stringify(item));
+                // Gunakan ID unik untuk memicu modal tanpa kendala karakter khusus string
+                const articleId = item.id || encodeURIComponent(title);
 
                 return `
-                    <div onclick="openArticleModal('${encodedItem}')" class="blog-card-element bg-[#1e293b] border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-lg hover:border-amber-500/50 transition duration-300 cursor-pointer">
+                    <div onclick="openArticleModal('${articleId}')" class="blog-card-element bg-[#1e293b] border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-lg hover:border-amber-500/50 transition duration-300 cursor-pointer">
                         <div class="relative h-48 bg-zinc-900 overflow-hidden">
                             <img src="${imageUrl}" alt="${title}" class="w-full h-full object-cover transform hover:scale-105 transition duration-500">
                             ${category ? `<span class="blog-pill-active absolute top-3 right-3 px-3 py-1 bg-zinc-950/80 backdrop-blur-md text-amber-400 font-mono font-bold text-xs rounded-full border border-zinc-800">${category}</span>` : ''}
@@ -462,12 +471,16 @@
                     </div>
                 `;
             }).join('');
+
+            // Terapkan ulang warna tema ke kartu pos yang baru saja dirender
+            applyDynamicTheme(cachedActiveStyles);
         }
 
-        // Fungsi Membuka Modal Artikel Lengkap dengan Penyesuaian Tema Database
-        function openArticleModal(encodedJson) {
+        // Fungsi Membuka Modal Artikel Lengkap Berbasis Cache ID
+        function openArticleModal(articleId) {
             try {
-                const item = JSON.parse(decodeURIComponent(encodedJson));
+                const item = articlesCache.find(p => p.id === articleId) || articlesCache[0];
+                if (!item) return;
                 
                 document.getElementById('modalTitle').innerText = item.title || item.heading || 'Untitled Story';
                 document.getElementById('modalCategory').innerText = item.category || 'Journal';
@@ -480,9 +493,7 @@
                 }
                 document.getElementById('modalDate').innerText = `Published on: ${dateStr}`;
 
-                // Terapkan gaya warna aktif (cachedActiveStyles) langsung ke elemen modal
                 applyDynamicTheme(cachedActiveStyles);
-
                 document.getElementById('articleModal').classList.remove('hidden');
             } catch (e) {
                 console.error("Gagal membuka artikel:", e);

@@ -1,853 +1,831 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RestoSync SaaS - Enterprise Shop Storefront</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .hero-slide { opacity: 0; transition: opacity 1s ease-in-out; position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
-    .hero-slide.active { opacity: 1; display: block; }
-    @keyframes floatLogo {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-    .flying-logo { animation: floatLogo 3s ease-in-out infinite; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestoSync SaaS - Theme & Branding Studio (Shop & Blog)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0f172a',
+                        cardBg: '#1e293b',
+                        accent: '#f59e0b',
+                        accentHover: '#d97706'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase Compat SDK v9.22.0 -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 </head>
-<body id="mainBody" class="bg-zinc-900 text-stone-200 flex flex-col min-h-screen pb-16">
+<body id="app-body" class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans selection:bg-accent selection:text-slate-900 transition-colors duration-200 overflow-x-hidden">
 
-  <!-- HEADER -->
-  <header id="mainHeader" class="sticky top-0 z-50 w-full bg-black transition-colors duration-200 border-b border-zinc-800"> 
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <!-- TENANT LOGO & EXTRA TEXT -->
-      <div class="flex items-center space-x-3 shrink-0">
-        <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
-        <div>
-          <span id="headerExtraText" class="font-bold text-xs uppercase tracking-wider block text-amber-400" style="display: none;"></span>
+    <!-- Top Navigation Bar (Header) -->
+    <header id="app-header" class="bg-cardBg border-b border-slate-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-md transition-colors duration-200">
+        <div class="flex items-center space-x-3">
+            <a id="logo-link" href="#" class="flex items-center focus:outline-none">
+                <img src="assets/images/RS.png" alt="RestoSync Logo" class="h-8 w-auto object-contain">
+            </a>
+            <div class="h-5 w-px bg-slate-700"></div>
+            <h1 class="text-lg font-semibold tracking-tight text-slate-200">Theme & Branding Studio (Shop & Blog)</h1>
         </div>
-      </div>
-
-      <!-- DESKTOP NAVIGATION & SWITCH TO BLOG -->
-      <nav id="switcherNav" class="hidden md:flex items-center space-x-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs font-bold switcher-container">
-        <a id="switcherActiveBtn" href="#" class="px-3 py-1.5 rounded-lg bg-amber-500 text-zinc-950 flex items-center space-x-1.5 shadow switcher-active">
-          <i class="fa-solid fa-utensils"></i><span>Shop</span>
-        </a>
-        <div id="desktopBlogSwitchContainer" style="display: none;">
-          <a id="navBlogSwitchLink" href="#" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition flex items-center space-x-1.5 switcher-inactive">
-            <i class="fa-solid fa-blog"></i><span>Blog</span>
-          </a>
-        </div>
-      </nav>
-
-      <div class="flex items-center space-x-3">
-        <button onclick="toggleCartModal()" id="cartBtn" class="font-bold px-3.5 py-2 rounded-xl text-xs flex items-center space-x-2 bg-amber-500 text-zinc-950 shadow-lg transition hover:bg-amber-400">
-          <i class="fa-solid fa-basket-shopping"></i><span>Cart</span><span id="cartCount" class="bg-zinc-950 text-amber-400 text-xs px-2 py-0.5 rounded-full font-mono cart-badge">0</span>
-        </button>
-        <!-- MOBILE HAMBURGER TOGGLE -->
-        <button onclick="toggleMobileMenu()" class="md:hidden text-stone-300 hover:text-white p-2 text-base">
-          <i class="fa-solid fa-bars"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- MOBILE DROPDOWN MENU -->
-    <div id="mobileMenu" class="hidden md:hidden bg-zinc-950 border-t border-zinc-800 px-4 py-3 space-y-2 text-xs font-bold">
-      <a href="#" class="block py-2 text-amber-400"><i class="fa-solid fa-utensils mr-2"></i> Shop Menu</a>
-      <div id="mobileBlogSwitchContainer" style="display: none;">
-        <a id="navBlogMobileLink" href="#" class="block py-2 text-stone-300 hover:text-amber-400"><i class="fa-solid fa-blog mr-2"></i> Switch to Blog</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- HERO SECTION -->
-  <section id="heroSection" class="relative w-full h-[360px] md:h-[460px] bg-zinc-950 overflow-hidden flex items-center justify-center">
-    <div id="heroSlidesContainer" class="absolute inset-0 w-full h-full"></div>
-    <div id="heroOverlay" class="absolute inset-0 bg-black/40 z-10"></div>
-    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6 z-20 max-w-2xl mx-auto">
-      <img id="heroFlyingLogo" src="" alt="Flying Logo" class="h-16 md:h-20 w-auto object-contain mb-3 flying-logo drop-shadow-2xl" style="display: none;" onerror="this.style.display='none'">
-      <p id="heroTextBelowLogo" class="text-xs md:text-sm font-semibold tracking-wide drop-shadow-md uppercase"></p>
-    </div>
-    <div id="heroDots" class="absolute bottom-4 z-30 flex space-x-2"></div>
-  </section>
-
-  <!-- MENU SECTION -->
-  <section class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
-    <!-- FILTER BAR CONTAINER -->
-    <div id="filterBarContainer" class="sticky top-[57px] z-35 bg-zinc-900/95 py-3 -mx-4 px-4 mb-6 border-b border-zinc-800 backdrop-blur-md flex flex-wrap justify-between items-center gap-4 transition-colors duration-200">
-      <div id="categoryPills" class="flex space-x-2 overflow-x-auto no-scrollbar py-1"></div>
-      <div id="layoutToggleBox" class="flex items-center space-x-1 bg-zinc-800 p-1 rounded-xl border border-zinc-700 text-xs view-switch-container">
-        <button onclick="switchLayout('grid')" id="btnLayoutGrid" class="px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-zinc-950 transition view-switch-active">
-          <i class="fa-solid fa-grip mr-1"></i> Grid
-        </button>
-        <button onclick="switchLayout('list')" id="btnLayoutList" class="px-3 py-1.5 rounded-lg font-bold text-stone-300 hover:text-white transition view-switch-inactive">
-          <i class="fa-solid fa-book-open mr-1"></i> Menu Book
-        </button>
-      </div>
-    </div>
-    <div id="menuContentBox" class="w-full"></div>
-  </section>
-
-  <!-- CART MODAL -->
-  <div id="cartModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-end">
-    <div class="bg-zinc-900 w-full max-w-md h-full flex flex-col shadow-2xl p-6 space-y-4 border-l border-zinc-800">
-      <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-        <h3 class="font-bold text-base text-white flex items-center space-x-2"><i class="fa-solid fa-basket-shopping text-amber-400"></i><span>Your Order Cart</span></h3>
-        <button onclick="toggleCartModal()" class="text-stone-400 hover:text-white text-xl font-bold">&times;</button>
-      </div>
-
-      <!-- Customer Contact Details Form -->
-      <div class="space-y-3 bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs">
-        <p class="font-bold text-amber-400"><i class="fa-solid fa-user mr-1"></i> Customer Information</p>
-        <div>
-          <label class="block text-stone-400 mb-1">Your Name *</label>
-          <input type="text" id="customerName" placeholder="e.g. John Doe" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
-        </div>
-        <div>
-          <label class="block text-stone-400 mb-1">Phone Number *</label>
-          <input type="tel" id="customerPhone" placeholder="e.g. 021 123 4567" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
-        </div>
-      </div>
-
-      <div id="cartItemsList" class="flex-grow overflow-y-auto space-y-2 text-xs divide-y divide-zinc-800/50"></div>
-      
-      <div class="pt-4 border-t border-zinc-800 space-y-2 text-xs bg-zinc-950 p-4 rounded-2xl">
-        <div class="flex justify-between text-stone-400"><span>Subtotal (Excl. GST)</span><span id="cartSubtotal" class="font-mono text-stone-200">$0.00</span></div>
-        <div class="flex justify-between text-stone-400"><span>NZ 15% GST (Included)</span><span id="cartGST" class="font-mono text-stone-200">$0.00</span></div>
-        <div class="flex justify-between font-bold text-base text-amber-400 pt-2 border-t border-zinc-800"><span>Total (NZD)</span><span id="cartTotal" class="font-mono">$0.00</span></div>
-        
-        <button onclick="processCheckout()" class="w-full mt-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black py-3 rounded-xl text-xs shadow-lg transition">
-          Checkout & Confirm Order
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <footer id="mainFooter" class="text-xs py-8 border-t border-zinc-800 mt-12 bg-black text-stone-400">
-    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div>
-        <h4 id="footerStoreName" class="font-bold text-sm mb-1 text-stone-200">Store Name</h4>
-        <p id="footerAddress" class="mb-1 text-xs">Address...</p>
-        <p class="text-xs">Phone: <a id="footerPhone" href="#" class="underline text-amber-400">Phone...</a></p>
-      </div>
-      <div>
-        <h4 class="font-bold text-sm mb-1 text-stone-200"><i class="fa-solid fa-clock mr-1 text-amber-400"></i> Operating Hours</h4>
-        <div id="footerOperatingHours" class="space-y-1 text-xs"><p>Loading hours...</p></div>
-      </div>
-      <div>
-        <h4 class="font-bold text-sm mb-1 text-stone-200"><i class="fa-solid fa-toolbox mr-1 text-amber-400"></i> Quick Links</h4>
-        <div class="flex flex-col space-y-1 text-xs">
-          <a id="adminPortalLink" href="admin.html" class="text-amber-400 hover:underline"><i class="fa-solid fa-user-gear mr-1"></i> Open Manager Portal</a>
-        </div>
-      </div>
-    </div>
-    
-    <!-- TRACE & DIAGNOSTIC CONSOLE -->
-    <div class="max-w-7xl mx-auto px-4 mt-8 pt-4 border-t border-zinc-900">
-      <details class="text-[11px] text-stone-500 font-mono">
-        <summary class="cursor-pointer hover:text-amber-400 font-bold">RESTOSYNC TRACE & DIAGNOSTIC CONSOLE</summary>
-        <div id="diagnosticConsole" class="mt-2 p-3 bg-zinc-950 rounded-xl border border-zinc-800 text-stone-400 space-y-1">
-          <p>[INIT] Loading shop.html storefront...</p>
-        </div>
-      </details>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 mt-4 text-center text-[11px] text-stone-600">
-      Powered & Developed by <span class="text-stone-500 font-semibold">TargetedScripts.com Ecosystem</span> &bull; RestoSync SaaS Enterprise
-    </div>
-  </footer>
-
-  <!-- FIREBASE COMPAT SDKs (v9.22.0) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
-      authDomain: "restosync-saas.firebaseapp.com",
-      projectId: "restosync-saas",
-      storageBucket: "restosync-saas.firebasestorage.app",
-      messagingSenderId: "780544019719",
-      appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
-    };
-
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const TENANT_ID = urlParams.get('tenant') || 'bangkokthaipalmy';
-
-    let tenantData = {};
-    let currentFilter = 'ALL';
-    let currentLayout = 'grid';
-    let cart = [];
-    let heroSlideIndex = 0;
-    let heroTimer = null;
-
-    function logDiagnostic(msg) {
-      const consoleBox = document.getElementById('diagnosticConsole');
-      if (consoleBox) {
-        consoleBox.innerHTML += `<p>[${new Date().toLocaleTimeString()}] ${msg}</p>`;
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('adminPortalLink').href = `admin.html?tenant=${TENANT_ID}`;
-      logDiagnostic(`Fetching tenant document for [${TENANT_ID}] from Firestore...`);
-
-      db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
-        if (doc.exists) {
-          tenantData = doc.data();
-          logDiagnostic(`Tenant document successfully loaded. Processing configuration...`);
-          
-          checkModulesAndNavigation();
-
-          const profile = tenantData.profile || {};
-          const jsPath = profile.jsAssetUrl;
-
-          if (jsPath) {
-            loadTenantJsAsset(jsPath, () => {
-              initializeStoreUI();
-            });
-          } else {
-            initializeStoreUI();
-          }
-        } else {
-          logDiagnostic(`ERROR: Tenant [${TENANT_ID}] not found in Firestore.`);
-          console.error("Tenant not found in Firestore.");
-        }
-      }, (error) => {
-        logDiagnostic(`Firestore Error: ${error.message}`);
-        console.error("Firestore error:", error);
-      });
-    });
-
-    function checkModulesAndNavigation() {
-      const enabledMods = tenantData.enabledModules || {};
-      logDiagnostic(`Module Status -> Shop: ${enabledMods.shop !== false}, Blog: ${enabledMods.blog === true}`);
-
-      if (enabledMods.blog === true) {
-        const blogUrl = `blog.html?tenant=${TENANT_ID}`;
-        
-        const desktopSwitch = document.getElementById('navBlogSwitchLink');
-        if (desktopSwitch) desktopSwitch.href = blogUrl;
-        document.getElementById('desktopBlogSwitchContainer').style.display = 'block';
-
-        const mobileLink = document.getElementById('navBlogMobileLink');
-        if (mobileLink) mobileLink.href = blogUrl;
-        document.getElementById('mobileBlogSwitchContainer').style.display = 'block';
-      }
-    }
-
-    function toggleMobileMenu() {
-      const menu = document.getElementById('mobileMenu');
-      menu.classList.toggle('hidden');
-    }
-
-    // Fungsi terpusat untuk menerapkan gaya UI (digunakan postMessage dan inisialisasi awal)
-    function applyUiStyles(styles) {
-      if (!styles) return;
-
-      // 1. Header Styling
-      const headerEl = document.getElementById('mainHeader');
-      if (headerEl && styles.headerBgColor) {
-        headerEl.style.backgroundColor = styles.headerBgColor;
-      }
-      if (headerEl && styles.headerBorderColor) {
-        headerEl.style.borderBottom = `${styles.headerBorderSize || '1px'} solid ${styles.headerBorderColor}`;
-      }
-
-      // 2. Cart Button Styling
-      const cartBtn = document.getElementById('cartBtn');
-      if (cartBtn) {
-        if (styles.cartBtnBg) cartBtn.style.backgroundColor = styles.cartBtnBg;
-        if (styles.cartBtnTextColor) cartBtn.style.color = styles.cartBtnTextColor;
-      }
-
-      // 3. Cart Badge Styling
-      const badgeBg = styles.cartBadgeBg || styles.cartBadgeBgColor;
-      const badgeText = styles.cartBadgeTextColor;
-      document.querySelectorAll('.cart-badge, #cartCount').forEach(el => {
-        if (badgeBg) el.style.backgroundColor = badgeBg;
-        if (badgeText) el.style.color = badgeText;
-      });
-
-      // 4. Switcher Shop & Blog Styling
-      if (styles.switcherContainerBg) {
-        document.querySelectorAll('.switcher-container, nav .flex.rounded-full').forEach(el => {
-          el.style.backgroundColor = styles.switcherContainerBg;
-        });
-      }
-      if (styles.switcherActiveBg) {
-        document.querySelectorAll('.switcher-active, .shop-blog-switch .active').forEach(el => {
-          el.style.backgroundColor = styles.switcherActiveBg;
-        });
-      }
-      if (styles.switcherActiveText) {
-        document.querySelectorAll('.switcher-active, .shop-blog-switch .active').forEach(el => {
-          el.style.color = styles.switcherActiveText;
-        });
-      }
-      if (styles.switcherInactiveText) {
-        document.querySelectorAll('.switcher-inactive, .shop-blog-switch :not(.active), .shop-blog-switch a').forEach(el => {
-          el.style.color = styles.switcherInactiveText;
-        });
-      }
-
-      // 5. View Switcher (Grid & Menu Book) Styling
-      if (styles.viewSwitcherContainerBg || styles.viewSwitchContainerBg) {
-        const bgVal = styles.viewSwitcherContainerBg || styles.viewSwitchContainerBg;
-        document.querySelectorAll('.view-switch-container').forEach(el => {
-          el.style.backgroundColor = bgVal;
-        });
-      }
-      
-      const activeBgVal = styles.activeViewBg || styles.viewSwitchActiveBg;
-      const activeTextVal = styles.activeViewText || styles.viewSwitchActiveText;
-      const inactiveBgVal = styles.inactiveViewBg || styles.viewSwitchInactiveBg;
-      const inactiveTextVal = styles.inactiveViewText || styles.viewSwitchInactiveText;
-
-      const activeViewBtn = currentLayout === 'grid' ? document.getElementById('btnLayoutGrid') : document.getElementById('btnLayoutList');
-      if (activeViewBtn) {
-        if (activeBgVal) activeViewBtn.style.backgroundColor = activeBgVal;
-        if (activeTextVal) activeViewBtn.style.color = activeTextVal;
-      }
-
-      const inactiveViewBtn = currentLayout === 'grid' ? document.getElementById('btnLayoutList') : document.getElementById('btnLayoutGrid');
-      if (inactiveViewBtn) {
-        if (inactiveBgVal) inactiveViewBtn.style.backgroundColor = inactiveBgVal;
-        if (inactiveTextVal) inactiveViewBtn.style.color = inactiveTextVal;
-      }
-
-      // 6. Fav & Promo Badge Styles
-      if (styles.badgeFavPromoBg) {
-        document.querySelectorAll('.fav-promo-badge').forEach(el => {
-          el.style.backgroundColor = styles.badgeFavPromoBg;
-        });
-      }
-      if (styles.badgeFavPromoTextColor) {
-        document.querySelectorAll('.fav-promo-badge').forEach(el => {
-          el.style.color = styles.badgeFavPromoTextColor;
-          el.querySelectorAll('i, svg').forEach(icon => {
-            icon.style.color = styles.badgeFavPromoTextColor;
-          });
-        });
-      }
-    }
-
-    // Tangkap pembaruan real-time dari admin-theme.html secara instan
-    window.addEventListener('message', function(event) {
-      if (!event.data) return;
-      const type = event.data.type;
-      if (type !== 'RESTOSYNC_LIVE_THEME_UPDATE' && type !== 'UPDATE_UI_STYLES') return;
-      
-      const styles = event.data.uiStyles || event.data.shopConfig?.uiStyles || {};
-      applyUiStyles(styles);
-    });
-
-    function loadTenantJsAsset(jsPath, callback) {
-      if (document.querySelector(`script[src="${jsPath}"]`)) {
-        if (typeof callback === 'function') callback();
-        return;
-      }
-      const scriptTag = document.createElement('script');
-      scriptTag.src = jsPath;
-      scriptTag.onload = () => { if (typeof callback === 'function') callback(); };
-      scriptTag.onerror = () => { if (typeof callback === 'function') callback(); };
-      document.head.appendChild(scriptTag);
-    }
-
-    function initializeStoreUI() {
-      initStoreBranding();
-      initHeroSlider();
-      renderCategoryPills();
-      renderMenuContentBox();
-      logDiagnostic(`Store UI initialized successfully.`);
-    }
-
-    function initStoreBranding() {
-      const profile = tenantData.profile || {};
-      const ui = profile.uiStyles || {};
-      const config = tenantData.config || {};
-      
-      const storeName = profile.tenantName || config.store?.name || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.name : TENANT_ID);
-      const address = profile.address || config.store?.address || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.address : '');
-      const phone = profile.phone || config.store?.phone || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.phone : '');
-      const logoUrl = profile.logoUrl || config.branding?.logo || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.logo : '');
-
-      const mainBodyEl = document.getElementById('mainBody');
-      if (ui.bodyBgColor && mainBodyEl) {
-        mainBodyEl.style.backgroundColor = ui.bodyBgColor;
-      }
-      if (ui.bodyTextColor && mainBodyEl) {
-        mainBodyEl.style.color = ui.bodyTextColor;
-      }
-
-      const filterBar = document.getElementById('filterBarContainer');
-      if (filterBar) {
-        if (ui.filterBarBg) filterBar.style.backgroundColor = ui.filterBarBg;
-        if (ui.filterBarBorderColor) {
-          filterBar.style.borderBottom = `1px solid ${ui.filterBarBorderColor}`;
-        }
-      }
-
-      const extraTextEl = document.getElementById('headerExtraText');
-      if (ui.headerExtraText) {
-        extraTextEl.innerText = ui.headerExtraText;
-        extraTextEl.style.display = 'block';
-        if (ui.headerTextColor) extraTextEl.style.color = ui.headerTextColor;
-      } else {
-        extraTextEl.style.display = 'none';
-      }
-
-      const logoEl = document.getElementById('storeLogo');
-      if (logoUrl) {
-        logoEl.src = logoUrl;
-        logoEl.style.display = 'block';
-        const scale = profile.logoScale ? profile.logoScale / 100 : 1;
-        logoEl.style.transform = `scale(${scale})`;
-      } else {
-        logoEl.style.display = 'none';
-      }
-
-      document.getElementById('footerStoreName').innerText = storeName;
-      document.getElementById('footerAddress').innerText = address;
-      document.getElementById('footerPhone').innerText = phone;
-      document.getElementById('footerPhone').href = `tel:${phone}`;
-
-      const footerEl = document.getElementById('mainFooter');
-      if (footerEl) {
-        if (ui.footerBgColor) footerEl.style.backgroundColor = ui.footerBgColor;
-        if (ui.footerTextColor) footerEl.style.color = ui.footerTextColor;
-      }
-
-      // Terapkan konfigurasi gaya UI termasuk View Switcher dan Switcher saat halaman dimuat/di-refresh
-      applyUiStyles(ui);
-
-      const op = tenantData.officeHours || config.operatingHours || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.operatingHours : {});
-      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-      const shortDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-      
-      const hoursHtml = days.map((day, idx) => {
-        const val = op[day] || op[day.toLowerCase()] || op[shortDays[idx]] || 'Closed';
-        return `<div class="flex justify-between"><span>${day}:</span><span class="font-mono">${val}</span></div>`;
-      }).join('');
-      document.getElementById('footerOperatingHours').innerHTML = hoursHtml || '<p>Hours not set</p>';
-    }
-
-    function initHeroSlider() {
-      const profile = tenantData.profile || {};
-      const ui = profile.uiStyles || {};
-      
-      let slidesData = [];
-
-      const defaultHeroImages = [
-        profile.heroImage1,
-        profile.heroImage2,
-        profile.heroImage3
-      ].filter(img => img && img.trim() !== '' && !img.includes('undefined') && !img.includes('null'));
-
-      defaultHeroImages.forEach(img => {
-        slidesData.push({
-          image: img,
-          title: '',
-          description: '',
-          price: null,
-          isMenuHero: false
-        });
-      });
-
-      const menuItems = tenantData.menuItems || [];
-      const heroMenuItems = menuItems.filter(i => i.isHero === true || i.isHero === 'true');
-
-      heroMenuItems.forEach(item => {
-        const imgSrc = item.image || item.imageUrl || '';
-        if (imgSrc) {
-          slidesData.push({
-            image: imgSrc,
-            title: item.name,
-            description: item.description,
-            price: item.promoPrice && Number(item.promoPrice) < Number(item.price) ? item.promoPrice : item.price,
-            isMenuHero: true
-          });
-        }
-      });
-
-      if (slidesData.length === 0) {
-        slidesData.push({
-          image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
-          title: '',
-          description: '',
-          price: null,
-          isMenuHero: false
-        });
-      }
-
-      const container = document.getElementById('heroSlidesContainer');
-      container.innerHTML = slidesData.map((slide, idx) => `
-        <div class="hero-slide ${idx === 0 ? 'active' : ''} relative" data-is-menu-hero="${slide.isMenuHero}">
-          <img src="${slide.image}" class="w-full h-full object-cover">
-          ${slide.isMenuHero ? `
-            <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-6 md:p-12 z-20">
-              <span class="bg-amber-500 text-zinc-950 text-xs font-bold px-2.5 py-1 rounded-md w-max mb-2"><i class="fa-solid fa-fire mr-1"></i> Featured Hero Menu</span>
-              <h2 class="text-2xl md:text-4xl font-extrabold text-white">${slide.title}</h2>
-              <p class="text-stone-300 text-xs md:text-sm mt-1 max-w-xl line-clamp-2">${slide.description || ''}</p>
-              <span class="text-amber-400 font-mono font-black text-lg mt-2">$${Number(slide.price).toFixed(2)}</span>
+        <div class="flex items-center space-x-4">
+            <div id="tenant-badge" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-mono">
+                Loading tenant...
             </div>
-          ` : ''}
+            <a id="back-to-console" href="#" class="text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-4 py-2 rounded-lg border border-slate-700 transition flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <span>Back to Launchpad</span>
+            </a>
         </div>
-      `).join('');
+    </header>
 
-      const tintColor = ui.heroOverlayColor || '#ffffff';
-      const textBelowEl = document.getElementById('heroTextBelowLogo');
-      textBelowEl.style.color = tintColor;
+    <!-- Main Content Area -->
+    <main class="flex-grow w-full max-w-7xl mx-auto p-4 lg:p-6 space-y-6 relative">
 
-      const flyingEnabled = ui.heroFlyingLogoEnabled === 'yes' || profile.heroFlyingLogoEnabled === 'yes';
-      const logoUrl = profile.logoUrl || '';
-      const flyingLogoEl = document.getElementById('heroFlyingLogo');
-      const textBelow = ui.heroFlyingLogoText || profile.heroFlyingLogoText || '';
-      textBelowEl.innerText = textBelow;
+        <!-- Status Alert Banner -->
+        <div id="alert-banner" class="hidden p-4 rounded-xl border text-sm font-medium transition-all"></div>
 
-      function updateFlyingLogoVisibility() {
-        const activeSlide = document.querySelector('.hero-slide.active');
-        if (!activeSlide) return;
+        <!-- Section Top: Tenant Identity & Logo -->
+        <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+            <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                <h2 class="text-sm font-bold text-slate-200">Tenant Identity & Logo</h2>
+                <span class="text-[10px] bg-accent/10 text-accent px-2 py-0.5 rounded border border-accent/20 font-medium">Branding & Storage</span>
+            </div>
 
-        const isMenuHero = activeSlide.getAttribute('data-is-menu-hero') === 'true';
-
-        if (flyingEnabled && logoUrl && !isMenuHero) {
-          flyingLogoEl.src = logoUrl;
-          flyingLogoEl.style.display = 'block';
-          textBelowEl.style.display = 'block';
-        } else {
-          flyingLogoEl.style.display = 'none';
-          textBelowEl.style.display = 'none';
-        }
-      }
-
-      updateFlyingLogoVisibility();
-
-      if (heroTimer) clearInterval(heroTimer);
-      if (slidesData.length > 1) {
-        heroSlideIndex = 0;
-        heroTimer = setInterval(() => {
-          const slides = document.querySelectorAll('.hero-slide');
-          if (slides.length === 0) return;
-          slides[heroSlideIndex].classList.remove('active');
-          heroSlideIndex = (heroSlideIndex + 1) % slides.length;
-          slides[heroSlideIndex].classList.add('active');
-
-          updateFlyingLogoVisibility();
-        }, 4500);
-      }
-    }
-
-    function getActiveMenuItems() {
-      let items = [];
-      if (tenantData.menuItems && tenantData.menuItems.length > 0) {
-        items = tenantData.menuItems;
-      } else if (tenantData.config?.menuItems && tenantData.config.menuItems.length > 0) {
-        items = tenantData.config.menuItems;
-      } else {
-        items = (typeof RESTOSYNC_CONFIG !== 'undefined' && RESTOSYNC_CONFIG.menuItems) ? RESTOSYNC_CONFIG.menuItems : [];
-      }
-      return items.filter(i => i.isAvailable !== false && i.isHidden !== true && i.hide !== true && i.isHidden !== 'true');
-    }
-
-    function renderCategoryPills() {
-      const items = getActiveMenuItems();
-      const categories = [...new Set(items.map(i => i.category || 'General'))];
-      const pills = document.getElementById('categoryPills');
-      
-      const profile = tenantData.profile || {};
-      const ui = profile.uiStyles || {};
-      
-      const activeBg = ui.catBtnActiveBg || '#f59e0b';
-      const activeText = ui.catBtnActiveText || '#030712';
-      const inactiveBg = ui.catBtnInactiveBg || '#1f2937';
-      const inactiveText = ui.catBtnInactiveText || '#f1f5f9';
-      const borderColor = ui.catBtnBorderColor || '#374151';
-
-      const getBtnStyle = (isActive) => {
-        if (isActive) {
-          return `style="background-color: ${activeBg}; color: ${activeText}; border: 1px solid ${borderColor};"`;
-        }
-        return `style="background-color: ${inactiveBg}; color: ${inactiveText}; border: 1px solid ${borderColor};"`;
-      };
-
-      let html = `<button onclick="filterCategory('ALL')" ${getBtnStyle(currentFilter === 'ALL')} class="px-4 py-2 rounded-full text-xs font-bold transition shadow-sm">ALL</button>`;
-      
-      html += `<button onclick="filterCategory('FAVOURITE')" ${getBtnStyle(currentFilter === 'FAVOURITE')} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap shadow-sm"><i class="fa-solid fa-star mr-1"></i> Favourite</button>`;
-      html += `<button onclick="filterCategory('PROMO')" ${getBtnStyle(currentFilter === 'PROMO')} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap shadow-sm"><i class="fa-solid fa-fire mr-1"></i> Promo</button>`;
-
-      html += categories.map(c => `
-        <button onclick="filterCategory('${c}')" ${getBtnStyle(currentFilter === c)} class="px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap shadow-sm">${c}</button>
-      `).join('');
-      
-      pills.innerHTML = html;
-    }
-
-    function filterCategory(cat) {
-      currentFilter = cat;
-      renderCategoryPills();
-      renderMenuContentBox();
-    }
-
-    function switchLayout(layout) {
-      currentLayout = layout;
-      const profile = tenantData.profile || {};
-      const ui = profile.uiStyles || {};
-      
-      const activeBg = ui.activeViewBg || ui.viewSwitchActiveBg || ui.catBtnActiveBg || '#f59e0b';
-      const activeText = ui.activeViewText || ui.viewSwitchActiveText || ui.catBtnActiveText || '#030712';
-      const inactiveBg = ui.inactiveViewBg || ui.viewSwitchInactiveBg || ui.catBtnInactiveBg || '#1f2937';
-      const inactiveText = ui.inactiveViewText || ui.viewSwitchInactiveText || ui.catBtnInactiveText || '#f1f5f9';
-      const borderColor = ui.catBtnBorderColor || '#374151';
-
-      const gridBtn = document.getElementById('btnLayoutGrid');
-      const listBtn = document.getElementById('btnLayoutList');
-      const layoutToggleBox = document.getElementById('layoutToggleBox');
-
-      if (layoutToggleBox && borderColor) {
-        layoutToggleBox.style.borderColor = borderColor;
-        if (ui.viewSwitcherContainerBg || ui.viewSwitchContainerBg) {
-          layoutToggleBox.style.backgroundColor = ui.viewSwitcherContainerBg || ui.viewSwitchContainerBg;
-        }
-      }
-
-      if (layout === 'grid') {
-        gridBtn.style.backgroundColor = activeBg;
-        gridBtn.style.color = activeText;
-        
-        listBtn.style.backgroundColor = inactiveBg;
-        listBtn.style.color = inactiveText;
-      } else {
-        listBtn.style.backgroundColor = activeBg;
-        listBtn.style.color = activeText;
-
-        gridBtn.style.backgroundColor = inactiveBg;
-        gridBtn.style.color = inactiveText;
-      }
-
-      renderMenuContentBox();
-    }
-
-    function renderMenuContentBox() {
-      let items = getActiveMenuItems();
-      
-      if (currentFilter === 'FAVOURITE') {
-        items = items.filter(i => i.isFav === true || i.isFavorite === true || i.isFav === 'true');
-      } else if (currentFilter === 'PROMO') {
-        items = items.filter(i => (i.promoPrice && Number(i.promoPrice) < Number(i.price)) || i.isPromo === true);
-      } else if (currentFilter !== 'ALL') {
-        items = items.filter(i => (i.category || 'General') === currentFilter);
-      }
-      
-      if (items.length === 0) {
-        document.getElementById('menuContentBox').innerHTML = `<div class="text-center py-16 text-stone-500 text-xs font-mono">No active menu items found for [${currentFilter}].</div>`;
-        return;
-      }
-
-      const profile = tenantData.profile || {};
-      const ui = profile.uiStyles || {};
-      const cardBgStyle = ui.cardMenuBg ? `background-color: ${ui.cardMenuBg};` : '';
-      const cardBorder = ui.cardBorderColor ? `border: ${ui.cardBorderThickness || '1px'} solid ${ui.cardBorderColor};` : '';
-
-      const renderBadges = (item) => {
-        let badgesHtml = '';
-        const spice = Number(item.spiceLevel || 0);
-        if (spice > 0) {
-          badgesHtml += `<span class="fav-promo-badge bg-red-950/80 text-red-400 border border-red-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Spice Level ${spice}"><i class="fa-solid fa-pepper-hot"></i><span>${spice}</span></span>`;
-        }
-        if (item.isFav || item.isFavorite) {
-          badgesHtml += `<span class="fav-promo-badge bg-amber-950/80 text-amber-400 border border-amber-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Favorite"><i class="fa-solid fa-star"></i><span>Fav</span></span>`;
-        }
-        const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
-        if (hasPromo) {
-          badgesHtml += `<span class="fav-promo-badge bg-orange-950/80 text-orange-400 border border-orange-800/50 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center space-x-1" title="Promo Offer"><i class="fa-solid fa-fire"></i><span>Promo</span></span>`;
-        }
-        return badgesHtml ? `<div class="flex flex-wrap gap-1.5 mt-2">${badgesHtml}</div>` : '';
-      };
-
-      if (currentLayout === 'grid') {
-        document.getElementById('menuContentBox').innerHTML = `
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            ${items.map((item, idx) => {
-              const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
-              const itemId = item.id || 'item_' + idx;
-              const imgSrc = item.image || item.imageUrl || '';
-
-              return `
-                <div style="${cardBgStyle} ${cardBorder}" class="bg-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-xl text-xs transition">
-                  <div>
-                    ${imgSrc ? `<div class="w-full h-40 bg-zinc-950 mb-3.5 rounded-xl overflow-hidden"><img src="${imgSrc}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'"></div>` : ''}
-                    <h3 class="font-bold text-stone-100 text-sm leading-snug">${item.name}</h3>
-                    <p class="text-[11px] text-stone-400 mt-1.5 leading-relaxed">${item.description || ''}</p>
-                    ${renderBadges(item)}
-                    <div class="mt-3 flex items-baseline space-x-2">
-                      <span class="${hasPromo ? 'line-through text-zinc-500 text-xs font-mono' : 'font-black text-amber-400 text-base font-mono'}">$${Number(item.price || 0).toFixed(2)}</span>
-                      ${hasPromo ? `<span class="font-black text-amber-400 text-base font-mono">$${Number(item.promoPrice).toFixed(2)}</span>` : ''}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex items-center justify-center p-1 shrink-0">
+                        <img id="logo-preview" src="" alt="Logo" class="object-contain w-full h-full" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\' ry=\'2\'/></svg>';">
                     </div>
-                  </div>
-                  <button onclick="addItemToCart('${itemId}')" class="mt-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-plus"></i><span>Add to Order</span>
-                  </button>
+                    <div class="flex-grow">
+                        <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Display Shop Name</label>
+                        <input type="text" id="shop-name-input" placeholder="Shop Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent">
+                    </div>
                 </div>
-              `;
-            }).join('')}
-          </div>
-        `;
-      } else {
-        document.getElementById('menuContentBox').innerHTML = `
-          <div style="${cardBgStyle} ${cardBorder}" class="bg-zinc-800/60 rounded-3xl p-6 shadow-xl space-y-4 max-w-4xl mx-auto">
-            <h3 class="text-amber-400 font-bold text-xs uppercase tracking-widest border-b border-zinc-700 pb-2 mb-4"><i class="fa-solid fa-book-open mr-2"></i>Classic Menu Book &bull; [${currentFilter}]</h3>
-            <div class="divide-y divide-zinc-700/50">
-              ${items.map((item, idx) => {
-                const hasPromo = item.promoPrice && Number(item.promoPrice) < Number(item.price);
-                const itemId = item.id || 'item_' + idx;
-                return `
-                  <div class="py-4 flex justify-between items-start gap-4 hover:bg-zinc-800/40 px-3 rounded-xl transition">
-                    <div class="space-y-1 flex-grow">
-                      <h4 class="font-bold text-stone-100 text-sm">${item.name}</h4>
-                      <p class="text-xs text-stone-400 leading-relaxed max-w-xl">${item.description || ''}</p>
-                      ${renderBadges(item)}
+
+                <div>
+                    <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1"><i class="fa-solid fa-folder-open mr-1"></i> Storage Library</label>
+                    <select id="storageLogoDropdown" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-accent font-mono">
+                        <option value="">-- Choose from Firebase Storage --</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Logo URL / Upload File</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="logo-url-input" placeholder="https://..." class="flex-grow bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs font-mono focus:outline-none focus:border-accent truncate">
+                        <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold px-3 py-1.5 rounded-lg border border-slate-700 cursor-pointer transition shrink-0 flex items-center space-x-1">
+                            <i class="fa-solid fa-upload text-accent"></i><span>Upload</span>
+                            <input type="file" id="logo-file-input" accept="image/*" class="hidden">
+                        </label>
                     </div>
-                    <div class="text-right shrink-0 flex flex-col items-end space-y-2">
-                      <div class="flex items-baseline space-x-2">
-                        <span class="${hasPromo ? 'line-through text-zinc-500 text-xs font-mono' : 'font-black text-amber-400 text-sm font-mono'}">$${Number(item.price || 0).toFixed(2)}</span>
-                        ${hasPromo ? `<span class="font-black text-amber-400 text-sm font-mono">$${Number(item.promoPrice).toFixed(2)}</span>` : ''}
-                      </div>
-                      <button onclick="addItemToCart('${itemId}')" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-3 py-1.5 rounded-lg text-[11px] shadow transition">
-                        <i class="fa-solid fa-plus"></i> Add
-                      </button>
+                    <div class="flex items-center space-x-2 pt-1">
+                        <span class="text-[10px] text-slate-400 font-semibold">Scale (%):</span>
+                        <input type="number" id="logo-scale-input" value="100" min="50" max="200" class="w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white">
                     </div>
-                  </div>
-                `;
-              }).join('')}
+                </div>
             </div>
-          </div>
-        `;
-      }
+        </section>
 
-      applyUiStyles(ui);
-    }
+        <!-- Main Workspace: 2-Column Split Layout -->
+        <form id="theme-form" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
+            
+            <!-- Left Column: Comprehensive UI Customization Form -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- SHOP / STOREFRONT UI STYLES -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5">
+                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                        <h2 class="text-sm font-bold text-slate-200">Shop / Storefront UI Styles</h2>
+                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-medium">shopConfig</span>
+                    </div>
 
-    function addItemToCart(id) {
-      const items = getActiveMenuItems();
-      const item = items.find((i, idx) => (i.id || 'item_' + idx) === id);
-      if (!item) return;
+                    <!-- Header & Cart Button -->
+                    <div class="space-y-2">
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-heading mr-1"></i> Header, Cart & Switcher</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Header Background</label>
+                                <input type="color" id="ui-headerBgColor" value="#000000" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Header Border Color</label>
+                                <input type="color" id="ui-headerBorderColor" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Cart Button Bg</label>
+                                <input type="color" id="ui-cartButtonBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Cart Button Text</label>
+                                <input type="color" id="ui-cartButtonTextColor" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Cart Badge Bg (Number)</label>
+                                <input type="color" id="ui-cartBadgeBg" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Cart Badge Text (Number)</label>
+                                <input type="color" id="ui-cartBadgeTextColor" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                        </div>
 
-      const finalPrice = item.promoPrice && Number(item.promoPrice) < Number(item.price) ? Number(item.promoPrice) : Number(item.price);
-      const existing = cart.find(c => c.cartId === id);
-      
-      if (existing) {
-        existing.qty++;
-      } else {
-        cart.push({ cartId: id, name: item.name, price: finalPrice, qty: 1 });
-      }
+                        <!-- Shop & Blog Switcher Controls -->
+                        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Switch Container Bg</label>
+                                <input type="color" id="ui-switcherContainerBg" value="#090d16" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active Switch Bg</label>
+                                <input type="color" id="ui-switcherActiveBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active Switch Text</label>
+                                <input type="color" id="ui-switcherActiveText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Inactive Switch Text</label>
+                                <input type="color" id="ui-switcherInactiveText" value="#94a3b8" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                        </div>
+                    </div>
 
-      document.getElementById('cartCount').innerText = cart.reduce((sum, i) => sum + i.qty, 0);
-      updateCartUI();
-    }
+                    <!-- Body & Main Page -->
+                    <div class="space-y-2 pt-3 border-t border-slate-800">
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-desktop mr-1"></i> Body & Main Page</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Body Background</label>
+                                <input type="color" id="ui-bodyBgColor" value="#18181b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Body Text Color</label>
+                                <input type="color" id="ui-bodyTextColor" value="#d6d3d1" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                        </div>
+                    </div>
 
-    function updateCartUI() {
-      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-      const subtotal = total / 1.15;
-      const gst = total - subtotal;
+                    <!-- Hero Banner Section -->
+                    <div class="space-y-2 pt-3 border-t border-slate-800">
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-flag mr-1"></i> Hero Banner Section</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Hero Section Bg</label>
+                                <input type="color" id="ui-heroSectionBg" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Hero Border Color</label>
+                                <input type="color" id="ui-heroSectionBorderColor" value="#3f3f46" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Hero Title Color</label>
+                                <input type="color" id="ui-heroTitleColor" value="#ffffff" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Hero Desc Color</label>
+                                <input type="color" id="ui-heroDescColor" value="#a1a1aa" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                        </div>
+                    </div>
 
-      document.getElementById('cartSubtotal').innerText = `$${subtotal.toFixed(2)}`;
-      document.getElementById('cartGST').innerText = `$${gst.toFixed(2)}`;
-      document.getElementById('cartTotal').innerText = `$${total.toFixed(2)}`;
-      
-      document.getElementById('cartItemsList').innerHTML = cart.length === 0 
-        ? `<div class="text-center py-8 text-stone-500">Your cart is empty.</div>`
-        : cart.map(i => `
-            <div class="flex justify-between items-center py-2.5">
-              <div>
-                <strong class="block text-stone-200">${i.name}</strong>
-                <span class="text-[10px] text-stone-400 font-mono">Qty: ${i.qty} &times; $${i.price.toFixed(2)}</span>
-              </div>
-              <span class="text-amber-400 font-bold font-mono">$${(i.price * i.qty).toFixed(2)}</span>
+                    <!-- Filter Bar & Grid/Menu Switcher -->
+                    <div class="space-y-2 pt-3 border-t border-slate-800">
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-filter mr-1"></i> Filter Bar & Grid/Menu Switcher</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Filter Bar Bg</label>
+                                <input type="color" id="ui-filterBarBg" value="#18181bf2" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Border Color</label>
+                                <input type="color" id="ui-catBtnBorderColor" value="#374151" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active Button Bg</label>
+                                <input type="color" id="ui-catBtnActiveBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active Text</label>
+                                <input type="color" id="ui-catBtnActiveText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Inactive Button Bg</label>
+                                <input type="color" id="ui-catBtnInactiveBg" value="#1f2937" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Inactive Text</label>
+                                <input type="color" id="ui-catBtnInactiveText" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                        </div>
+
+                        <!-- Grid / Menu Book View Switcher Controls -->
+                        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">View Switcher Container Bg</label>
+                                <input type="color" id="ui-viewSwitchContainerBg" value="#1f2937" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active View Bg</label>
+                                <input type="color" id="ui-viewSwitchActiveBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active View Text</label>
+                                <input type="color" id="ui-viewSwitchActiveText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Inactive View Text</label>
+                                <input type="color" id="ui-viewSwitchInactiveText" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Menu Card Styling -->
+                    <div class="space-y-2 pt-3 border-t border-slate-800">
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-utensils mr-1"></i> Menu Card, Prices & Badges</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Card Background</label>
+                                <input type="color" id="ui-cardMenuBg" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Card Border Color</label>
+                                <input type="color" id="ui-cardBorderColor" value="#3f3f46" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Card Title Color</label>
+                                <input type="color" id="ui-cardTitleColor" value="#ffffff" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Price Text Color</label>
+                                <input type="color" id="ui-cardPriceColor" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Strikethrough Price</label>
+                                <input type="color" id="ui-cardStrikethroughPriceColor" value="#71717a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Card Button Bg</label>
+                                <input type="color" id="ui-cardButtonBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Card Button Text</label>
+                                <input type="color" id="ui-cardButtonTextColor" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Fav/Promo Badge Bg</label>
+                                <input type="color" id="ui-badgeFavPromoBg" value="#3f1d05" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-[10px] text-slate-400 mb-1">Fav/Promo Badge Text & Icon</label>
+                                <input type="color" id="ui-badgeFavPromoTextColor" value="#fbbf24" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- BLOG / JOURNAL STYLING -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5">
+                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                        <h2 class="text-sm font-bold text-slate-200">Blog / Journal Styling</h2>
+                        <span class="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded border border-purple-500/20 font-medium">blogConfig</span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-purple-400"><i class="fa-solid fa-newspaper mr-1"></i> Blog Cards & Typography</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Blog Card Bg</label>
+                                <input type="color" id="blogCardBgInput" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Blog Border Color</label>
+                                <input type="color" id="blogCardBorderInput" value="#3f3f46" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Blog Title Color</label>
+                                <input type="color" id="blogTitleColorInput" value="#ffffff" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Blog Desc Color</label>
+                                <input type="color" id="blogDescColorInput" value="#a1a1aa" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-3 border-t border-slate-800">
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-purple-400"><i class="fa-solid fa-tags mr-1"></i> Blog Categories & Buttons</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active Pill Bg</label>
+                                <input type="color" id="blogCatActiveBgInput" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active Pill Text</label>
+                                <input type="color" id="blogCatActiveTextInput" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Inactive Pill Bg</label>
+                                <input type="color" id="blogCatInactiveBgInput" value="#1f2937" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Inactive Pill Text</label>
+                                <input type="color" id="blogCatInactiveTextInput" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Read More Bg</label>
+                                <input type="color" id="blogReadMoreBgInput" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Read More Text</label>
+                                <input type="color" id="blogReadMoreTextInput" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FOOTER STYLING -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5">
+                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                        <h2 class="text-sm font-bold text-slate-200">Footer Styling (Global / Shared)</h2>
+                        <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 font-medium">footerConfig</span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-blue-400"><i class="fa-solid fa-shoe-prints mr-1"></i> Footer Colors & Typography</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Footer Background</label>
+                                <input type="color" id="ui-footerBgColor" value="#090d16" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item footer-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Footer Border Color</label>
+                                <input type="color" id="ui-footerBorderColor" value="#1e293b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item footer-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Footer Text Color</label>
+                                <input type="color" id="ui-footerTextColor" value="#94a3b8" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item footer-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Footer Link / Accent</label>
+                                <input type="color" id="ui-footerLinkColor" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item footer-color-picker">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
             </div>
-          `).join('');
-    }
 
-    function toggleCartModal() {
-      document.getElementById('cartModal').classList.toggle('hidden');
-    }
+            <!-- Right Column: Dual Live Previews -->
+            <div class="lg:col-span-7 sticky top-24 space-y-6">
+                
+                <!-- Storefront Preview Box (shop.html) -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col space-y-3">
+                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-sm font-bold text-slate-200">Real-Time Storefront Preview (shop.html)</h2>
+                            <p class="text-[11px] text-slate-400">Live preview of shop storefront reflecting theme edits instantly.</p>
+                        </div>
+                        <button type="button" onclick="refreshShopIframe()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium border border-slate-700 transition">
+                            <i class="fa-solid fa-rotate mr-1"></i> Refresh
+                        </button>
+                    </div>
 
-    async function processCheckout() {
-      const name = document.getElementById('customerName').value.trim();
-      const phone = document.getElementById('customerPhone').value.trim();
+                    <div class="w-full h-[450px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-inner">
+                        <iframe id="live-storefront-iframe" src="" class="w-full h-full border-0"></iframe>
+                    </div>
+                </section>
 
-      if (!name || !phone) {
-        alert('Please enter your Name and Phone Number before checkout.');
-        return;
-      }
+                <!-- Blog Live Preview Box (blog.html) -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col space-y-3">
+                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-sm font-bold text-slate-200">Real-Time Blog Preview (blog.html)</h2>
+                            <p class="text-[11px] text-slate-400">Live preview of journal/blog module reflecting blog theme edits.</p>
+                        </div>
+                        <button type="button" onclick="refreshBlogIframe()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium border border-slate-700 transition">
+                            <i class="fa-solid fa-rotate mr-1"></i> Refresh
+                        </button>
+                    </div>
 
-      if (cart.length === 0) {
-        alert('Your cart is empty.');
-        return;
-      }
+                    <div class="w-full h-[450px] bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-inner">
+                        <iframe id="blogPreviewIframe" src="" class="w-full h-full border-0"></iframe>
+                    </div>
+                </section>
 
-      try {
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const gst = subtotal * 0.15;
-        const grandTotal = subtotal + gst;
+            </div>
 
-        const randomNum = Math.floor(1000 + Math.random() * 9000);
-        const orderId = `RS-${randomNum}`;
+        </form>
 
-        const orderData = {
-          orderId: orderId,
-          customerName: name,
-          customerPhone: phone,
-          items: cart.map(item => ({
-            id: item.cartId || '',
-            name: item.name,
-            price: item.price,
-            quantity: item.qty,
-            notes: ''
-          })),
-          subtotal: Number(subtotal.toFixed(2)),
-          gst: Number(gst.toFixed(2)),
-          total: Number(grandTotal.toFixed(2)),
-          status: 'Pending',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        <!-- Truly Floating Dynamic Save Action Button -->
+        <div id="dynamic-save-container" class="hidden lg:block fixed z-50 transition-all duration-300 ease-out pointer-events-auto" style="top: 150px; left: 400px;">
+            <button type="button" id="save-btn" onclick="document.getElementById('theme-form').requestSubmit()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl shadow-2xl transition flex items-center text-xs border border-amber-300/60 whitespace-nowrap">
+                <span>Save Theme Settings</span>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Trace & Diagnostic Console -->
+    <footer class="bg-slate-950 border-t border-slate-900 text-xs text-slate-400 py-3 px-6 mt-12 font-mono">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
+            <div class="flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
+            </div>
+            <div id="console-output" class="text-slate-400 break-all">
+                Initializing Fully Synchronized Shop, Blog & Footer Theme Studio...
+            </div>
+        </div>
+    </footer>
+
+    <!-- Core Script Logic -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
+            authDomain: "restosync-saas.firebaseapp.com",
+            projectId: "restosync-saas",
+            storageBucket: "restosync-saas.firebasestorage.app",
+            messagingSenderId: "780544019719",
+            appId: "1:780544019719:web:e5fccb00a4981f2579c9a2"
         };
 
-        logDiagnostic(`Submitting order ${orderId} to Firestore...`);
-        const ordersRef = db.collection("tenants").doc(TENANT_ID).collection("orders");
-        await ordersRef.add(orderData);
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-        const storePhone = tenantData.profile?.phone || 'our store phone';
+        function logTrace(message, type = 'info') {
+            const consoleEl = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            let colorClass = 'text-slate-400';
+            if (type === 'success') colorClass = 'text-emerald-400';
+            if (type === 'error') colorClass = 'text-rose-400';
+            if (type === 'warn') colorClass = 'text-amber-400';
+            
+            consoleEl.innerHTML = `<span class="text-slate-600">[${timestamp}]</span> <span class="${colorClass}">${message}</span>`;
+            console.log(`[RestoSync Theme Trace ${timestamp}] ${message}`);
+        }
 
-        const confirmationMsg = `Order Placed Successfully!\n\n` +
-          `Order ID: ${orderId}\n` +
-          `Customer Name: ${name}\n` +
-          `Phone Number: ${phone}\n\n` +
-          `IMPORTANT: Please call us now at [ ${storePhone} ] and mention your Order ID (${orderId}) to confirm your order and start kitchen processing!`;
+        function showAlert(message, type = 'success') {
+            const alertEl = document.getElementById('alert-banner');
+            alertEl.className = `p-4 rounded-xl border text-sm font-medium transition-all ${
+                type === 'success' 
+                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                    : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+            }`;
+            alertEl.textContent = message;
+            alertEl.classList.remove('hidden');
+            setTimeout(() => { alertEl.classList.add('hidden'); }, 5000);
+        }
 
-        alert(confirmationMsg);
-        logDiagnostic(`Order ${orderId} successfully placed.`);
+        const urlParams = new URLSearchParams(window.location.search);
+        const TENANT_ID = urlParams.get('tenant') || 'bangkokthaipalmy';
 
-        cart = [];
-        document.getElementById('cartCount').innerText = '0';
-        document.getElementById('customerName').value = '';
-        document.getElementById('customerPhone').value = '';
-        updateCartUI();
-        toggleCartModal();
+        document.getElementById('tenant-badge').textContent = `Tenant: ${TENANT_ID}`;
+        document.getElementById('back-to-console').href = `index.html?tenant=${encodeURIComponent(TENANT_ID)}`;
+        document.getElementById('logo-link').href = `index.html?tenant=${encodeURIComponent(TENANT_ID)}`;
 
-      } catch (error) {
-        logDiagnostic(`Checkout Error: ${error.message}`);
-        console.error("Error placing order to Firestore:", error);
-        alert("Failed to place order. Please check your connection and try again.");
-      }
-    }
-  </script>
+        document.getElementById('live-storefront-iframe').src = `shop.html?tenant=${encodeURIComponent(TENANT_ID)}`;
+        document.getElementById('blogPreviewIframe').src = `blog.html?tenant=${encodeURIComponent(TENANT_ID)}`;
+
+        function refreshShopIframe() {
+            const iframe = document.getElementById('live-storefront-iframe');
+            iframe.src = iframe.src;
+            logTrace(`Refreshed shop storefront iframe.`, 'info');
+        }
+
+        function refreshBlogIframe() {
+            const iframe = document.getElementById('blogPreviewIframe');
+            iframe.src = iframe.src;
+            logTrace(`Refreshed blog journal iframe.`, 'info');
+        }
+
+        let fetchedDocumentData = {};
+        
+        // Shop & Footer UI Keys lengkap dengan variabel baru switcher & view mode
+        const shopUiKeys = [
+            'headerBgColor', 'headerBorderColor', 'headerBorderSize', 'headerTextColor', 'headerExtraText',
+            'cartButtonBg', 'cartButtonTextColor', 'cartBadgeBg', 'cartBadgeTextColor',
+            'switcherContainerBg', 'switcherActiveBg', 'switcherActiveText', 'switcherInactiveText',
+            'bodyBgColor', 'bodyTextColor',
+            'heroSectionBg', 'heroSectionBorderColor', 'heroTitleColor', 'heroDescColor',
+            'filterBarBg', 'catBtnActiveBg', 'catBtnActiveText', 'catBtnInactiveBg', 'catBtnInactiveText', 'catBtnBorderColor',
+            'viewSwitchContainerBg', 'viewSwitchActiveBg', 'viewSwitchActiveText', 'viewSwitchInactiveText',
+            'cardMenuBg', 'cardBorderColor', 'cardBorderThickness',
+            'cardTitleColor', 'cardPriceColor', 'cardStrikethroughPriceColor',
+            'cardButtonBg', 'cardButtonTextColor', 'badgeFavPromoBg', 'badgeFavPromoTextColor',
+            'footerBgColor', 'footerBorderColor', 'footerTextColor', 'footerLinkColor'
+        ];
+
+        let activeTargetElement = null;
+
+        function positionSaveButtonNear(element) {
+            if (!element) return;
+            activeTargetElement = element;
+            const container = document.getElementById('dynamic-save-container');
+            const elemRect = element.getBoundingClientRect();
+
+            const topPos = elemRect.top + (elemRect.height / 2) - 16;
+            container.style.top = `${Math.max(10, topPos)}px`;
+            container.style.left = `${elemRect.right + 12}px`;
+            container.classList.remove('hidden');
+        }
+
+        window.addEventListener('scroll', () => {
+            if (activeTargetElement) positionSaveButtonNear(activeTargetElement);
+        });
+
+        window.addEventListener('resize', () => {
+            if (activeTargetElement) positionSaveButtonNear(activeTargetElement);
+        });
+
+        // Send Blog Theme Update via postMessage to blog.html
+        function sendBlogThemeUpdate() {
+            const iframe = document.getElementById('blogPreviewIframe');
+            if (!iframe || !iframe.contentWindow) return;
+
+            const blogStyles = {
+                headerBg: document.getElementById('ui-headerBgColor')?.value || '',
+                headerBorderColor: document.getElementById('ui-headerBorderColor')?.value || '',
+                bodyBg: document.getElementById('ui-bodyBgColor')?.value || '',
+                textColor: document.getElementById('ui-bodyTextColor')?.value || '',
+                
+                footerBgColor: document.getElementById('ui-footerBgColor')?.value || '',
+                footerBorderColor: document.getElementById('ui-footerBorderColor')?.value || '',
+                footerTextColor: document.getElementById('ui-footerTextColor')?.value || '',
+                footerLinkColor: document.getElementById('ui-footerLinkColor')?.value || '',
+
+                blogCardBg: document.getElementById('blogCardBgInput')?.value || '',
+                blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value || '',
+                blogTitleColor: document.getElementById('blogTitleColorInput')?.value || '',
+                blogDescColor: document.getElementById('blogDescColorInput')?.value || '',
+                blogCatActiveBg: document.getElementById('blogCatActiveBgInput')?.value || '',
+                blogCatActiveText: document.getElementById('blogCatActiveTextInput')?.value || '',
+                blogCatInactiveBg: document.getElementById('blogCatInactiveBgInput')?.value || '',
+                blogCatInactiveText: document.getElementById('blogCatInactiveTextInput')?.value || '',
+                blogReadMoreBg: document.getElementById('blogReadMoreBgInput')?.value || '',
+                blogReadMoreText: document.getElementById('blogReadMoreTextInput')?.value || ''
+            };
+
+            iframe.contentWindow.postMessage({
+                type: 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE',
+                uiStyles: blogStyles
+            }, '*');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            logTrace(`Initializing Fully Synchronized Shop, Blog & Footer Studio for tenant: [${TENANT_ID}]`, 'info');
+            fetchStorageAssetLists();
+            fetchAndRenderThemeData();
+
+            // Shop inputs listener
+            shopUiKeys.forEach(key => {
+                const el = document.getElementById(`ui-${key}`);
+                if (el) {
+                    el.addEventListener('input', () => {
+                        sendRealtimeShopThemeToIframe();
+                        if(key.includes('footer') || key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor' || key === 'headerBorderColor') {
+                            sendBlogThemeUpdate();
+                        }
+                    });
+                    el.addEventListener('change', () => {
+                        sendRealtimeShopThemeToIframe();
+                        if(key.includes('footer') || key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor' || key === 'headerBorderColor') {
+                            sendBlogThemeUpdate();
+                        }
+                    });
+                    el.addEventListener('focus', () => positionSaveButtonNear(el));
+                    el.addEventListener('click', () => positionSaveButtonNear(el));
+                }
+            });
+
+            // Blog color pickers listener
+            document.querySelectorAll('.blog-color-picker').forEach(input => {
+                input.addEventListener('input', sendBlogThemeUpdate);
+                input.addEventListener('change', sendBlogThemeUpdate);
+                input.addEventListener('focus', () => positionSaveButtonNear(input));
+                input.addEventListener('click', () => positionSaveButtonNear(input));
+            });
+
+            ['shop-name-input', 'storageLogoDropdown', 'logo-url-input', 'logo-scale-input'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('focus', () => positionSaveButtonNear(el));
+                    el.addEventListener('click', () => positionSaveButtonNear(el));
+                }
+            });
+
+            setTimeout(() => {
+                const firstInput = document.getElementById('ui-headerBgColor');
+                if (firstInput) positionSaveButtonNear(firstInput);
+            }, 300);
+
+            document.getElementById('shop-name-input').addEventListener('input', () => sendRealtimeShopThemeToIframe());
+            document.getElementById('logo-url-input').addEventListener('input', (e) => {
+                document.getElementById('logo-preview').src = e.target.value.trim();
+                sendRealtimeShopThemeToIframe();
+            });
+            document.getElementById('logo-scale-input').addEventListener('input', () => sendRealtimeShopThemeToIframe());
+
+            document.getElementById('logo-file-input').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const storagePath = `tenants/${TENANT_ID}/images/${Date.now()}_${file.name}`;
+                    const storageRef = storage.ref().child(storagePath);
+                    logTrace(`Uploading file to Storage...`, 'info');
+                    storageRef.put(file).then(snapshot => {
+                        snapshot.ref.getDownloadURL().then(downloadURL => {
+                            document.getElementById('logo-url-input').value = downloadURL;
+                            document.getElementById('logo-preview').src = downloadURL;
+                            fetchStorageAssetLists();
+                            sendRealtimeShopThemeToIframe();
+                            logTrace(`Logo uploaded and previewed successfully!`, 'success');
+                        });
+                    }).catch(err => {
+                        logTrace(`Upload failed: ${err.message}`, 'error');
+                    });
+                }
+            });
+
+            document.getElementById('storageLogoDropdown').addEventListener('change', function(e) {
+                if(e.target.value) {
+                    document.getElementById('logo-url-input').value = e.target.value;
+                    document.getElementById('logo-preview').src = e.target.value;
+                    sendRealtimeShopThemeToIframe();
+                    logTrace('Logo selected from storage dropdown.', 'success');
+                }
+            });
+        });
+
+        function fetchStorageAssetLists() {
+            const listRef = storage.ref().child(`tenants/${TENANT_ID}/images`);
+            listRef.listAll().then((res) => {
+                const dropdown = document.getElementById('storageLogoDropdown');
+                dropdown.innerHTML = '<option value="">-- Choose from Firebase Storage --</option>';
+
+                res.items.forEach((itemRef) => {
+                    itemRef.getDownloadURL().then((url) => {
+                        const opt = document.createElement('option');
+                        opt.value = url;
+                        opt.textContent = itemRef.name;
+                        dropdown.appendChild(opt);
+                    });
+                });
+                logTrace(`Successfully fetched storage asset files list.`, 'success');
+            }).catch((err) => {
+                logTrace(`Note: Could not list storage files yet: ${err.message}`, 'warn');
+            });
+        }
+
+        function collectShopUiStylesPayload() {
+            const uiStyles = {};
+            shopUiKeys.forEach(key => {
+                const el = document.getElementById(`ui-${key}`);
+                if (el) uiStyles[key] = el.value.trim();
+            });
+            return uiStyles;
+        }
+
+        function sendRealtimeShopThemeToIframe() {
+            const iframe = document.getElementById('live-storefront-iframe');
+            if (!iframe || !iframe.contentWindow) return;
+
+            const payload = {
+                type: 'RESTOSYNC_LIVE_THEME_UPDATE',
+                tenantName: document.getElementById('shop-name-input').value.trim(),
+                logoUrl: document.getElementById('logo-url-input').value.trim(),
+                logoScale: Number(document.getElementById('logo-scale-input').value) || 100,
+                uiStyles: collectShopUiStylesPayload()
+            };
+
+            iframe.contentWindow.postMessage(payload, '*');
+        }
+
+        function fetchAndRenderThemeData() {
+            logTrace(`Fetching Firestore unified document for "${TENANT_ID}"...`, 'info');
+            db.collection('tenants').doc(TENANT_ID).get().then((doc) => {
+                if (doc.exists) {
+                    fetchedDocumentData = doc.data();
+                    logTrace(`Document retrieved successfully. Populating shop, blog & footer styles...`, 'success');
+
+                    const profile = fetchedDocumentData.profile || {};
+                    const shopConfig = fetchedDocumentData.shopConfig || {};
+                    const blogConfig = fetchedDocumentData.blogConfig || {};
+                    
+                    const shopUiStyles = profile.uiStyles || shopConfig.uiStyles || {};
+                    const blogUiStyles = blogConfig.uiStyles || {};
+
+                    const shopName = profile.tenantName || shopConfig.shopName || TENANT_ID;
+                    const logoUrl = profile.logoUrl || shopConfig.logoUrl || '';
+                    const logoScale = profile.logoScale || 100;
+
+                    document.getElementById('shop-name-input').value = shopName;
+                    document.getElementById('logo-url-input').value = logoUrl;
+                    document.getElementById('logo-scale-input').value = logoScale;
+                    
+                    if(logoUrl) {
+                        document.getElementById('logo-preview').src = logoUrl;
+                    }
+
+                    // Populate Shop & Footer UI fields
+                    shopUiKeys.forEach(key => {
+                        if (shopUiStyles[key] !== undefined && shopUiStyles[key] !== '') {
+                            const el = document.getElementById(`ui-${key}`);
+                            if (el) el.value = shopUiStyles[key];
+                        }
+                    });
+
+                    // Populate Blog UI fields consistently from blogConfig.uiStyles
+                    if(blogUiStyles.blogCardBg) document.getElementById('blogCardBgInput').value = blogUiStyles.blogCardBg;
+                    if(blogUiStyles.blogCardBorderColor) document.getElementById('blogCardBorderInput').value = blogUiStyles.blogCardBorderColor;
+                    if(blogUiStyles.blogTitleColor) document.getElementById('blogTitleColorInput').value = blogUiStyles.blogTitleColor;
+                    if(blogUiStyles.blogDescColor) document.getElementById('blogDescColorInput').value = blogUiStyles.blogDescColor;
+                    if(blogUiStyles.blogCatActiveBg) document.getElementById('blogCatActiveBgInput').value = blogUiStyles.blogCatActiveBg;
+                    if(blogUiStyles.blogCatActiveText) document.getElementById('blogCatActiveTextInput').value = blogUiStyles.blogCatActiveText;
+                    if(blogUiStyles.blogCatInactiveBg) document.getElementById('blogCatInactiveBgInput').value = blogUiStyles.blogCatInactiveBg;
+                    if(blogUiStyles.blogCatInactiveText) document.getElementById('blogCatInactiveTextInput').value = blogUiStyles.blogCatInactiveText;
+                    if(blogUiStyles.blogReadMoreBg) document.getElementById('blogReadMoreBgInput').value = blogUiStyles.blogReadMoreBg;
+                    if(blogUiStyles.blogReadMoreText) document.getElementById('blogReadMoreTextInput').value = blogUiStyles.blogReadMoreText;
+
+                    // Trigger initial update to blog preview iframe
+                    setTimeout(() => sendBlogThemeUpdate(), 500);
+
+                } else {
+                    logTrace(`Document for "${TENANT_ID}" not found. Using defaults.`, 'warn');
+                    document.getElementById('shop-name-input').value = TENANT_ID;
+                }
+            }).catch((error) => {
+                logTrace(`Firestore read error: ${error.message}`, 'error');
+                showAlert(`Failed to load theme data: ${error.message}`, 'error');
+            });
+        }
+
+        // Save Theme Settings to Firestore
+        document.getElementById('theme-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            logTrace(`Saving unified theme updates for tenant "${TENANT_ID}"...`, 'info');
+
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `<span>Saving...</span>`;
+
+            const updatedProfile = fetchedDocumentData.profile || {};
+            updatedProfile.tenantName = document.getElementById('shop-name-input').value.trim();
+            updatedProfile.logoUrl = document.getElementById('logo-url-input').value.trim();
+            updatedProfile.logoScale = Number(document.getElementById('logo-scale-input').value) || 100;
+            updatedProfile.uiStyles = collectShopUiStylesPayload();
+
+            const updatedBlogConfig = fetchedDocumentData.blogConfig || {};
+            updatedBlogConfig.uiStyles = {
+                blogCardBg: document.getElementById('blogCardBgInput')?.value || '',
+                blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value || '',
+                blogTitleColor: document.getElementById('blogTitleColorInput')?.value || '',
+                blogDescColor: document.getElementById('blogDescColorInput')?.value || '',
+                blogCatActiveBg: document.getElementById('blogCatActiveBgInput')?.value || '',
+                blogCatActiveText: document.getElementById('blogCatActiveTextInput')?.value || '',
+                blogCatInactiveBg: document.getElementById('blogCatInactiveBgInput')?.value || '',
+                blogCatInactiveText: document.getElementById('blogCatInactiveTextInput')?.value || '',
+                blogReadMoreBg: document.getElementById('blogReadMoreBgInput')?.value || '',
+                blogReadMoreText: document.getElementById('blogReadMoreTextInput')?.value || ''
+            };
+
+            const updatePayload = {
+                profile: updatedProfile,
+                blogConfig: updatedBlogConfig,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            db.collection("tenants").doc(TENANT_ID).set(updatePayload, { merge: true })
+                .then(() => {
+                    logTrace(`Theme settings successfully saved to Firestore!`, 'success');
+                    showAlert('Theme settings successfully saved to Firestore!', 'success');
+                    
+                    refreshShopIframe();
+                    refreshBlogIframe();
+
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = `<span>Save Theme Settings</span>`;
+                })
+                .catch((error) => {
+                    logTrace(`Firestore write error: ${error.message}`, 'error');
+                    showAlert(`Failed to save theme: ${error.message}`, 'error');
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = `<span>Save Theme Settings</span>`;
+                });
+        });
+    </script>
 </body>
 </html>

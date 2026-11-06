@@ -471,12 +471,15 @@
             if (activeTargetElement) positionSaveButtonNear(activeTargetElement);
         });
 
-        // Send Blog Theme Update via postMessage to blog.html
+        // Send Blog Theme Update via postMessage to blog.html (including supporting header/body variables)
         function sendBlogThemeUpdate() {
             const iframe = document.getElementById('blogPreviewIframe');
             if (!iframe || !iframe.contentWindow) return;
 
             const blogStyles = {
+                headerBg: document.getElementById('ui-headerBgColor')?.value,
+                bodyBg: document.getElementById('ui-bodyBgColor')?.value,
+                textColor: document.getElementById('ui-bodyTextColor')?.value,
                 blogCardBg: document.getElementById('blogCardBgInput')?.value,
                 blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value,
                 blogTitleColor: document.getElementById('blogTitleColorInput')?.value,
@@ -504,14 +507,24 @@
             shopUiKeys.forEach(key => {
                 const el = document.getElementById(`ui-${key}`);
                 if (el) {
-                    el.addEventListener('input', () => sendRealtimeShopThemeToIframe());
+                    el.addEventListener('input', () => {
+                        sendRealtimeShopThemeToIframe();
+                        if(key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor') {
+                            sendBlogThemeUpdate();
+                        }
+                    });
+                    el.addEventListener('change', () => {
+                        sendRealtimeShopThemeToIframe();
+                        if(key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor') {
+                            sendBlogThemeUpdate();
+                        }
+                    });
                     el.addEventListener('focus', () => positionSaveButtonNear(el));
                     el.addEventListener('click', () => positionSaveButtonNear(el));
-                    el.addEventListener('change', () => positionSaveButtonNear(el));
                 }
             });
 
-            // Blog color pickers listener
+            // Blog color pickers listener (stable handling for input & change)
             document.querySelectorAll('.blog-color-picker').forEach(input => {
                 input.addEventListener('input', sendBlogThemeUpdate);
                 input.addEventListener('change', sendBlogThemeUpdate);
@@ -672,7 +685,7 @@
             });
         }
 
-        // Save Theme Settings to Firestore (Shop & Blog unified payload)
+        // Save Theme Settings to Firestore (Safely persisting under blogConfig.uiStyles with merge: true)
         document.getElementById('theme-form').addEventListener('submit', function(e) {
             e.preventDefault();
             logTrace(`Saving unified theme updates for tenant "${TENANT_ID}"...`, 'info');

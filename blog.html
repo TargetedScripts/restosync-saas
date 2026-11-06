@@ -95,9 +95,9 @@
 
     </main>
 
-    <!-- FOOTER & OPERATING HOURS -->
+    <!-- FOOTER & OPERATING HOURS (Dengan Konsol Diagnostik Transparan) -->
     <footer class="blog-footer-element footer-element bg-zinc-950 border-t border-zinc-900 mt-16 text-stone-400 text-xs transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="space-y-3">
                 <h4 id="footerStoreName" class="blog-title-element footer-text font-bold text-sm text-white tracking-wide">RestoSync Journal</h4>
                 <p id="footerStoreAddress" class="blog-desc-element footer-text text-stone-400 leading-relaxed">Powered by RestoSync SaaS multi-tenant cloud architecture.</p>
@@ -107,6 +107,15 @@
                 <div id="footerOperatingHours" class="space-y-1.5 font-mono text-[11px] footer-text">
                     <p class="text-stone-500">Loading schedule...</p>
                 </div>
+            </div>
+            <div class="space-y-3">
+                <h4 class="blog-title-element footer-text font-bold text-sm text-white tracking-wide">Firestore Diagnostics</h4>
+                <details class="text-[11px] text-stone-500 font-mono bg-zinc-900 p-3 rounded-xl border border-zinc-800" open>
+                    <summary class="cursor-pointer hover:text-amber-400 font-bold">LIVE DB STATUS & FIELDS</summary>
+                    <div id="diagnosticConsole" class="mt-2 space-y-1 text-stone-400 max-h-32 overflow-y-auto">
+                        <div>[INIT] Memulai koneksi database...</div>
+                    </div>
+                </details>
             </div>
         </div>
     </footer>
@@ -132,32 +141,59 @@
 
         let tenantData = {};
 
-        // Inisialisasi utama saat halaman dimuat (Mengambil data dokumen utama & Sub-koleksi posts secara permanen)
+        function logDiagnostic(message, type = 'info') {
+            const consoleEl = document.getElementById('diagnosticConsole');
+            if (consoleEl) {
+                const timestamp = new Date().toLocaleTimeString();
+                let colorClass = 'text-stone-400';
+                if (type === 'success') colorClass = 'text-emerald-400 font-bold';
+                if (type === 'error') colorClass = 'text-rose-400 font-bold';
+                if (type === 'warn') colorClass = 'text-amber-400 font-bold';
+
+                consoleEl.innerHTML += `<div class="${colorClass}">[${timestamp}] ${message}</div>`;
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+            }
+            console.log(`[Blog Diagnostic] ${message}`);
+        }
+
+        // Inisialisasi utama saat halaman dimuat (Mengambil data dokumen utama & Sub-koleksi posts)
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Listener dokumen utama tenant (profil, tema, shopConfig, enabledModules, dll)
+            logDiagnostic(`Menghubungkan ke tenant: [${TENANT_ID}]`, 'info');
+
+            // 1. Ambil dokumen utama tenant
             db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
                 if (doc.exists) {
                     tenantData = doc.data();
+                    logDiagnostic(`SUKSES: Dokumen tenant [${TENANT_ID}] terbaca.`, 'success');
+                    logDiagnostic(`Field dokumen tenant: [${Object.keys(tenantData).join(', ')}]`, 'info');
                     renderJournalContent();
+                } else {
+                    logDiagnostic(`ERROR: Dokumen [${TENANT_ID}] tidak ditemukan di koleksi tenants.`, 'error');
                 }
             }, (error) => {
-                console.error("Firestore tenant error:", error);
+                logDiagnostic(`GAGAL baca tenant: ${error.message}`, 'error');
             });
 
-            // 2. Listener sub-koleksi posts (tenants/{tenantId}/posts)
+            // 2. Ambil data pos dari sub-koleksi posts (tenants/{tenantId}/posts)
             db.collection("tenants").doc(TENANT_ID).collection("posts")
               .orderBy("createdAt", "desc")
               .onSnapshot((snapshot) => {
                   const postsArray = [];
                   snapshot.forEach((doc) => {
-                      postsArray.push({ id: doc.id, ...doc.data() });
+                      const postData = doc.data();
+                      postsArray.push({ id: doc.id, ...postData });
+                      logDiagnostic(`SUKSES baca Post ID [${doc.id}]. Field tersedia: [${Object.keys(postData).join(', ')}]`, 'success');
                   });
+
+                  if (postsArray.length === 0) {
+                      logDiagnostic(`WARNING: Sub-koleksi 'posts' kosong atau belum ada dokumen pos.`, 'warn');
+                  }
 
                   tenantData.blogConfig = tenantData.blogConfig || {};
                   tenantData.blogConfig.articles = postsArray;
                   renderJournalContent();
               }, (error) => {
-                  console.error("Firestore sub-collection posts error:", error);
+                  logDiagnostic(`GAGAL baca sub-koleksi posts: ${error.message}`, 'error');
               });
         });
 
@@ -225,13 +261,15 @@
 
             applyDynamicTheme(activeStyles);
 
-            // Ambil daftar artikel dari sub-koleksi posts atau blogConfig.articles/posts
+            // Ambil daftar artikel dari sub-koleksi posts
             const articles = blogConf.articles || blogConf.posts || [];
+            logDiagnostic(`Jumlah total pos dimuat untuk grid: ${articles.length}`, 'info');
 
-            // Cari artikel yang diset sebagai Hero (`displayAsHero === true`) atau ambil pos pertama
+            // Cari artikel Hero (`displayAsHero === true`) atau ambil pos pertama
             const heroPost = articles.find(p => p.displayAsHero === true) || articles[0];
 
             if (heroPost) {
+                logDiagnostic(`Pos Hero aktif: "${heroPost.title || heroPost.heading || 'Tanpa Judul'}"`, 'info');
                 document.getElementById('heroTitle').innerText = heroPost.title || heroPost.heading || `Stories from ${blogTitle}`;
                 document.getElementById('heroSubtitle').innerText = heroPost.excerpt || heroPost.summary || heroPost.content || blogConf.heroSubtitle || 'Explore our articles, baking notes, and behind-the-scenes stories.';
                 
@@ -335,7 +373,7 @@
             }
         }
 
-        // Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)
+        // Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)[cite: 3]
         window.addEventListener('message', function(event) {
             if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE') return;
             

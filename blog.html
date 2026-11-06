@@ -33,7 +33,7 @@
     <header id="mainHeader" class="sticky top-0 z-40 bg-[#1e293b]/90 backdrop-blur-md border-b border-zinc-800 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
-            <!-- Left: Tenant Full Logo (Text Removed) -->
+            <!-- Left: Tenant Full Logo (Text and Global RS Logo Removed) -->
             <div class="flex items-center space-x-3">
                 <img id="tenantLogo" src="" alt="Tenant Logo" class="h-10 w-auto object-contain hidden max-h-12">
             </div>
@@ -154,7 +154,7 @@
             }
         }
 
-        // Live Firestore Snapshot Listener
+        // Live Firestore Snapshot Listener[cite: 1]
         function initJournalListener() {
             logDiagnostic(`Connecting to Firestore tenant for journal: [${TENANT_ID}]`);
             db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
@@ -190,7 +190,7 @@
                 logDiagnostic("Tenant full logo successfully loaded.");
             }
 
-            // Cross-Navigation Module Switcher (Journal/Blog ⇄ Shop)
+            // Cross-Navigation Module Switcher (Journal/Blog ⇄ Shop)[cite: 1]
             if (enabledMods.shop !== false) {
                 const switcher = document.getElementById('moduleSwitcher');
                 const mobileSwitcher = document.getElementById('mobileModuleSwitcher');
@@ -266,7 +266,7 @@
         }
 
         // ==========================================
-        // REAL-TIME POSTMESSAGE LISTENER (ADMIN-THEME SYNC)
+        // REAL-TIME POSTMESSAGE LISTENER (ADMIN-THEME SYNC)[cite: 3]
         // ==========================================
         window.addEventListener('message', function(event) {
             if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE') return;

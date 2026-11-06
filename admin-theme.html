@@ -308,8 +308,13 @@
                         <h3 class="text-[11px] font-bold uppercase tracking-wider text-purple-400"><i class="fa-solid fa-newspaper mr-1"></i> Blog Cards & Typography</h3>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-[10px] text-slate-400 mb-1">Blog Card Bg</label>
+                                <label class="block text-[10px] text-slate-400 mb-1">Blog Card Outer Bg</label>
                                 <input type="color" id="blogCardBgInput" value="#27272a" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
+                            </div>
+                            <!-- Tambahan Kontrol Warna Area Konten Teks Kartu Blog -->
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Blog Content Bg</label>
+                                <input type="color" id="blogCardContentBgInput" value="#1e293b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Blog Border Color</label>
@@ -319,7 +324,7 @@
                                 <label class="block text-[10px] text-slate-400 mb-1">Blog Title Color</label>
                                 <input type="color" id="blogTitleColorInput" value="#ffffff" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
-                            <div>
+                            <div class="col-span-2">
                                 <label class="block text-[10px] text-slate-400 mb-1">Blog Desc Color</label>
                                 <input type="color" id="blogDescColorInput" value="#a1a1aa" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 blog-color-picker">
                             </div>
@@ -515,7 +520,6 @@
 
         let fetchedDocumentData = {};
         
-        // Shop & Footer UI Keys lengkap dengan variabel switcher & view mode
         const shopUiKeys = [
             'headerBgColor', 'headerBorderColor', 'headerBorderSize', 'headerTextColor', 'headerExtraText',
             'cartButtonBg', 'cartButtonTextColor', 'cartBadgeBg', 'cartBadgeTextColor',
@@ -569,6 +573,7 @@
                 footerLinkColor: document.getElementById('ui-footerLinkColor')?.value || '',
 
                 blogCardBg: document.getElementById('blogCardBgInput')?.value || '',
+                blogCardContentBg: document.getElementById('blogCardContentBgInput')?.value || '',
                 blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value || '',
                 blogTitleColor: document.getElementById('blogTitleColorInput')?.value || '',
                 blogDescColor: document.getElementById('blogDescColorInput')?.value || '',
@@ -591,7 +596,6 @@
             fetchStorageAssetLists();
             fetchAndRenderThemeData();
 
-            // Shop inputs listener
             shopUiKeys.forEach(key => {
                 const el = document.getElementById(`ui-${key}`);
                 if (el) {
@@ -612,7 +616,6 @@
                 }
             });
 
-            // Blog color pickers listener
             document.querySelectorAll('.blog-color-picker').forEach(input => {
                 input.addEventListener('input', sendBlogThemeUpdate);
                 input.addEventListener('change', sendBlogThemeUpdate);
@@ -740,7 +743,6 @@
                         document.getElementById('logo-preview').src = logoUrl;
                     }
 
-                    // Populate Shop & Footer UI fields
                     shopUiKeys.forEach(key => {
                         if (shopUiStyles[key] !== undefined && shopUiStyles[key] !== '') {
                             const el = document.getElementById(`ui-${key}`);
@@ -748,8 +750,8 @@
                         }
                     });
 
-                    // Populate Blog UI fields consistently from blogConfig.uiStyles
                     if(blogUiStyles.blogCardBg) document.getElementById('blogCardBgInput').value = blogUiStyles.blogCardBg;
+                    if(blogUiStyles.blogCardContentBg) document.getElementById('blogCardContentBgInput').value = blogUiStyles.blogCardContentBg;
                     if(blogUiStyles.blogCardBorderColor) document.getElementById('blogCardBorderInput').value = blogUiStyles.blogCardBorderColor;
                     if(blogUiStyles.blogTitleColor) document.getElementById('blogTitleColorInput').value = blogUiStyles.blogTitleColor;
                     if(blogUiStyles.blogDescColor) document.getElementById('blogDescColorInput').value = blogUiStyles.blogDescColor;
@@ -760,7 +762,6 @@
                     if(blogUiStyles.blogReadMoreBg) document.getElementById('blogReadMoreBgInput').value = blogUiStyles.blogReadMoreBg;
                     if(blogUiStyles.blogReadMoreText) document.getElementById('blogReadMoreTextInput').value = blogUiStyles.blogReadMoreText;
 
-                    // Trigger initial update to blog preview iframe
                     setTimeout(() => sendBlogThemeUpdate(), 500);
 
                 } else {
@@ -791,6 +792,7 @@
             const updatedBlogConfig = fetchedDocumentData.blogConfig || {};
             updatedBlogConfig.uiStyles = {
                 blogCardBg: document.getElementById('blogCardBgInput')?.value || '',
+                blogCardContentBg: document.getElementById('blogCardContentBgInput')?.value || '',
                 blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value || '',
                 blogTitleColor: document.getElementById('blogTitleColorInput')?.value || '',
                 blogDescColor: document.getElementById('blogDescColorInput')?.value || '',

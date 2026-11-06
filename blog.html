@@ -162,7 +162,7 @@
                 logoEl.classList.remove('hidden');
             }
 
-            // Validasi visibilitas modul (Shop dan Blog harus aktif bersamaan untuk menampilkan switcher)
+            // Validasi visibilitas modul Switcher (Shop & Blog harus aktif bersamaan)
             const isShopEnabled = enabledMods.shop !== false;
             const isBlogEnabled = enabledMods.blog !== false;
 
@@ -208,15 +208,36 @@
 
             applyDynamicTheme(activeStyles);
 
-            document.getElementById('heroTitle').innerText = blogConf.heroTitle || `Stories from ${blogTitle}`;
-            document.getElementById('heroSubtitle').innerText = blogConf.heroSubtitle || blogConf.description || 'Explore our articles, baking notes, and behind-the-scenes stories.';
-            if (blogConf.heroBannerUrl) {
-                document.getElementById('heroImage').src = blogConf.heroBannerUrl;
+            // Ambil daftar artikel dari berbagai kemungkinan properti Firestore (articles, posts, items)
+            const articles = blogConf.articles || blogConf.posts || blogConf.items || tenantData.posts || [];
+
+            // Cari artikel yang diset sebagai Hero (`displayAsHero === true`) atau ambil pos pertama
+            const heroPost = articles.find(p => p.displayAsHero === true) || articles[0];
+
+            if (heroPost) {
+                document.getElementById('heroTitle').innerText = heroPost.title || heroPost.heading || `Stories from ${blogTitle}`;
+                document.getElementById('heroSubtitle').innerText = heroPost.excerpt || heroPost.summary || heroPost.content || blogConf.heroSubtitle || 'Explore our articles, baking notes, and behind-the-scenes stories.';
+                
+                const heroImgUrl = heroPost.imageUrl || heroPost.image || heroPost.photoUrl;
+                if (heroImgUrl) {
+                    document.getElementById('heroImage').src = heroImgUrl;
+                } else if (blogConf.heroBannerUrl) {
+                    document.getElementById('heroImage').src = blogConf.heroBannerUrl;
+                }
+
+                if (heroPost.category) {
+                    document.getElementById('heroBadge').innerText = heroPost.category;
+                }
+            } else {
+                document.getElementById('heroTitle').innerText = blogConf.heroTitle || `Stories from ${blogTitle}`;
+                document.getElementById('heroSubtitle').innerText = blogConf.heroSubtitle || blogConf.description || 'Explore our articles, baking notes, and behind-the-scenes stories.';
+                if (blogConf.heroBannerUrl) {
+                    document.getElementById('heroImage').src = blogConf.heroBannerUrl;
+                }
             }
 
             renderOperatingHours(tenantData.officeHours || shopConf.operatingHours);
 
-            const articles = blogConf.articles || blogConf.posts || [];
             document.getElementById('articleCountBadge').innerText = `${articles.length} posts`;
             renderArticlesGrid(articles);
         }
@@ -335,24 +356,43 @@
                 return;
             }
 
-            grid.innerHTML = articles.map(item => `
-                <div class="blog-card-element bg-[#1e293b] border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-lg hover:border-amber-500/50 transition duration-300">
-                    <div class="relative h-48 bg-zinc-900 overflow-hidden">
-                        <img src="${item.imageUrl || item.image || 'https://images.unsplash.com/photo-1509440159596-0249088772ff'}" alt="${item.title}" class="w-full h-full object-cover transform hover:scale-105 transition duration-500">
-                        ${item.category ? `<span class="blog-pill-active absolute top-3 right-3 px-3 py-1 bg-zinc-950/80 backdrop-blur-md text-amber-400 font-mono font-bold text-xs rounded-full border border-zinc-800">${item.category}</span>` : ''}
-                    </div>
-                    <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
-                        <div class="space-y-2">
-                            <h3 class="blog-title-element font-bold text-base text-white">${item.title || 'Untitled Story'}</h3>
-                            <p class="blog-desc-element text-xs text-stone-400 line-clamp-3">${item.summary || item.content || 'Read more about this story from our kitchen...'}</p>
+            grid.innerHTML = articles.map(item => {
+                const title = item.title || item.heading || 'Untitled Story';
+                const excerpt = item.excerpt || item.summary || item.content || item.description || 'Read more about this story from our kitchen...';
+                const imageUrl = item.imageUrl || item.image || item.photoUrl || 'https://images.unsplash.com/photo-1509440159596-0249088772ff';
+                const category = item.category || item.tag || '';
+                
+                // Format tanggal dari Firestore Timestamp atau string
+                let dateStr = 'Recent Note';
+                if (item.createdAt) {
+                    if (typeof item.createdAt.toDate === 'function') {
+                        dateStr = item.createdAt.toDate().toLocaleDateString();
+                    } else {
+                        dateStr = new Date(item.createdAt).toLocaleDateString();
+                    }
+                } else if (item.date) {
+                    dateStr = item.date;
+                }
+
+                return `
+                    <div class="blog-card-element bg-[#1e293b] border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-lg hover:border-amber-500/50 transition duration-300">
+                        <div class="relative h-48 bg-zinc-900 overflow-hidden">
+                            <img src="${imageUrl}" alt="${title}" class="w-full h-full object-cover transform hover:scale-105 transition duration-500">
+                            ${category ? `<span class="blog-pill-active absolute top-3 right-3 px-3 py-1 bg-zinc-950/80 backdrop-blur-md text-amber-400 font-mono font-bold text-xs rounded-full border border-zinc-800">${category}</span>` : ''}
                         </div>
-                        <div class="pt-4 border-t border-zinc-800/60 flex items-center justify-between text-xs text-stone-500">
-                            <span><i class="fa-regular fa-calendar mr-1.5"></i>${item.date || 'Recent Note'}</span>
-                            <span class="blog-readmore-btn text-amber-400 font-semibold hover:underline cursor-pointer px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 transition">Read Full Story <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                        <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
+                            <div class="space-y-2">
+                                <h3 class="blog-title-element font-bold text-base text-white">${title}</h3>
+                                <p class="blog-desc-element text-xs text-stone-400 line-clamp-3">${excerpt}</p>
+                            </div>
+                            <div class="pt-4 border-t border-zinc-800/60 flex items-center justify-between text-xs text-stone-500">
+                               <span><i class="fa-regular fa-calendar mr-1.5"></i>${dateStr}</span>
+                                <span class="blog-readmore-btn text-amber-400 font-semibold hover:underline cursor-pointer px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 transition">Read Full Story <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function toggleMobileMenu() {

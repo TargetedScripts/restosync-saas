@@ -40,7 +40,7 @@
 
             <!-- Right Nav: Switcher & Mobile Menu -->
             <div class="flex items-center space-x-4">
-                <!-- Cross-Navigation Switcher (Journal/Blog ⇄ Shop)[cite: 1] -->
+                <!-- Cross-Navigation Switcher (Journal/Blog ⇄ Shop) [Conditional Visibility via enabledModules] -->
                 <div id="moduleSwitcher" class="blog-switcher-element hidden items-center space-x-2 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800 text-xs transition-colors duration-300">
                     <a id="blogLinkNav" href="#" class="blog-pill-active px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold transition"><i class="fa-solid fa-book-open mr-1.5"></i>Journal</a>
                     <a id="shopLinkNav" href="#" class="blog-pill-inactive px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
@@ -162,17 +162,33 @@
                 logoEl.classList.remove('hidden');
             }
 
-            if (enabledMods.shop !== false) {
-                const switcher = document.getElementById('moduleSwitcher');
-                const mobileSwitcher = document.getElementById('mobileModuleSwitcher');
-                switcher.classList.remove('hidden');
-                switcher.classList.add('flex');
-                
+            // Validasi visibilitas modul (Shop dan Blog harus aktif bersamaan untuk menampilkan switcher)
+            const isShopEnabled = enabledMods.shop !== false;
+            const isBlogEnabled = enabledMods.blog !== false;
+
+            const switcher = document.getElementById('moduleSwitcher');
+            const mobileSwitcher = document.getElementById('mobileModuleSwitcher');
+
+            if (isShopEnabled && isBlogEnabled) {
+                if (switcher) {
+                    switcher.classList.remove('hidden');
+                    switcher.classList.add('flex');
+                }
                 document.getElementById('shopLinkNav').href = `shop.html?tenant=${TENANT_ID}`;
-                mobileSwitcher.innerHTML = `
-                    <a href="blog.html?tenant=${TENANT_ID}" class="px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold text-xs"><i class="fa-solid fa-book-open mr-1.5"></i>Journal</a>
-                    <a href="shop.html?tenant=${TENANT_ID}" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white text-xs"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
-                `;
+                if (mobileSwitcher) {
+                    mobileSwitcher.innerHTML = `
+                        <a href="blog.html?tenant=${TENANT_ID}" class="px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold text-xs"><i class="fa-solid fa-book-open mr-1.5"></i>Journal</a>
+                        <a href="shop.html?tenant=${TENANT_ID}" class="px-3 py-1.5 rounded-lg text-stone-400 hover:text-white text-xs"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
+                    `;
+                }
+            } else {
+                if (switcher) {
+                    switcher.classList.add('hidden');
+                    switcher.classList.remove('flex');
+                }
+                if (mobileSwitcher) {
+                    mobileSwitcher.innerHTML = '';
+                }
             }
 
             const blogStyles = blogConf.uiStyles || {};
@@ -205,7 +221,7 @@
             renderArticlesGrid(articles);
         }
 
-        // Fungsi Penerapan Gaya Dinamis ke Elemen HTML (Termasuk Switcher Container)
+        // Fungsi Penerapan Gaya Dinamis ke Elemen HTML
         function applyDynamicTheme(styles) {
             if (!styles) return;
 

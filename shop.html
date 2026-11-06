@@ -227,7 +227,6 @@
       });
     });
 
-    // Check enabledModules and configure cross-navigation (Shop <-> Blog)
     function checkModulesAndNavigation() {
       const enabledMods = tenantData.enabledModules || {};
       logDiagnostic(`Module Status -> Shop: ${enabledMods.shop !== false}, Blog: ${enabledMods.blog === true}`);
@@ -250,13 +249,9 @@
       menu.classList.toggle('hidden');
     }
 
-    // 1. Tangkap pembaruan real-time dari admin-theme.html
-    window.addEventListener('message', function(event) {
-      if (!event.data) return;
-      const type = event.data.type;
-      if (type !== 'RESTOSYNC_LIVE_THEME_UPDATE' && type !== 'UPDATE_UI_STYLES') return;
-      
-      const styles = event.data.uiStyles || event.data.shopConfig?.uiStyles || {};
+    // Fungsi terpusat untuk menerapkan gaya UI (digunakan postMessage dan inisialisasi awal)
+    function applyUiStyles(styles) {
+      if (!styles) return;
 
       // 1. Header Styling
       const headerEl = document.getElementById('mainHeader');
@@ -282,7 +277,7 @@
         if (badgeText) el.style.color = badgeText;
       });
 
-      // Terjemahkan warna ke elemen Switcher Shop & Blog
+      // 4. Switcher Shop & Blog Styling
       if (styles.switcherContainerBg) {
         document.querySelectorAll('.switcher-container, nav .flex.rounded-full').forEach(el => {
           el.style.backgroundColor = styles.switcherContainerBg;
@@ -304,47 +299,56 @@
         });
       }
 
-      // Terjemahkan warna ke elemen View Switcher (Grid & Menu Book)
-      if (styles.viewSwitchContainerBg) {
+      // 5. View Switcher (Grid & Menu Book) Styling
+      if (styles.viewSwitcherContainerBg || styles.viewSwitchContainerBg) {
+        const bgVal = styles.viewSwitcherContainerBg || styles.viewSwitchContainerBg;
         document.querySelectorAll('.view-switch-container').forEach(el => {
-          el.style.backgroundColor = styles.viewSwitchContainerBg;
+          el.style.backgroundColor = bgVal;
         });
       }
-      if (styles.viewSwitchActiveBg) {
-        document.querySelectorAll('.view-switch-active').forEach(el => {
-          el.style.backgroundColor = styles.viewSwitchActiveBg;
-        });
-      }
-      if (styles.viewSwitchActiveText) {
-        document.querySelectorAll('.view-switch-active').forEach(el => {
-          el.style.color = styles.viewSwitchActiveText;
-        });
-      }
-      if (styles.viewSwitchInactiveText) {
-        document.querySelectorAll('.view-switch-inactive').forEach(el => {
-          el.style.color = styles.viewSwitchInactiveText;
-        });
+      
+      const activeBgVal = styles.activeViewBg || styles.viewSwitchActiveBg;
+      const activeTextVal = styles.activeViewText || styles.viewSwitchActiveText;
+      const inactiveBgVal = styles.inactiveViewBg || styles.viewSwitchInactiveBg;
+      const inactiveTextVal = styles.inactiveViewText || styles.viewSwitchInactiveText;
+
+      const activeViewBtn = currentLayout === 'grid' ? document.getElementById('btnLayoutGrid') : document.getElementById('btnLayoutList');
+      if (activeViewBtn) {
+        if (activeBgVal) activeViewBtn.style.backgroundColor = activeBgVal;
+        if (activeTextVal) activeViewBtn.style.color = activeTextVal;
       }
 
-      applyBadgeStyles(styles);
-    });
+      const inactiveViewBtn = currentLayout === 'grid' ? document.getElementById('btnLayoutList') : document.getElementById('btnLayoutGrid');
+      if (inactiveViewBtn) {
+        if (inactiveBgVal) inactiveViewBtn.style.backgroundColor = inactiveBgVal;
+        if (inactiveTextVal) inactiveViewBtn.style.color = inactiveTextVal;
+      }
 
-    function applyBadgeStyles(uiStyles) {
-      if (!uiStyles) return;
-      if (uiStyles.badgeFavPromoBg) {
+      // 6. Fav & Promo Badge Styles
+      if (styles.badgeFavPromoBg) {
         document.querySelectorAll('.fav-promo-badge').forEach(el => {
-          el.style.backgroundColor = uiStyles.badgeFavPromoBg;
+          el.style.backgroundColor = styles.badgeFavPromoBg;
         });
       }
-      if (uiStyles.badgeFavPromoTextColor) {
+      if (styles.badgeFavPromoTextColor) {
         document.querySelectorAll('.fav-promo-badge').forEach(el => {
-          el.style.color = uiStyles.badgeFavPromoTextColor;
+          el.style.color = styles.badgeFavPromoTextColor;
           el.querySelectorAll('i, svg').forEach(icon => {
-            icon.style.color = uiStyles.badgeFavPromoTextColor;
+            icon.style.color = styles.badgeFavPromoTextColor;
           });
         });
       }
     }
+
+    // Tangkap pembaruan real-time dari admin-theme.html secara instan
+    window.addEventListener('message', function(event) {
+      if (!event.data) return;
+      const type = event.data.type;
+      if (type !== 'RESTOSYNC_LIVE_THEME_UPDATE' && type !== 'UPDATE_UI_STYLES') return;
+      
+      const styles = event.data.uiStyles || event.data.shopConfig?.uiStyles || {};
+      applyUiStyles(styles);
+    });
 
     function loadTenantJsAsset(jsPath, callback) {
       if (document.querySelector(`script[src="${jsPath}"]`)) {
@@ -375,18 +379,6 @@
       const address = profile.address || config.store?.address || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.store?.address : '');
       const phone = profile.phone || config.store?.phone || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.phone : '');
       const logoUrl = profile.logoUrl || config.branding?.logo || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.branding?.logo : '');
-
-      const headerEl = document.getElementById('mainHeader');
-      if (ui.headerBgColor) headerEl.style.backgroundColor = ui.headerBgColor;
-      if (ui.headerBorderColor && ui.headerBorderSize && ui.headerBorderSize !== '0px') {
-        headerEl.style.borderBottom = `${ui.headerBorderSize} solid ${ui.headerBorderColor}`;
-      }
-
-      const cartBtn = document.getElementById('cartBtn');
-      if (cartBtn) {
-        if (ui.cartBtnBg) cartBtn.style.backgroundColor = ui.cartBtnBg;
-        if (ui.cartBtnTextColor) cartBtn.style.color = ui.cartBtnTextColor;
-      }
 
       const mainBodyEl = document.getElementById('mainBody');
       if (ui.bodyBgColor && mainBodyEl) {
@@ -434,7 +426,9 @@
         if (ui.footerTextColor) footerEl.style.color = ui.footerTextColor;
       }
 
-      // Fetch working hours from Firestore (tenantData.officeHours) with fallback to config.operatingHours or RESTOSYNC_CONFIG.operatingHours
+      // Terapkan konfigurasi gaya UI termasuk View Switcher dan Switcher saat halaman dimuat/di-refresh
+      applyUiStyles(ui);
+
       const op = tenantData.officeHours || config.operatingHours || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.operatingHours : {});
       const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       const shortDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
@@ -608,10 +602,10 @@
       const profile = tenantData.profile || {};
       const ui = profile.uiStyles || {};
       
-      const activeBg = ui.catBtnActiveBg || '#f59e0b';
-      const activeText = ui.catBtnActiveText || '#030712';
-      const inactiveBg = ui.catBtnInactiveBg || '#1f2937';
-      const inactiveText = ui.catBtnInactiveText || '#f1f5f9';
+      const activeBg = ui.activeViewBg || ui.viewSwitchActiveBg || ui.catBtnActiveBg || '#f59e0b';
+      const activeText = ui.activeViewText || ui.viewSwitchActiveText || ui.catBtnActiveText || '#030712';
+      const inactiveBg = ui.inactiveViewBg || ui.viewSwitchInactiveBg || ui.catBtnInactiveBg || '#1f2937';
+      const inactiveText = ui.inactiveViewText || ui.viewSwitchInactiveText || ui.catBtnInactiveText || '#f1f5f9';
       const borderColor = ui.catBtnBorderColor || '#374151';
 
       const gridBtn = document.getElementById('btnLayoutGrid');
@@ -620,25 +614,23 @@
 
       if (layoutToggleBox && borderColor) {
         layoutToggleBox.style.borderColor = borderColor;
-        if (ui.filterBarBg) layoutToggleBox.style.backgroundColor = inactiveBg;
+        if (ui.viewSwitcherContainerBg || ui.viewSwitchContainerBg) {
+          layoutToggleBox.style.backgroundColor = ui.viewSwitcherContainerBg || ui.viewSwitchContainerBg;
+        }
       }
 
       if (layout === 'grid') {
         gridBtn.style.backgroundColor = activeBg;
         gridBtn.style.color = activeText;
-        gridBtn.style.border = `1px solid ${borderColor}`;
         
         listBtn.style.backgroundColor = inactiveBg;
         listBtn.style.color = inactiveText;
-        listBtn.style.border = `1px solid transparent`;
       } else {
         listBtn.style.backgroundColor = activeBg;
         listBtn.style.color = activeText;
-        listBtn.style.border = `1px solid ${borderColor}`;
 
         gridBtn.style.backgroundColor = inactiveBg;
         gridBtn.style.color = inactiveText;
-        gridBtn.style.border = `1px solid transparent`;
       }
 
       renderMenuContentBox();
@@ -741,7 +733,7 @@
         `;
       }
 
-      applyBadgeStyles(ui);
+      applyUiStyles(ui);
     }
 
     function addItemToCart(id) {
@@ -788,7 +780,6 @@
       document.getElementById('cartModal').classList.toggle('hidden');
     }
 
-    // Integrated Firestore Checkout & Phone Confirmation Workflow
     async function processCheckout() {
       const name = document.getElementById('customerName').value.trim();
       const phone = document.getElementById('customerPhone').value.trim();

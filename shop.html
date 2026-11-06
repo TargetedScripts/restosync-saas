@@ -246,7 +246,7 @@
       menu.classList.toggle('hidden');
     }
 
-    // Comprehensive real-time postMessage listener supporting both event types
+    // Comprehensive real-time postMessage listener supporting admin-theme variables
     window.addEventListener('message', function(event) {
       if (!event.data) return;
       const type = event.data.type;
@@ -280,8 +280,8 @@
 
       // 4. Switcher Shop & Blog Styling
       const switcherNav = document.getElementById('switcherNav');
-      if (switcherNav && styles.switcherContainerBg) {
-        switcherNav.style.backgroundColor = styles.switcherContainerBg;
+      if (switcherNav) {
+        if (styles.switcherContainerBg) switcherNav.style.backgroundColor = styles.switcherContainerBg;
       }
       const activeBtn = document.getElementById('switcherActiveBtn');
       if (activeBtn) {
@@ -295,18 +295,21 @@
 
       // 5. Grid & Menu Book View Switcher Styling
       const layoutToggleBox = document.getElementById('layoutToggleBox');
-      if (layoutToggleBox && styles.viewSwitchContainerBg) {
-        layoutToggleBox.style.backgroundColor = styles.viewSwitchContainerBg;
+      if (layoutToggleBox) {
+        if (styles.viewSwitcherContainerBg) layoutToggleBox.style.backgroundColor = styles.viewSwitcherContainerBg;
+        if (styles.viewSwitcherBorderColor) layoutToggleBox.style.borderColor = styles.viewSwitcherBorderColor;
       }
-      const gridBtn = document.getElementById('btnLayoutGrid');
-      if (gridBtn && currentLayout === 'grid') {
-        if (styles.viewSwitchActiveBg) gridBtn.style.backgroundColor = styles.viewSwitchActiveBg;
-        if (styles.viewSwitchActiveText) gridBtn.style.color = styles.viewSwitchActiveText;
+
+      const activeViewBtn = currentLayout === 'grid' ? document.getElementById('btnLayoutGrid') : document.getElementById('btnLayoutList');
+      if (activeViewBtn) {
+        if (styles.activeViewBg) activeViewBtn.style.backgroundColor = styles.activeViewBg;
+        if (styles.activeViewText) activeViewBtn.style.color = styles.activeViewText;
       }
-      const listBtn = document.getElementById('btnLayoutList');
-      if (listBtn && currentLayout !== 'grid') {
-        if (styles.viewSwitchActiveBg) listBtn.style.backgroundColor = styles.viewSwitchActiveBg;
-        if (styles.viewSwitchActiveText) listBtn.style.color = styles.viewSwitchActiveText;
+
+      const inactiveViewBtn = currentLayout === 'grid' ? document.getElementById('btnLayoutList') : document.getElementById('btnLayoutGrid');
+      if (inactiveViewBtn) {
+        if (styles.inactiveViewBg) inactiveViewBtn.style.backgroundColor = styles.inactiveViewBg;
+        if (styles.inactiveViewText) inactiveViewBtn.style.color = styles.inactiveViewText;
       }
 
       // 6. Apply Fav & Promo Badge Styles
@@ -366,7 +369,6 @@
         headerEl.style.borderBottom = `${ui.headerBorderSize} solid ${ui.headerBorderColor}`;
       }
 
-      // Apply initial cart button styling if available in profile.uiStyles
       const cartBtn = document.getElementById('cartBtn');
       if (cartBtn) {
         if (ui.cartBtnBg) cartBtn.style.backgroundColor = ui.cartBtnBg;
@@ -419,7 +421,6 @@
         if (ui.footerTextColor) footerEl.style.color = ui.footerTextColor;
       }
 
-      // Fetch operating hours from Firestore (tenantData.officeHours) with fallback to config.operatingHours or RESTOSYNC_CONFIG.operatingHours
       const op = tenantData.officeHours || config.operatingHours || (typeof RESTOSYNC_CONFIG !== 'undefined' ? RESTOSYNC_CONFIG.operatingHours : {});
       const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       const shortDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];

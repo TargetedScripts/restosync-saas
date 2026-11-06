@@ -27,13 +27,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 </head>
-<body class="bg-[#0f172a] text-stone-200 min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-black">
+<body class="blog-body-element bg-[#0f172a] text-stone-200 min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-black transition-colors duration-300">
 
     <!-- HEADER & NAVIGATION -->
-    <header id="mainHeader" class="sticky top-0 z-40 bg-[#1e293b]/90 backdrop-blur-md border-b border-zinc-800 transition-colors duration-300">
+    <header id="mainHeader" class="blog-header-element sticky top-0 z-40 bg-[#1e293b]/90 backdrop-blur-md border-b border-zinc-800 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
-            <!-- Left: Tenant Full Logo (Text and Global RS Logo Removed) -->
+            <!-- Left: Tenant Full Logo -->
             <div class="flex items-center space-x-3">
                 <img id="tenantLogo" src="" alt="Tenant Logo" class="h-10 w-auto object-contain hidden max-h-12">
             </div>
@@ -41,7 +41,7 @@
             <!-- Right Nav: Switcher & Mobile Menu -->
             <div class="flex items-center space-x-4">
                 <!-- Cross-Navigation Switcher (Journal/Blog ⇄ Shop) -->
-                <div id="moduleSwitcher" class="hidden items-center space-x-2 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800 text-xs">
+                <div id="moduleSwitcher" class="blog-switcher-element hidden items-center space-x-2 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800 text-xs transition-colors duration-300">
                     <a id="blogLinkNav" href="#" class="blog-pill-active px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold transition"><i class="fa-solid fa-book-open mr-1.5"></i>Journal</a>
                     <a id="shopLinkNav" href="#" class="blog-pill-inactive px-3 py-1.5 rounded-lg text-stone-400 hover:text-white transition"><i class="fa-solid fa-store mr-1.5"></i>Shop</a>
                 </div>
@@ -63,7 +63,7 @@
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-10">
 
         <!-- HERO SECTION / FEATURED STORY -->
-        <section id="heroSection" class="blog-card-element relative rounded-3xl overflow-hidden bg-[#1e293b] border border-zinc-800 min-h-[380px] flex items-center p-8 lg:p-12 shadow-2xl transition-all duration-500">
+        <section id="heroSection" class="blog-hero-element relative rounded-3xl overflow-hidden bg-[#1e293b] border border-zinc-800 min-h-[380px] flex items-center p-8 lg:p-12 shadow-2xl transition-all duration-500">
             <div id="heroBgOverlay" class="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent z-10"></div>
             <img id="heroImage" src="" alt="Hero Banner" class="absolute inset-0 w-full h-full object-cover opacity-30 transform hover:scale-105 transition duration-1000">
             
@@ -76,7 +76,7 @@
 
         <!-- ARTICLES / POSTS SECTION -->
         <section id="articlesSection" class="space-y-6">
-            <div class="blog-card-element flex items-center justify-between bg-[#1e293b] p-4 rounded-2xl border border-zinc-800">
+            <div class="blog-card-element flex items-center justify-between bg-[#1e293b] p-4 rounded-2xl border border-zinc-800 transition-colors duration-300">
                 <h3 class="blog-title-element text-base font-bold text-white tracking-tight flex items-center space-x-2">
                     <i class="fa-solid fa-feather-pointed text-amber-400"></i>
                     <span>Latest Published Stories</span>
@@ -97,20 +97,20 @@
     </main>
 
     <!-- FOOTER & OPERATING HOURS -->
-    <footer class="bg-zinc-950 border-t border-zinc-900 mt-16 text-stone-400 text-xs">
+    <footer class="blog-footer-element bg-zinc-950 border-t border-zinc-900 mt-16 text-stone-400 text-xs transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="space-y-3">
-                <h4 id="footerStoreName" class="font-bold text-sm text-white tracking-wide">RestoSync Journal</h4>
-                <p id="footerStoreAddress" class="text-stone-400 leading-relaxed">Powered by RestoSync SaaS multi-tenant cloud architecture.</p>
+                <h4 id="footerStoreName" class="blog-title-element font-bold text-sm text-white tracking-wide">RestoSync Journal</h4>
+                <p id="footerStoreAddress" class="blog-desc-element text-stone-400 leading-relaxed">Powered by RestoSync SaaS multi-tenant cloud architecture.</p>
             </div>
             <div>
-                <h4 class="font-bold text-sm text-white tracking-wide mb-3">Operating Hours</h4>
+                <h4 class="blog-title-element font-bold text-sm text-white tracking-wide mb-3">Operating Hours</h4>
                 <div id="footerOperatingHours" class="space-y-1.5 font-mono text-[11px]">
                     <p class="text-stone-500">Loading schedule...</p>
                 </div>
             </div>
             <div class="space-y-3">
-                <h4 class="font-bold text-sm text-white tracking-wide">System Trace</h4>
+                <h4 class="blog-title-element font-bold text-sm text-white tracking-wide">System Trace</h4>
                 <!-- Trace & Diagnostic Console -->
                 <details class="text-[11px] text-stone-500 font-mono bg-zinc-900 p-3 rounded-xl border border-zinc-800">
                     <summary class="cursor-pointer hover:text-amber-400 font-bold">RESTOSYNC TRACE & DIAGNOSTIC CONSOLE</summary>
@@ -124,7 +124,6 @@
 
     <!-- CORE APPLICATION SCRIPT -->
     <script>
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCMd3tOM2g8FNL96UIlGRE9cbq3UUvssrQ",
             authDomain: "restosync-saas.firebaseapp.com",
@@ -139,7 +138,6 @@
         }
         const db = firebase.firestore();
 
-        // URL Tenant Parameter Resolver
         const urlParams = new URLSearchParams(window.location.search);
         const TENANT_ID = (urlParams.get('tenant') || 'boluhalus').trim().toLowerCase();
 
@@ -154,7 +152,6 @@
             }
         }
 
-        // Live Firestore Snapshot Listener[cite: 1]
         function initJournalListener() {
             logDiagnostic(`Connecting to Firestore tenant for journal: [${TENANT_ID}]`);
             db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
@@ -170,7 +167,6 @@
             });
         }
 
-        // Render Journal Content to DOM
         function renderJournalContent() {
             const blogConf = tenantData.blogConfig || {};
             const shopConf = tenantData.shopConfig || {};
@@ -181,7 +177,6 @@
             document.getElementById('footerStoreName').innerText = `${blogTitle} Journal`;
             document.getElementById('footerStoreAddress').innerText = shopConf.address || tenantData.address || 'New Zealand';
 
-            // Tenant Full Logo (Menampilkan logo asli tanpa crop lingkaran)
             const logoUrl = blogConf.logoUrl || shopConf.logoUrl || tenantData.logoUrl;
             if (logoUrl) {
                 const logoEl = document.getElementById('tenantLogo');
@@ -190,7 +185,6 @@
                 logDiagnostic("Tenant full logo successfully loaded.");
             }
 
-            // Cross-Navigation Module Switcher (Journal/Blog ⇄ Shop)[cite: 1]
             if (enabledMods.shop !== false) {
                 const switcher = document.getElementById('moduleSwitcher');
                 const mobileSwitcher = document.getElementById('mobileModuleSwitcher');
@@ -204,69 +198,100 @@
                 `;
             }
 
-            // Theme & Dynamic Styles Injection dari Firestore
             const activeStyles = shopConf.uiStyles || blogConf.uiStyles || tenantData.uiStyles;
             if (activeStyles) {
                 applyDynamicTheme(activeStyles);
             }
 
-            // Hero Section Rendering
             document.getElementById('heroTitle').innerText = blogConf.heroTitle || `Stories from ${blogTitle}`;
             document.getElementById('heroSubtitle').innerText = blogConf.heroSubtitle || blogConf.description || 'Explore our articles, baking notes, and behind-the-scenes stories.';
             if (blogConf.heroBannerUrl) {
                 document.getElementById('heroImage').src = blogConf.heroBannerUrl;
             }
 
-            // Operating Hours Rendering
             renderOperatingHours(tenantData.officeHours || shopConf.operatingHours);
 
-            // Articles / Posts Catalog
             const articles = blogConf.articles || blogConf.posts || [];
             document.getElementById('articleCountBadge').innerText = `${articles.length} posts`;
             renderArticlesGrid(articles);
         }
 
-        // Apply Custom UI Styles dynamically
+        // Apply Custom UI Styles dynamically to all components
         function applyDynamicTheme(styles) {
             if (!styles) return;
-            const header = document.getElementById('mainHeader');
-            if (styles.headerBg) header.style.backgroundColor = styles.headerBg;
-            if (styles.bodyBg) document.body.style.backgroundColor = styles.bodyBg;
-            if (styles.textColor) document.body.style.color = styles.textColor;
 
+            // 1. Header Styling
+            document.querySelectorAll('.blog-header-element').forEach(el => {
+                if (styles.headerBg || styles.blogHeaderBg) {
+                    el.style.backgroundColor = styles.headerBg || styles.blogHeaderBg;
+                }
+                if (styles.headerBorderColor) {
+                    el.style.borderColor = styles.headerBorderColor;
+                }
+            });
+
+            // 2. Body Background & Global Text Color
+            if (styles.bodyBg) {
+                document.body.style.backgroundColor = styles.bodyBg;
+            }
+            if (styles.textColor) {
+                document.body.style.color = styles.textColor;
+            }
+
+            // 3. Hero Section Styling
+            document.querySelectorAll('.blog-hero-element').forEach(el => {
+                if (styles.blogCardBg) el.style.backgroundColor = styles.blogCardBg;
+                if (styles.blogCardBorderColor) el.style.borderColor = styles.blogCardBorderColor;
+            });
+
+            // 4. Card Elements (Articles & Section Header)
             document.querySelectorAll('.blog-card-element').forEach(el => {
                 if (styles.blogCardBg) el.style.backgroundColor = styles.blogCardBg;
                 if (styles.blogCardBorderColor) el.style.borderColor = styles.blogCardBorderColor;
             });
 
+            // 5. Typography (Titles)
             document.querySelectorAll('.blog-title-element').forEach(el => {
                 if (styles.blogTitleColor) el.style.color = styles.blogTitleColor;
             });
 
+            // 6. Typography (Descriptions)
             document.querySelectorAll('.blog-desc-element').forEach(el => {
                 if (styles.blogDescColor) el.style.color = styles.blogDescColor;
             });
 
+            // 7. Active Category Pills
             document.querySelectorAll('.blog-pill-active').forEach(el => {
                 if (styles.blogCatActiveBg) el.style.backgroundColor = styles.blogCatActiveBg;
                 if (styles.blogCatActiveText) el.style.color = styles.blogCatActiveText;
             });
 
+            // 8. Inactive Category Pills
             document.querySelectorAll('.blog-pill-inactive').forEach(el => {
                 if (styles.blogCatInactiveBg) el.style.backgroundColor = styles.blogCatInactiveBg;
                 if (styles.blogCatInactiveText) el.style.color = styles.blogCatInactiveText;
             });
 
+            // 9. Read More Buttons
             document.querySelectorAll('.blog-readmore-btn').forEach(el => {
                 if (styles.blogReadMoreBg) el.style.backgroundColor = styles.blogReadMoreBg;
                 if (styles.blogReadMoreText) el.style.color = styles.blogReadMoreText;
             });
 
-            logDiagnostic("Dynamic UI styles applied successfully.");
+            // 10. Footer & Switcher Styling
+            document.querySelectorAll('.blog-footer-element').forEach(el => {
+                if (styles.footerBg || styles.headerBg) el.style.backgroundColor = styles.footerBg || styles.headerBg;
+            });
+            document.querySelectorAll('.blog-switcher-element').forEach(el => {
+                if (styles.blogCardBg) el.style.backgroundColor = styles.blogCardBg;
+                if (styles.blogCardBorderColor) el.style.borderColor = styles.blogCardBorderColor;
+            });
+
+            logDiagnostic("Dynamic UI styles applied comprehensively across all components.");
         }
 
         // ==========================================
-        // REAL-TIME POSTMESSAGE LISTENER (ADMIN-THEME SYNC)[cite: 3]
+        // REAL-TIME POSTMESSAGE LISTENER (ADMIN-THEME SYNC)
         // ==========================================
         window.addEventListener('message', function(event) {
             if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE') return;
@@ -278,7 +303,6 @@
             applyDynamicTheme(styles);
         });
 
-        // Operating Hours Fallback Handler
         function renderOperatingHours(opHours) {
             const container = document.getElementById('footerOperatingHours');
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -298,7 +322,6 @@
             }).join('');
         }
 
-        // Render Articles / Journal Cards Grid
         function renderArticlesGrid(articles) {
             const grid = document.getElementById('articlesGrid');
 

@@ -101,7 +101,7 @@
         <!-- Main Workspace: 2-Column Split Layout -->
         <form id="theme-form" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
             
-            <!-- Left Column: Comprehensive UI Customization Form (Shop, Blog & Footer) -->
+            <!-- Left Column: Comprehensive UI Customization Form -->
             <div class="lg:col-span-5 space-y-6">
                 
                 <!-- SHOP / STOREFRONT UI STYLES -->
@@ -113,7 +113,7 @@
 
                     <!-- Header & Cart Button -->
                     <div class="space-y-2">
-                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-heading mr-1"></i> Header & Cart Button</h3>
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-heading mr-1"></i> Header, Cart & Switcher</h3>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Header Background</label>
@@ -132,6 +132,34 @@
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Cart Button Text</label>
                                 <input type="color" id="ui-cartButtonTextColor" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Cart Badge Bg (Number)</label>
+                                <input type="color" id="ui-cartBadgeBg" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Cart Badge Text (Number)</label>
+                                <input type="color" id="ui-cartBadgeTextColor" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                        </div>
+
+                        <!-- Shop & Blog Switcher Controls -->
+                        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Switch Container Bg</label>
+                                <input type="color" id="ui-switcherContainerBg" value="#090d16" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active Switch Bg</label>
+                                <input type="color" id="ui-switcherActiveBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active Switch Text</label>
+                                <input type="color" id="ui-switcherActiveText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Inactive Switch Text</label>
+                                <input type="color" id="ui-switcherInactiveText" value="#94a3b8" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                         </div>
                     </div>
@@ -174,9 +202,9 @@
                         </div>
                     </div>
 
-                    <!-- Filter Bar & Categories -->
+                    <!-- Filter Bar & Grid/Menu Switcher -->
                     <div class="space-y-2 pt-3 border-t border-slate-800">
-                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-filter mr-1"></i> Filter Bar & Pills</h3>
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-filter mr-1"></i> Filter Bar & Grid/Menu Switcher</h3>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Filter Bar Bg</label>
@@ -201,6 +229,26 @@
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Inactive Text</label>
                                 <input type="color" id="ui-catBtnInactiveText" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                        </div>
+
+                        <!-- Grid / Menu Book View Switcher Controls (New) -->
+                        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">View Switcher Container Bg</label>
+                                <input type="color" id="ui-viewSwitchContainerBg" value="#1f2937" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active View Bg</label>
+                                <input type="color" id="ui-viewSwitchActiveBg" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Active View Text</label>
+                                <input type="color" id="ui-viewSwitchActiveText" value="#030712" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Inactive View Text</label>
+                                <input type="color" id="ui-viewSwitchInactiveText" value="#f1f5f9" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item">
                             </div>
                         </div>
                     </div>
@@ -309,7 +357,7 @@
                     </div>
                 </section>
 
-                <!-- FOOTER STYLING (FULLY INTEGRATED) -->
+                <!-- FOOTER STYLING -->
                 <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5">
                     <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
                         <h2 class="text-sm font-bold text-slate-200">Footer Styling (Global / Shared)</h2>
@@ -341,7 +389,7 @@
 
             </div>
 
-            <!-- Right Column: Dual Live Previews (Shop Preview & Blog Preview) -->
+            <!-- Right Column: Dual Live Previews -->
             <div class="lg:col-span-7 sticky top-24 space-y-6">
                 
                 <!-- Storefront Preview Box (shop.html) -->
@@ -467,13 +515,15 @@
 
         let fetchedDocumentData = {};
         
-        // Shop & Footer UI Keys
+        // Shop & Footer UI Keys (including new switcher & view mode variables)
         const shopUiKeys = [
             'headerBgColor', 'headerBorderColor', 'headerBorderSize', 'headerTextColor', 'headerExtraText',
-            'cartButtonBg', 'cartButtonTextColor',
+            'cartButtonBg', 'cartButtonTextColor', 'cartBadgeBg', 'cartBadgeTextColor',
+            'switcherContainerBg', 'switcherActiveBg', 'switcherActiveText', 'switcherInactiveText',
             'bodyBgColor', 'bodyTextColor',
             'heroSectionBg', 'heroSectionBorderColor', 'heroTitleColor', 'heroDescColor',
             'filterBarBg', 'catBtnActiveBg', 'catBtnActiveText', 'catBtnInactiveBg', 'catBtnInactiveText', 'catBtnBorderColor',
+            'viewSwitchContainerBg', 'viewSwitchActiveBg', 'viewSwitchActiveText', 'viewSwitchInactiveText',
             'cardMenuBg', 'cardBorderColor', 'cardBorderThickness',
             'cardTitleColor', 'cardPriceColor', 'cardStrikethroughPriceColor',
             'cardButtonBg', 'cardButtonTextColor', 'badgeFavPromoBg', 'badgeFavPromoTextColor',
@@ -502,7 +552,7 @@
             if (activeTargetElement) positionSaveButtonNear(activeTargetElement);
         });
 
-        // Send Blog Theme Update via postMessage to blog.html (including Footer styling variables)
+        // Send Blog Theme Update via postMessage to blog.html
         function sendBlogThemeUpdate() {
             const iframe = document.getElementById('blogPreviewIframe');
             if (!iframe || !iframe.contentWindow) return;
@@ -513,7 +563,6 @@
                 bodyBg: document.getElementById('ui-bodyBgColor')?.value || '',
                 textColor: document.getElementById('ui-bodyTextColor')?.value || '',
                 
-                // Footer styling variables included for live preview reaction
                 footerBgColor: document.getElementById('ui-footerBgColor')?.value || '',
                 footerBorderColor: document.getElementById('ui-footerBorderColor')?.value || '',
                 footerTextColor: document.getElementById('ui-footerTextColor')?.value || '',
@@ -542,7 +591,7 @@
             fetchStorageAssetLists();
             fetchAndRenderThemeData();
 
-            // Shop & Footer inputs listener
+            // Shop inputs listener
             shopUiKeys.forEach(key => {
                 const el = document.getElementById(`ui-${key}`);
                 if (el) {
@@ -724,7 +773,7 @@
             });
         }
 
-        // Save Theme Settings to Firestore with proper shopConfig.uiStyles & blogConfig.uiStyles structure
+        // Save Theme Settings to Firestore
         document.getElementById('theme-form').addEventListener('submit', function(e) {
             e.preventDefault();
             logTrace(`Saving unified theme updates for tenant "${TENANT_ID}"...`, 'info');
@@ -761,8 +810,8 @@
 
             db.collection("tenants").doc(TENANT_ID).set(updatePayload, { merge: true })
                 .then(() => {
-                    logTrace(`Theme settings (Shop, Blog & Footer) successfully saved to Firestore!`, 'success');
-                    showAlert('Theme settings (Shop, Blog & Footer) successfully saved to Firestore!', 'success');
+                    logTrace(`Theme settings successfully saved to Firestore!`, 'success');
+                    showAlert('Theme settings successfully saved to Firestore!', 'success');
                     
                     refreshShopIframe();
                     refreshBlogIframe();

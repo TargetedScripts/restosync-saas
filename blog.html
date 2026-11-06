@@ -95,9 +95,9 @@
 
     </main>
 
-    <!-- FOOTER & OPERATING HOURS -->
+    <!-- FOOTER & OPERATING HOURS (System Trace Removed) -->
     <footer class="blog-footer-element footer-element bg-zinc-950 border-t border-zinc-900 mt-16 text-stone-400 text-xs transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="space-y-3">
                 <h4 id="footerStoreName" class="blog-title-element footer-text font-bold text-sm text-white tracking-wide">RestoSync Journal</h4>
                 <p id="footerStoreAddress" class="blog-desc-element footer-text text-stone-400 leading-relaxed">Powered by RestoSync SaaS multi-tenant cloud architecture.</p>
@@ -107,15 +107,6 @@
                 <div id="footerOperatingHours" class="space-y-1.5 font-mono text-[11px] footer-text">
                     <p class="text-stone-500">Loading schedule...</p>
                 </div>
-            </div>
-            <div class="space-y-3">
-                <h4 class="blog-title-element footer-text font-bold text-sm text-white tracking-wide">System Trace</h4>
-                <details class="text-[11px] text-stone-500 font-mono bg-zinc-900 p-3 rounded-xl border border-zinc-800">
-                    <summary class="cursor-pointer hover:text-amber-400 font-bold">RESTOSYNC TRACE & DIAGNOSTIC CONSOLE</summary>
-                    <div id="diagnosticConsole" class="mt-2 space-y-1 text-stone-400 max-h-32 overflow-y-auto">
-                        <p>[INIT] Initializing journal module...</p>
-                    </div>
-                </details>
             </div>
         </div>
     </footer>
@@ -141,29 +132,15 @@
 
         let tenantData = {};
 
-        function logDiagnostic(message) {
-            const consoleEl = document.getElementById('diagnosticConsole');
-            if (consoleEl) {
-                const timestamp = new Date().toLocaleTimeString();
-                consoleEl.innerHTML += `<div>[${timestamp}] ${message}</div>`;
-                consoleEl.scrollTop = consoleEl.scrollHeight;
-            }
-        }
-
         // 1. Inisialisasi utama saat halaman dimuat (Mengambil data Firestore secara permanen)[cite: 1]
         document.addEventListener('DOMContentLoaded', () => {
-            logDiagnostic(`Connecting to Firestore tenant for journal: [${TENANT_ID}]`);
-            
             db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
                 if (doc.exists) {
                     tenantData = doc.data();
-                    logDiagnostic(`Data successfully synced for tenant journal: ${tenantData.tenantName || TENANT_ID}`);
                     renderJournalContent();
-                } else {
-                    logDiagnostic(`ERROR: Tenant document [${TENANT_ID}] not found in database.`);
                 }
             }, (error) => {
-                logDiagnostic(`Firestore error: ${error.message}`);
+                console.error("Firestore error:", error);
             });
         });
 
@@ -183,7 +160,6 @@
                 const logoEl = document.getElementById('tenantLogo');
                 logoEl.src = logoUrl;
                 logoEl.classList.remove('hidden');
-                logDiagnostic("Tenant full logo successfully loaded.");
             }
 
             if (enabledMods.shop !== false) {
@@ -229,11 +205,10 @@
             renderArticlesGrid(articles);
         }
 
-        // 2. Fungsi Penerapan Gaya Dinamis ke Elemen HTML (Termasuk Footer)
+        // 2. Fungsi Penerapan Gaya Dinamis ke Elemen HTML
         function applyDynamicTheme(styles) {
             if (!styles) return;
 
-            // 1. Header Styling
             const headerColor = styles.headerBg || styles.blogHeaderBg;
             if (headerColor && headerColor.trim() !== '') {
                 document.querySelectorAll('header, .blog-header-element, .bg-header').forEach(el => {
@@ -246,7 +221,6 @@
                 });
             }
 
-            // 2. Body Background & Text Color
             if (styles.bodyBg && styles.bodyBg.trim() !== '') {
                 document.body.style.backgroundColor = styles.bodyBg;
             }
@@ -254,13 +228,11 @@
                 document.body.style.color = styles.textColor;
             }
 
-            // 3. Hero Section & Card Elements
             document.querySelectorAll('.blog-card, .blog-card-element, article, .card, .blog-hero-element').forEach(el => {
                 if (styles.blogCardBg && styles.blogCardBg.trim() !== '') el.style.backgroundColor = styles.blogCardBg;
                 if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') el.style.borderColor = styles.blogCardBorderColor;
             });
 
-            // 4. Typography (Titles & Descriptions)
             if (styles.blogTitleColor && styles.blogTitleColor.trim() !== '') {
                 document.querySelectorAll('h1, h2, h3, .blog-title').forEach(el => {
                     el.style.color = styles.blogTitleColor;
@@ -272,7 +244,6 @@
                 });
             }
 
-            // 5. Category Pills (Active & Inactive)
             document.querySelectorAll('.category-pill.active, .pill-active, .active-pill, .blog-pill-active').forEach(el => {
                 if (styles.blogCatActiveBg && styles.blogCatActiveBg.trim() !== '') el.style.backgroundColor = styles.blogCatActiveBg;
                 if (styles.blogCatActiveText && styles.blogCatActiveText.trim() !== '') el.style.color = styles.blogCatActiveText;
@@ -282,13 +253,11 @@
                 if (styles.blogCatInactiveText && styles.blogCatInactiveText.trim() !== '') el.style.color = styles.blogCatInactiveText;
             });
 
-            // 6. Read More Buttons
             document.querySelectorAll('.read-more-btn, .btn-read-more, button, .blog-readmore-btn').forEach(el => {
                 if (styles.blogReadMoreBg && styles.blogReadMoreBg.trim() !== '') el.style.backgroundColor = styles.blogReadMoreBg;
                 if (styles.blogReadMoreText && styles.blogReadMoreText.trim() !== '') el.style.color = styles.blogReadMoreText;
             });
 
-            // 7. Footer Styling Dinamis (Background, Border, Text, Link)
             const footerBg = styles.footerBgColor || styles.footerBg || styles.headerBg;
             if (footerBg && footerBg.trim() !== '') {
                 document.querySelectorAll('footer, .blog-footer-element, .footer-element').forEach(el => {
@@ -310,18 +279,15 @@
                     el.style.color = styles.footerLinkColor;
                 });
             }
-
-            logDiagnostic("Dynamic UI styles (including footer) applied comprehensively.");
         }
 
-        // 3. Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)[cite: 3]
+        // 3. Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)
         window.addEventListener('message', function(event) {
             if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE') return;
             
             const styles = event.data.uiStyles;
             if (!styles) return;
 
-            logDiagnostic("Received live theme update message from admin studio.");
             applyDynamicTheme(styles);
         });
 

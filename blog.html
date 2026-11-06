@@ -216,75 +216,91 @@
             renderArticlesGrid(articles);
         }
 
-        // Apply Custom UI Styles dynamically to all components
+        // Apply Custom UI Styles dynamically with strict validation to prevent fallback overwrites
         function applyDynamicTheme(styles) {
             if (!styles) return;
 
-            // 1. Header Styling
-            document.querySelectorAll('.blog-header-element').forEach(el => {
-                if (styles.headerBg || styles.blogHeaderBg) {
-                    el.style.backgroundColor = styles.headerBg || styles.blogHeaderBg;
-                }
-                if (styles.headerBorderColor) {
+            // 1. Header Styling (Strict check to prevent empty value overwrites)
+            const headerBgVal = styles.headerBg || styles.blogHeaderBg;
+            if (headerBgVal && headerBgVal.trim() !== '') {
+                document.querySelectorAll('.blog-header-element').forEach(el => {
+                    el.style.backgroundColor = headerBgVal;
+                });
+            }
+            if (styles.headerBorderColor && styles.headerBorderColor.trim() !== '') {
+                document.querySelectorAll('.blog-header-element').forEach(el => {
                     el.style.borderColor = styles.headerBorderColor;
-                }
-            });
+                });
+            }
 
             // 2. Body Background & Global Text Color
-            if (styles.bodyBg) {
+            if (styles.bodyBg && styles.bodyBg.trim() !== '') {
                 document.body.style.backgroundColor = styles.bodyBg;
             }
-            if (styles.textColor) {
+            if (styles.textColor && styles.textColor.trim() !== '') {
                 document.body.style.color = styles.textColor;
             }
 
             // 3. Hero Section Styling
-            document.querySelectorAll('.blog-hero-element').forEach(el => {
-                if (styles.blogCardBg) el.style.backgroundColor = styles.blogCardBg;
-                if (styles.blogCardBorderColor) el.style.borderColor = styles.blogCardBorderColor;
-            });
+            if (styles.blogCardBg && styles.blogCardBg.trim() !== '') {
+                document.querySelectorAll('.blog-hero-element').forEach(el => {
+                    el.style.backgroundColor = styles.blogCardBg;
+                });
+            }
+            if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') {
+                document.querySelectorAll('.blog-hero-element').forEach(el => {
+                    el.style.borderColor = styles.blogCardBorderColor;
+                });
+            }
 
             // 4. Card Elements (Articles & Section Header)
             document.querySelectorAll('.blog-card-element').forEach(el => {
-                if (styles.blogCardBg) el.style.backgroundColor = styles.blogCardBg;
-                if (styles.blogCardBorderColor) el.style.borderColor = styles.blogCardBorderColor;
+                if (styles.blogCardBg && styles.blogCardBg.trim() !== '') el.style.backgroundColor = styles.blogCardBg;
+                if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') el.style.borderColor = styles.blogCardBorderColor;
             });
 
             // 5. Typography (Titles)
-            document.querySelectorAll('.blog-title-element').forEach(el => {
-                if (styles.blogTitleColor) el.style.color = styles.blogTitleColor;
-            });
+            if (styles.blogTitleColor && styles.blogTitleColor.trim() !== '') {
+                document.querySelectorAll('.blog-title-element').forEach(el => {
+                    el.style.color = styles.blogTitleColor;
+                });
+            }
 
             // 6. Typography (Descriptions)
-            document.querySelectorAll('.blog-desc-element').forEach(el => {
-                if (styles.blogDescColor) el.style.color = styles.blogDescColor;
-            });
+            if (styles.blogDescColor && styles.blogDescColor.trim() !== '') {
+                document.querySelectorAll('.blog-desc-element').forEach(el => {
+                    el.style.color = styles.blogDescColor;
+                });
+            }
 
             // 7. Active Category Pills
             document.querySelectorAll('.blog-pill-active').forEach(el => {
-                if (styles.blogCatActiveBg) el.style.backgroundColor = styles.blogCatActiveBg;
-                if (styles.blogCatActiveText) el.style.color = styles.blogCatActiveText;
+                if (styles.blogCatActiveBg && styles.blogCatActiveBg.trim() !== '') el.style.backgroundColor = styles.blogCatActiveBg;
+                if (styles.blogCatActiveText && styles.blogCatActiveText.trim() !== '') el.style.color = styles.blogCatActiveText;
             });
 
             // 8. Inactive Category Pills
             document.querySelectorAll('.blog-pill-inactive').forEach(el => {
-                if (styles.blogCatInactiveBg) el.style.backgroundColor = styles.blogCatInactiveBg;
-                if (styles.blogCatInactiveText) el.style.color = styles.blogCatInactiveText;
+                if (styles.blogCatInactiveBg && styles.blogCatInactiveBg.trim() !== '') el.style.backgroundColor = styles.blogCatInactiveBg;
+                if (styles.blogCatInactiveText && styles.blogCatInactiveText.trim() !== '') el.style.color = styles.blogCatInactiveText;
             });
 
             // 9. Read More Buttons
             document.querySelectorAll('.blog-readmore-btn').forEach(el => {
-                if (styles.blogReadMoreBg) el.style.backgroundColor = styles.blogReadMoreBg;
-                if (styles.blogReadMoreText) el.style.color = styles.blogReadMoreText;
+                if (styles.blogReadMoreBg && styles.blogReadMoreBg.trim() !== '') el.style.backgroundColor = styles.blogReadMoreBg;
+                if (styles.blogReadMoreText && styles.blogReadMoreText.trim() !== '') el.style.color = styles.blogReadMoreText;
             });
 
             // 10. Footer & Switcher Styling
-            document.querySelectorAll('.blog-footer-element').forEach(el => {
-                if (styles.footerBg || styles.headerBg) el.style.backgroundColor = styles.footerBg || styles.headerBg;
-            });
+            const footerBgVal = styles.footerBg || styles.headerBg;
+            if (footerBgVal && footerBgVal.trim() !== '') {
+                document.querySelectorAll('.blog-footer-element').forEach(el => {
+                    el.style.backgroundColor = footerBgVal;
+                });
+            }
             document.querySelectorAll('.blog-switcher-element').forEach(el => {
-                if (styles.blogCardBg) el.style.backgroundColor = styles.blogCardBg;
-                if (styles.blogCardBorderColor) el.style.borderColor = styles.blogCardBorderColor;
+                if (styles.blogCardBg && styles.blogCardBg.trim() !== '') el.style.backgroundColor = styles.blogCardBg;
+                if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') el.style.borderColor = styles.blogCardBorderColor;
             });
 
             logDiagnostic("Dynamic UI styles applied comprehensively across all components.");

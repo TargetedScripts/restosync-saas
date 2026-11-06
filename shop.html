@@ -23,15 +23,10 @@
   <!-- HEADER -->
   <header id="mainHeader" class="sticky top-0 z-50 w-full bg-black transition-colors duration-200 border-b border-zinc-800"> 
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <!-- TENANT LOGO & EXTRA TEXT (RestoSync logo removed) -->
       <div class="flex items-center space-x-3 shrink-0">
-        <!-- RestoSync Global Logo (Scaled 50%) -->
-        <a id="consoleLink" href="https://console.targetedscripts.com/index.html" class="flex items-center" title="Back to Console">
-          <img src="assets/images/RS.png" alt="RestoSync" class="h-5 w-auto object-contain">
-        </a>
-        <div class="h-5 w-[1px] bg-zinc-800"></div>
-        <!-- Tenant Logo & Extra Text -->
-        <div class="flex items-center space-x-3">
-          <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
+        <img id="storeLogo" src="" alt="Logo" class="w-auto object-contain transition-transform duration-200" style="height: 38px; display: none;" onerror="this.style.display='none'">
+        <div>
           <span id="headerExtraText" class="font-bold text-xs uppercase tracking-wider block text-amber-400" style="display: none;"></span>
         </div>
       </div>
@@ -199,7 +194,6 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('adminPortalLink').href = `admin.html?tenant=${TENANT_ID}`;
-      document.getElementById('consoleLink').href = `https://console.targetedscripts.com/index.html?tenant=${TENANT_ID}`;
       logDiagnostic(`Fetching tenant document for [${TENANT_ID}] from Firestore...`);
 
       db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {

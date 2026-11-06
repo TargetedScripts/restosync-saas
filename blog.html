@@ -128,20 +128,37 @@
         const db = firebase.firestore();
 
         const urlParams = new URLSearchParams(window.location.search);
-        const TENANT_ID = (urlParams.get('tenant') || 'bangkokthaipalmy').trim().toLowerCase();
+        const TENANT_ID = (urlParams.get('tenant') || 'boluhalus').trim().toLowerCase();
 
         let tenantData = {};
 
-        // Inisialisasi utama saat halaman dimuat (Mengambil data Firestore secara permanen)[cite: 1]
+        // Inisialisasi utama saat halaman dimuat (Mengambil data dokumen utama & Sub-koleksi posts secara permanen)
         document.addEventListener('DOMContentLoaded', () => {
+            // 1. Listener dokumen utama tenant (profil, tema, shopConfig, enabledModules, dll)
             db.collection("tenants").doc(TENANT_ID).onSnapshot((doc) => {
                 if (doc.exists) {
                     tenantData = doc.data();
                     renderJournalContent();
                 }
             }, (error) => {
-                console.error("Firestore error:", error);
+                console.error("Firestore tenant error:", error);
             });
+
+            // 2. Listener sub-koleksi posts (tenants/{tenantId}/posts)
+            db.collection("tenants").doc(TENANT_ID).collection("posts")
+              .orderBy("createdAt", "desc")
+              .onSnapshot((snapshot) => {
+                  const postsArray = [];
+                  snapshot.forEach((doc) => {
+                      postsArray.push({ id: doc.id, ...doc.data() });
+                  });
+
+                  tenantData.blogConfig = tenantData.blogConfig || {};
+                  tenantData.blogConfig.articles = postsArray;
+                  renderJournalContent();
+              }, (error) => {
+                  console.error("Firestore sub-collection posts error:", error);
+              });
         });
 
         function renderJournalContent() {
@@ -208,8 +225,8 @@
 
             applyDynamicTheme(activeStyles);
 
-            // Ambil daftar artikel dari berbagai kemungkinan properti Firestore (articles, posts, items)
-            const articles = blogConf.articles || blogConf.posts || blogConf.items || tenantData.posts || [];
+            // Ambil daftar artikel dari sub-koleksi posts atau blogConfig.articles/posts
+            const articles = blogConf.articles || blogConf.posts || [];
 
             // Cari artikel yang diset sebagai Hero (`displayAsHero === true`) atau ambil pos pertama
             const heroPost = articles.find(p => p.displayAsHero === true) || articles[0];
@@ -265,7 +282,6 @@
                 document.body.style.color = styles.textColor;
             }
 
-            // Kartu, Hero, dan Switcher Container
             document.querySelectorAll('.blog-card, .blog-card-element, article, .card, .blog-hero-element, .blog-switcher-element').forEach(el => {
                 if (styles.blogCardBg && styles.blogCardBg.trim() !== '') el.style.backgroundColor = styles.blogCardBg;
                 if (styles.blogCardBorderColor && styles.blogCardBorderColor.trim() !== '') el.style.borderColor = styles.blogCardBorderColor;
@@ -319,7 +335,7 @@
             }
         }
 
-        // Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)[cite: 3]
+        // Listener Real-Time postMessage dari admin-theme.html (untuk Iframe Preview)
         window.addEventListener('message', function(event) {
             if (!event.data || event.data.type !== 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE') return;
             
@@ -362,7 +378,6 @@
                 const imageUrl = item.imageUrl || item.image || item.photoUrl || 'https://images.unsplash.com/photo-1509440159596-0249088772ff';
                 const category = item.category || item.tag || '';
                 
-                // Format tanggal dari Firestore Timestamp atau string
                 let dateStr = 'Recent Note';
                 if (item.createdAt) {
                     if (typeof item.createdAt.toDate === 'function') {
@@ -386,7 +401,7 @@
                                 <p class="blog-desc-element text-xs text-stone-400 line-clamp-3">${excerpt}</p>
                             </div>
                             <div class="pt-4 border-t border-zinc-800/60 flex items-center justify-between text-xs text-stone-500">
-                               <span><i class="fa-regular fa-calendar mr-1.5"></i>${dateStr}</span>
+                                <span><i class="fa-regular fa-calendar mr-1.5"></i>${dateStr}</span>
                                 <span class="blog-readmore-btn text-amber-400 font-semibold hover:underline cursor-pointer px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 transition">Read Full Story <i class="fa-solid fa-arrow-right ml-1"></i></span>
                             </div>
                         </div>

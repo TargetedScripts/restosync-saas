@@ -471,15 +471,16 @@
             if (activeTargetElement) positionSaveButtonNear(activeTargetElement);
         });
 
-        // Send Blog Theme Update via postMessage to blog.html (including supporting header/body variables)
+        // Send Blog Theme Update via postMessage to blog.html (Only transmitting defined/active headerBg if present)
         function sendBlogThemeUpdate() {
             const iframe = document.getElementById('blogPreviewIframe');
             if (!iframe || !iframe.contentWindow) return;
 
+            const headerVal = document.getElementById('ui-headerBgColor')?.value;
+            const bodyVal = document.getElementById('ui-bodyBgColor')?.value;
+            const textVal = document.getElementById('ui-bodyTextColor')?.value;
+
             const blogStyles = {
-                headerBg: document.getElementById('ui-headerBgColor')?.value,
-                bodyBg: document.getElementById('ui-bodyBgColor')?.value,
-                textColor: document.getElementById('ui-bodyTextColor')?.value,
                 blogCardBg: document.getElementById('blogCardBgInput')?.value,
                 blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value,
                 blogTitleColor: document.getElementById('blogTitleColorInput')?.value,
@@ -491,6 +492,10 @@
                 blogReadMoreBg: document.getElementById('blogReadMoreBgInput')?.value,
                 blogReadMoreText: document.getElementById('blogReadMoreTextInput')?.value
             };
+
+            if (headerVal) blogStyles.headerBg = headerVal;
+            if (bodyVal) blogStyles.bodyBg = bodyVal;
+            if (textVal) blogStyles.textColor = textVal;
 
             iframe.contentWindow.postMessage({
                 type: 'RESTOSYNC_LIVE_BLOG_THEME_UPDATE',

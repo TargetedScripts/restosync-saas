@@ -101,7 +101,7 @@
         <!-- Main Workspace: 2-Column Split Layout -->
         <form id="theme-form" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
             
-            <!-- Left Column: Comprehensive UI Customization Form (Shop & Blog) -->
+            <!-- Left Column: Comprehensive UI Customization Form (Shop, Blog & Footer) -->
             <div class="lg:col-span-5 space-y-6">
                 
                 <!-- SHOP / STOREFRONT UI STYLES -->
@@ -205,7 +205,7 @@
                         </div>
                     </div>
 
-                    <!-- Menu Card Styling (Typography, Prices, Badges, Add to Order) -->
+                    <!-- Menu Card Styling -->
                     <div class="space-y-2 pt-3 border-t border-slate-800">
                         <h3 class="text-[11px] font-bold uppercase tracking-wider text-amber-500"><i class="fa-solid fa-utensils mr-1"></i> Menu Card, Prices & Badges</h3>
                         <div class="grid grid-cols-2 gap-2">
@@ -249,7 +249,7 @@
                     </div>
                 </section>
 
-                <!-- BLOG / JOURNAL STYLING (SYNCHRONIZED ID MAPPING) -->
+                <!-- BLOG / JOURNAL STYLING -->
                 <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5">
                     <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
                         <h2 class="text-sm font-bold text-slate-200">Blog / Journal Styling</h2>
@@ -308,6 +308,37 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- FOOTER STYLING (NEW - FULL CUSTOMIZATION) -->
+                <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5">
+                    <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+                        <h2 class="text-sm font-bold text-slate-200">Footer Styling (Global / Shared)</h2>
+                        <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 font-medium">footerConfig</span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-blue-400"><i class="fa-solid fa-shoe-prints mr-1"></i> Footer Colors & Typography</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Footer Background</label>
+                                <input type="color" id="ui-footerBgColor" value="#090d16" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item footer-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Footer Border Color</label>
+                                <input type="color" id="ui-footerBorderColor" value="#1e293b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item footer-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Footer Text Color</label>
+                                <input type="color" id="ui-footerTextColor" value="#94a3b8" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item footer-color-picker">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Footer Link / Accent</label>
+                                <input type="color" id="ui-footerLinkColor" value="#f59e0b" class="w-full h-8 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5 theme-input-item footer-color-picker">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
             </div>
 
             <!-- Right Column: Dual Live Previews (Shop Preview & Blog Preview) -->
@@ -368,7 +399,7 @@
                 <span class="font-semibold text-slate-300">Trace & Diagnostic Console:</span>
             </div>
             <div id="console-output" class="text-slate-400 break-all">
-                Initializing Fully Synchronized Shop & Blog Theme Studio...
+                Initializing Fully Synchronized Shop, Blog & Footer Theme Studio...
             </div>
         </div>
     </footer>
@@ -419,7 +450,6 @@
         document.getElementById('back-to-console').href = `index.html?tenant=${encodeURIComponent(TENANT_ID)}`;
         document.getElementById('logo-link').href = `index.html?tenant=${encodeURIComponent(TENANT_ID)}`;
 
-        // Mengarahkan pratinjau ke shop.html dan blog.html
         document.getElementById('live-storefront-iframe').src = `shop.html?tenant=${encodeURIComponent(TENANT_ID)}`;
         document.getElementById('blogPreviewIframe').src = `blog.html?tenant=${encodeURIComponent(TENANT_ID)}`;
 
@@ -437,7 +467,7 @@
 
         let fetchedDocumentData = {};
         
-        // Shop UI Keys
+        // Shop UI Keys (including footer)
         const shopUiKeys = [
             'headerBgColor', 'headerBorderColor', 'headerBorderSize', 'headerTextColor', 'headerExtraText',
             'cartButtonBg', 'cartButtonTextColor',
@@ -447,7 +477,7 @@
             'cardMenuBg', 'cardBorderColor', 'cardBorderThickness',
             'cardTitleColor', 'cardPriceColor', 'cardStrikethroughPriceColor',
             'cardButtonBg', 'cardButtonTextColor', 'badgeFavPromoBg', 'badgeFavPromoTextColor',
-            'footerBgColor', 'footerTextColor'
+            'footerBgColor', 'footerBorderColor', 'footerTextColor', 'footerLinkColor'
         ];
 
         let activeTargetElement = null;
@@ -482,6 +512,10 @@
                 headerBorderColor: document.getElementById('ui-headerBorderColor')?.value || '',
                 bodyBg: document.getElementById('ui-bodyBgColor')?.value || '',
                 textColor: document.getElementById('ui-bodyTextColor')?.value || '',
+                footerBgColor: document.getElementById('ui-footerBgColor')?.value || '',
+                footerBorderColor: document.getElementById('ui-footerBorderColor')?.value || '',
+                footerTextColor: document.getElementById('ui-footerTextColor')?.value || '',
+                footerLinkColor: document.getElementById('ui-footerLinkColor')?.value || '',
                 blogCardBg: document.getElementById('blogCardBgInput')?.value || '',
                 blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value || '',
                 blogTitleColor: document.getElementById('blogTitleColorInput')?.value || '',
@@ -501,7 +535,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            logTrace(`Initializing Fully Synchronized Shop & Blog Studio for tenant: [${TENANT_ID}]`, 'info');
+            logTrace(`Initializing Fully Synchronized Shop, Blog & Footer Studio for tenant: [${TENANT_ID}]`, 'info');
             fetchStorageAssetLists();
             fetchAndRenderThemeData();
 
@@ -511,13 +545,13 @@
                 if (el) {
                     el.addEventListener('input', () => {
                         sendRealtimeShopThemeToIframe();
-                        if(key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor' || key === 'headerBorderColor') {
+                        if(key.includes('footer') || key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor' || key === 'headerBorderColor') {
                             sendBlogThemeUpdate();
                         }
                     });
                     el.addEventListener('change', () => {
                         sendRealtimeShopThemeToIframe();
-                        if(key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor' || key === 'headerBorderColor') {
+                        if(key.includes('footer') || key === 'headerBgColor' || key === 'bodyBgColor' || key === 'bodyTextColor' || key === 'headerBorderColor') {
                             sendBlogThemeUpdate();
                         }
                     });
@@ -633,7 +667,7 @@
             db.collection('tenants').doc(TENANT_ID).get().then((doc) => {
                 if (doc.exists) {
                     fetchedDocumentData = doc.data();
-                    logTrace(`Document retrieved successfully. Populating shop and blog styles...`, 'success');
+                    logTrace(`Document retrieved successfully. Populating shop, blog & footer styles...`, 'success');
 
                     const profile = fetchedDocumentData.profile || {};
                     const shopConfig = fetchedDocumentData.shopConfig || {};
@@ -654,7 +688,7 @@
                         document.getElementById('logo-preview').src = logoUrl;
                     }
 
-                    // Populate Shop UI fields
+                    // Populate Shop & Footer UI fields
                     shopUiKeys.forEach(key => {
                         if (shopUiStyles[key] !== undefined && shopUiStyles[key] !== '') {
                             const el = document.getElementById(`ui-${key}`);
@@ -687,7 +721,7 @@
             });
         }
 
-        // Save Theme Settings to Firestore with proper blogConfig.uiStyles structure and merge: true
+        // Save Theme Settings to Firestore with proper shopConfig.uiStyles & blogConfig.uiStyles structure
         document.getElementById('theme-form').addEventListener('submit', function(e) {
             e.preventDefault();
             logTrace(`Saving unified theme updates for tenant "${TENANT_ID}"...`, 'info');
@@ -724,8 +758,8 @@
 
             db.collection("tenants").doc(TENANT_ID).set(updatePayload, { merge: true })
                 .then(() => {
-                    logTrace(`Theme settings (Shop & Blog) successfully saved to Firestore!`, 'success');
-                    showAlert('Theme settings (Shop & Blog) successfully saved to Firestore!', 'success');
+                    logTrace(`Theme settings (Shop, Blog & Footer) successfully saved to Firestore!`, 'success');
+                    showAlert('Theme settings (Shop, Blog & Footer) successfully saved to Firestore!', 'success');
                     
                     refreshShopIframe();
                     refreshBlogIframe();

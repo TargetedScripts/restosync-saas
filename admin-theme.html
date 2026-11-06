@@ -309,7 +309,7 @@
                     </div>
                 </section>
 
-                <!-- FOOTER STYLING (NEW - FULL CUSTOMIZATION) -->
+                <!-- FOOTER STYLING (FULLY INTEGRATED) -->
                 <section class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5">
                     <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
                         <h2 class="text-sm font-bold text-slate-200">Footer Styling (Global / Shared)</h2>
@@ -467,7 +467,7 @@
 
         let fetchedDocumentData = {};
         
-        // Shop UI Keys (including footer)
+        // Shop & Footer UI Keys
         const shopUiKeys = [
             'headerBgColor', 'headerBorderColor', 'headerBorderSize', 'headerTextColor', 'headerExtraText',
             'cartButtonBg', 'cartButtonTextColor',
@@ -502,7 +502,7 @@
             if (activeTargetElement) positionSaveButtonNear(activeTargetElement);
         });
 
-        // Send Blog Theme Update via postMessage to blog.html
+        // Send Blog Theme Update via postMessage to blog.html (including Footer styling variables)
         function sendBlogThemeUpdate() {
             const iframe = document.getElementById('blogPreviewIframe');
             if (!iframe || !iframe.contentWindow) return;
@@ -512,10 +512,13 @@
                 headerBorderColor: document.getElementById('ui-headerBorderColor')?.value || '',
                 bodyBg: document.getElementById('ui-bodyBgColor')?.value || '',
                 textColor: document.getElementById('ui-bodyTextColor')?.value || '',
+                
+                // Footer styling variables included for live preview reaction
                 footerBgColor: document.getElementById('ui-footerBgColor')?.value || '',
                 footerBorderColor: document.getElementById('ui-footerBorderColor')?.value || '',
                 footerTextColor: document.getElementById('ui-footerTextColor')?.value || '',
                 footerLinkColor: document.getElementById('ui-footerLinkColor')?.value || '',
+
                 blogCardBg: document.getElementById('blogCardBgInput')?.value || '',
                 blogCardBorderColor: document.getElementById('blogCardBorderInput')?.value || '',
                 blogTitleColor: document.getElementById('blogTitleColorInput')?.value || '',
@@ -539,7 +542,7 @@
             fetchStorageAssetLists();
             fetchAndRenderThemeData();
 
-            // Shop inputs listener
+            // Shop & Footer inputs listener
             shopUiKeys.forEach(key => {
                 const el = document.getElementById(`ui-${key}`);
                 if (el) {

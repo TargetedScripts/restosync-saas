@@ -16,6 +16,12 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; }
+        /* Basic styling for rich text editor content output */
+        .rich-editor-content h1 { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .rich-editor-content h2 { font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .rich-editor-content p { margin-bottom: 0.75rem; }
+        .rich-editor-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+        .rich-editor-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.75rem; }
     </style>
 </head>
 <body class="bg-stone-50 min-h-screen text-stone-800 flex flex-col">
@@ -124,9 +130,33 @@
                     <textarea id="postExcerpt" rows="2" placeholder="Brief summary displayed on article cards..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-xs text-stone-800 focus:outline-none focus:border-stone-400"></textarea>
                 </div>
 
+                <!-- Rich Text Editor Section -->
                 <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Full Article / Journal Content</label>
-                    <textarea id="postContent" rows="8" placeholder="Write your story or journal description here..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-stone-400 leading-relaxed"></textarea>
+                    <label class="block text-xs font-medium text-stone-600 mb-1.5">Full Article / Journal Content (Rich Text)</label>
+                    
+                    <!-- Formatting Toolbar -->
+                    <div class="bg-stone-100 border border-stone-200 rounded-t-xl p-2 flex flex-wrap gap-1 items-center border-b-0">
+                        <button type="button" onclick="formatText('bold')" class="p-1.5 px-2.5 rounded hover:bg-stone-200 text-stone-700 text-xs font-bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
+                        <button type="button" onclick="formatText('italic')" class="p-1.5 px-2.5 rounded hover:bg-stone-200 text-stone-700 text-xs italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
+                        <button type="button" onclick="formatText('underline')" class="p-1.5 px-2.5 rounded hover:bg-stone-200 text-stone-700 text-xs underline" title="Underline"><i class="fa-solid fa-underline"></i></button>
+                        <span class="w-px h-4 bg-stone-300 mx-1"></span>
+                        <button type="button" onclick="formatBlock('h1')" class="p-1.5 px-2 rounded hover:bg-stone-200 text-stone-700 text-xs font-bold" title="Heading 1">H1</button>
+                        <button type="button" onclick="formatBlock('h2')" class="p-1.5 px-2 rounded hover:bg-stone-200 text-stone-700 text-xs font-bold" title="Heading 2">H2</button>
+                        <button type="button" onclick="formatBlock('p')" class="p-1.5 px-2 rounded hover:bg-stone-200 text-stone-700 text-xs" title="Paragraph">P</button>
+                        <span class="w-px h-4 bg-stone-300 mx-1"></span>
+                        <button type="button" onclick="formatText('insertUnorderedList')" class="p-1.5 px-2 rounded hover:bg-stone-200 text-stone-700 text-xs" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+                        <button type="button" onclick="formatText('insertOrderedList')" class="p-1.5 px-2 rounded hover:bg-stone-200 text-stone-700 text-xs" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+                        <span class="w-px h-4 bg-stone-300 mx-1"></span>
+                        <button type="button" onclick="formatText('justifyLeft')" class="p-1.5 px-2 rounded hover:bg-stone-200 text-stone-700 text-xs" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
+                        <button type="button" onclick="formatText('justifyCenter')" class="p-1.5 px-2 rounded hover:bg-stone-200 text-stone-700 text-xs" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
+                        <button type="button" onclick="formatText('justifyRight')" class="p-1.5 px-2 rounded hover:bg-stone-200 text-stone-700 text-xs" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+                    </div>
+
+                    <!-- Editable Content Box -->
+                    <div id="postContent" contenteditable="true" 
+                        class="w-full bg-stone-50 border border-stone-200 rounded-b-xl p-3.5 min-h-[220px] max-h-[350px] overflow-y-auto text-xs text-stone-800 focus:outline-none focus:border-stone-400 leading-relaxed rich-editor-content">
+                        Write your story or journal description here...
+                    </div>
                 </div>
             </div>
 
@@ -204,7 +234,7 @@
             document.getElementById('postCategory').value = post.category || '';
             document.getElementById('postImage').value = post.imageUrl || post.image || '';
             document.getElementById('postExcerpt').value = post.excerpt || '';
-            document.getElementById('postContent').value = post.content || '';
+            document.getElementById('postContent').innerHTML = post.content || '';
             document.getElementById('displayAsHero').checked = !!post.displayAsHero;
             document.getElementById('displayAsSlider').checked = !!post.displayAsSlider;
         }
@@ -215,9 +245,20 @@
             document.getElementById('postCategory').value = '';
             document.getElementById('postImage').value = '';
             document.getElementById('postExcerpt').value = '';
-            document.getElementById('postContent').value = '';
+            document.getElementById('postContent').innerHTML = 'Write your story or journal description here...';
             document.getElementById('displayAsHero').checked = false;
             document.getElementById('displayAsSlider').checked = false;
+        }
+
+        // Rich Text Editor Command Helpers
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            document.getElementById('postContent').focus();
+        }
+
+        function formatBlock(blockTag) {
+            document.execCommand('formatBlock', false, `<${blockTag}>`);
+            document.getElementById('postContent').focus();
         }
 
         // Upload Image to Firebase Storage
@@ -262,7 +303,7 @@
                 excerpt: document.getElementById('postExcerpt').value.trim(),
                 displayAsHero: document.getElementById('displayAsHero').checked,
                 displayAsSlider: document.getElementById('displayAsSlider').checked,
-                content: document.getElementById('postContent').value,
+                content: document.getElementById('postContent').innerHTML,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
